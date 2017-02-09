@@ -1,0 +1,7 @@
+#mySidenav {
+	display: inherit;
+}
+
+#main {
+  transition: 0.3s;
+}
