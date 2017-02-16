@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Link } from 'react-router'
 import SearchBar from './search/SearchBar'
 import './navbar.css'
 
@@ -117,7 +118,6 @@ const matches = {
 ]
 };
 
-
 class NavBar extends Component {
 	onChange(input, resolve) {
 	  // Simulate AJAX request
@@ -132,9 +132,9 @@ class NavBar extends Component {
 	  }, 25);
   	}
 	onSearch(input) {
-	  if (!input)
-	  	return;
-	  console.info(`Searching "${input}"`);
+		if (!input)
+			return;
+		console.info(`Searching "${input}"`);
 	}
 	render() {
 		return (
@@ -146,9 +146,9 @@ class NavBar extends Component {
 				onSearch={this.onSearch}
 			/>
 			</div>
-			<div id="menu-bar">
-				<div className="App-header-elem"><h4 className="App-header-elem-txt">Accueil</h4></div>
-				<div className="App-header-elem"><h4 className="App-header-elem-txt">Mon compte</h4></div>
+			<div id="menu-bar" className="menu-bar">
+				<Link to="/" alt=""><div className="App-header-elem"><h4 className="App-header-elem-txt">Accueil</h4></div></Link>
+				<Link to="/profile" alt=""><div className="App-header-elem"><h4 className="App-header-elem-txt">Mon compte</h4></div></Link>
 				<div className="App-header-elem"><h4 className="App-header-elem-txt">Contact</h4></div>
 			</div>
 		</div>

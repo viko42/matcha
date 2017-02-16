@@ -9,7 +9,9 @@ class Header extends Component {
 			<div id="mySidenav" className="sidenav">
 				<a className="closebtn sidenavlink" onClick={closeNav}>&times;</a>
 				<Link to="/" className="sidenavlink">Accueil</Link>
-				<Link to="/" className="sidenavlink">Mon compte</Link>
+				<Link to="/register" className="sidenavlink">Inscription</Link>
+				<Link to="/profile" className="sidenavlink">Mon compte</Link>
+				<Link to="/login" className="sidenavlink">Se connecter</Link>
 			</div>
 		)
 	}

@@ -3,12 +3,14 @@ export function openNav() {
 	document.getElementById("main").style.marginLeft = "250px";
 	document.getElementById("App-header-hbgr").style.display = "none";
 	document.getElementById("App-header-search").style.display = "none";
+	document.getElementById("App-header-bar").style.marginLeft = "1px";
 }
 export function closeNav() {
 	document.getElementById("mySidenav").style.width = "0";
 	document.getElementById("main").style.marginLeft= "0";
 	document.getElementById("App-header-hbgr").style.display = "inline-block";
 	document.getElementById("App-header-search").style.display = "inherit"
+	document.getElementById("App-header-bar").style.marginLeft = "115px";
 }
 
 export function openSearchBar() {

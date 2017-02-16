@@ -92,7 +92,7 @@
 	animation: show 500ms linear;
 	animation-fill-mode: forwards;
 	margin-right: 100px;
-	display:inherit;
+	/*display:inherit;*/
 }
 #App-header-bar {
 	min-width: 120px;
@@ -108,12 +108,12 @@
   padding:0;
   display: inline;
 }
-
+/*
 @media screen and (min-width: 0px) and (max-width: 427px) {
   #App-header-elem-line {
     display:none;
   }
-}
+}*/
 
 .App-header-elem {
   padding:0;
@@ -136,27 +136,13 @@
   font-weight: 400;
 }
 
-#App-header-elem-content {
-  float: left;
-  min-width: 500px;
-  margin-right: 10px;
-  width: auto;
-  border: solid;
-  color: red;
-}
-#App-header-elem-search {
-  color: yellow;
-  border: solid;
-  border-width: 2px;
-  height: 50px;
-  -webkit-appearance: none;
-  border-radius: 2px;
-  box-sizing: border-box;
-  display:inline;
-}
-.App-intro {
-  text-align: center;
-  font-size: large;
+#header-more {
+	display: none;
+	top:0;
+	right:0;
+	margin-right: 70px;
+	margin-top: 20px;
+	position :absolute;
 }
 
 .sidenav {
@@ -179,6 +165,7 @@
     font-size: 17px;
     margin-bottom: 10px;
     display: block;
+	color:black;
     transition: 0.5s
 }
 
@@ -294,3 +281,10 @@ input {
 .search-bar-suggestions .highlighted {
   background: #f5f5f5;
 }
+
+/*@media screen and (min-width: 0px) and (max-width: 589px) {
+	.menu-bar {
+		display: none;
+		color: red;
+	}
+}*/
