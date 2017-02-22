@@ -24,11 +24,11 @@ router.post('/register', (req, res) => {
     activate: '0',
     admin: '0'
   });
-	User.find({}, function(err, users) {
-	if (err) throw err;
-	// object of all the users
-	console.log(users);
-});
+	// User.find({}, function(err, users) {
+	// if (err) throw err;
+	// // object of all the users
+	// console.log(users);
+	// });
 	if (message === "OK") {
 	  newUser.save(function(err) {
 	    if (err)
@@ -43,4 +43,4 @@ router.post('/register', (req, res) => {
 		res.send({message, status: 0});
 });
 
-module.exports = router;
+export default router;

@@ -1,3 +1,4 @@
+require('babel-register');
 const express = require('express');
 const router = express();
 import User from '../../bdd/db.user'
@@ -5,19 +6,25 @@ import RCode from '../../bdd/db.resetCode'
 import mongoose from 'mongoose'
 import validator from 'validator'
 
-require('babel-register');
-import { Register, ForgotMdp, ForgotMdpGet } from '../account/register/'
-// import bodyParser from 'body-parser'
+import jwt from 'jsonwebtoken'
+import Auth from './auth'
+const ApiRoutes = express.Router();
 
-// User.remove(function(err) {
-// 	if (err) throw err;
-// 	console.log('User successfully deleted!');
-// });
-// router.use(require('../account/register/'))
+import { Register, ForgotMdp, ForgotMdpGet } from '../account/register/'
+import { Login } from '../account/login'
+
+
+ApiRoutes.use(Auth);
 
 router.post('/register', Register)
+router.post('/login', Login)
 router.post('/forgot/new', ForgotMdpGet)
 router.post('/forgot', ForgotMdp)
 
+
+router.use('/api', ApiRoutes);
+router.post('/api/search', (req, res) => {
+	res.send({message: "successfully connected", "decoded": req.decoded});
+});
 module.exports = router;
 // export default router;
