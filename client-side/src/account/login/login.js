@@ -51,19 +51,15 @@ class Login extends Component {
 
   handleSubmit(event) {
     event.preventDefault();
-		const regObj = { name: event.target.name.value,
-											firstname: event.target.firstname.value,
-											email: event.target.email.value,
-											pass: event.target.pass.value,
-	    								passconfirm: event.target.passconfirm.value}
+		const regObj = {email: event.target.email.value,pass: event.target.pass.value}
 
-		if (!regObj.name || !regObj.firstname || !regObj.email || !regObj.email || !regObj.pass || !regObj.passconfirm) {
+		if (!regObj.email || !regObj.pass) {
 			this.messageInfo('Champs manquant(s)')
 			return ;
 		}
 		axios({
 		  method: 'post',
-		  url: 'http://localhost:8080/register',
+		  url: 'http://localhost:8080/login',
 			headers: {
 				'Accept': 'application/json',
 				'Content-Type': 'application/json',

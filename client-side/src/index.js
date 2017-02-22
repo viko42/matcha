@@ -15,6 +15,7 @@ ReactDOM.render(
 		<Route path="/login" component={Login} />
 		<Route path="/forgot" component={ForgotMdp} />
 		<Route path="/test" component={test} />
-	</Router>,
+	</Router>
+	,
 	document.getElementById('root')
 );

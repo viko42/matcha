@@ -4,6 +4,10 @@ import '../App.css';
 import {closeNav} from './nav_func'
 
 class Header extends Component {
+	constructor(props) {
+		super(props);
+		console.log(props);
+	}
 	render() {
 		return (
 			<div id="mySidenav" className="sidenav">
