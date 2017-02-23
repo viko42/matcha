@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import './profile.css'
-import HeaderFull from '../header-menu/header'
+// import HeaderFull from '../header-menu/header'
 import App from '../App'
 
 class Profile extends Component {

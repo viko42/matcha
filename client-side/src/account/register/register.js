@@ -9,10 +9,10 @@ class Register extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-      isFocus: 'Phone',
-      created: false,
-			message: '',
-			event: []
+	      isFocus: 'Phone',
+	      created: false,
+		  message: '',
+		  event: []
 		}
 		this.alertOptions = {
 			offset: 14,
@@ -72,7 +72,7 @@ class Register extends Component {
 		    ...regObj
 		  }
 		}).then((res) => {
-			console.log(res.data);
+			// console.log(res.data);
 			if (res.data.status === 1)
 				this.messageInfo(res.data.message);
 			else
@@ -97,7 +97,7 @@ class Register extends Component {
     		<div className="Register-content">
           <center>
 						<Link to="/">Retour</Link><h2>Inscription</h2>
-	          <form className="Register-form" onSubmit={this.handleSubmit.bind(this)}>
+	          <form className="Register-form" onSubmit={this.handleSubmit = this.handleSubmit.bind(this)}>
 	            <label>
 								<input type="text" name="name" onChange={this.handleInputChange} placeholder="Nom"/><br/>
 								<input type="text" name="firstname" onChange={this.handleInputChange} placeholder="Prenom"/><br/>

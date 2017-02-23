@@ -11,12 +11,13 @@ import Auth from './auth'
 const ApiRoutes = express.Router();
 
 import { Register, ForgotMdp, ForgotMdpGet } from '../account/register/'
-import { Login } from '../account/login'
+import { Login, CheckAuth } from '../account/login'
 
 
 ApiRoutes.use(Auth);
 
 router.post('/register', Register)
+router.post('/auth', CheckAuth)
 router.post('/login', Login)
 router.post('/forgot/new', ForgotMdpGet)
 router.post('/forgot', ForgotMdp)

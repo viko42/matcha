@@ -16,12 +16,14 @@ router.post('/login', async (req, res) => {
 	}
 	let userReg = {}
 	let message;
+	let status = false
 	await Users.find({email: obj.email}, function(err, user) {
 		if (err) throw err;
 
 		if (user[0] && typeof user[0].password !== 'undefined' && user[0].password === obj.pass) {
 			userReg.id = user[0]._id
 			message = "Vous etes bien connecte."
+			status = true;
 			const token = jwt.sign(userReg, router.get('jwtTokenSecret'), {
 				expiresIn: "2 days"
 			})
@@ -33,7 +35,8 @@ router.post('/login', async (req, res) => {
 	});
 	res.json({
 		message,
-		userReg
+		userReg,
+		status
 	});
 });
 
