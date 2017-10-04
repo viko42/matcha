@@ -1,18 +1,12 @@
 import React, { Component } from 'react';
-import './App.css';
-
 import { Col, Card, Row } from 'react-materialize';
-import Header from './header/index'
-import SideBar from './sidebar/index'
-import Footer from './footer/index'
 import {Link} from 'react-router-dom';
 
+import './App.css';
+
 class App extends Component {
-  render() {
-    return (
-		<div>
-			<Header />
-			<SideBar />
+	render() {
+		return (
 			<div className="content">
 				<Row>
 					<Col m={12} s={12}>
@@ -41,19 +35,10 @@ class App extends Component {
 					<Col m={12} s={12}>
 						<Card title='S'>Welcome to the home page.</Card>
 					</Col>
-			</Row>
+				</Row>
 			</div>
-			<Footer />
-			{/* <Footer copyrights="Copyright 2017"/> */}
-		</div>
-    );
-  }
+		);
+	}
 }
 
 export default App;
-
-// <MuiThemeProvider>
-// 	<AppBar
-// 		iconClassNameRight="muidocs-icon-navigation-expand-more">
-// 	</AppBar>
-// </MuiThemeProvider>

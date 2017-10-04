@@ -1,89 +1,10 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
-}
-
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
-}
-
-.App-title {
-  font-size: 1.5em;
-}
-
-.App-intro {
-  font-size: large;
-}
-
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.navbar {
-	position: fixed;
-	z-index: 50;
-}
-
-.navbar .nav-wrapper {
-	background-color: #232323;
-}
-
-.navbar .brand-logo {
-	color: white;
-	left: 0;
-}
-
-.navbar .hide-on-med-and-down {
-	right: 0;
-}
-
-.navbar a:hover {
-	background-color: rgba(93, 93, 93, 0.64);
-}
-
-.dropdown-content {
-	max-width: 200px;
-}
-
-.dropdown-content li>a {
-	color: black;
-	font-size: 14px;
-}
-.dropdown-content li>a:hover {
-	background-color: rgba(222, 222, 222, 0.64);
-}
-
-ul.select-dropdown,ul.dropdown-content{
-    width:200% !important;
-}
-
-.sideBarTest {
-	margin-top: 65px;
-	position: absolute;
-	bottom: 0;
-}
-
 .content {
 	padding-top: 50px;
-	padding-left: 330px;
-	padding-right: 33px;
 }
 
-.footer {
-	position: relative;
-	bottom: 0;
-	font-size: smaller;
-	text-align: center;
-	width: 100%;
-	padding-left: 330px;
-	padding-bottom: 20px;
-	padding-top: 20px;
+@media screen and (min-width: 993px) {
+	.content {
+		padding-left: 330px;
+		padding-right: 33px;
+	}
 }

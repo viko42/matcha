@@ -1,0 +1,41 @@
+.dropdown-content {
+	max-width: 200px;
+}
+
+.dropdown-content li>a {
+	color: black;
+	font-size: 14px;
+}
+
+.dropdown-content li>a:hover {
+	background-color: rgba(222, 222, 222, 0.64);
+}
+
+ul.select-dropdown,ul.dropdown-content{
+    width:200% !important;
+}
+
+@media screen and (min-width: 993px) {
+	.navbar .brand-logo {
+		margin-left: 90px;
+	}
+}
+
+.navbar {
+	position: fixed;
+	z-index: 50;
+}
+
+.navbar .nav-wrapper {
+	background-color: #232323;
+}
+
+.navbar .brand-logo {
+	/*color: white;*/
+	/*padding-left: 30px;*/
+	/*left: 0;*/
+}
+
+.navbar .hide-on-med-and-down {
+	right: 0;
+}
