@@ -4,16 +4,16 @@ exports.serverError = function(res, err) {
 };
 
 exports.badRequest = function(res, err) {
-	console.log('Service badRequest');
+	console.log('Service badRequest', err);
 	return res.status(403).json({error: err});
 };
 
 exports.notFound = function(res, err) {
-	console.log('Service notFound');
+	console.log('Service notFound', err);
 	return res.status(404).json({error: err});
 };
 
 exports.forbidden = function(res, err) {
-	console.log('Service forbidden');
+	console.log('Service forbidden', err);
 	return res.status(401).json({error: err});
 };
