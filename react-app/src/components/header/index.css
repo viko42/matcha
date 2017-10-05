@@ -28,12 +28,10 @@ ul.select-dropdown,ul.dropdown-content{
 
 .navbar .nav-wrapper {
 	background-color: #232323;
+	height: 67px;
 }
 
 .navbar .brand-logo {
-	/*color: white;*/
-	/*padding-left: 30px;*/
-	/*left: 0;*/
 }
 
 .navbar .hide-on-med-and-down {

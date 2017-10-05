@@ -8,3 +8,9 @@
 	padding-bottom: 20px;
 	padding-top: 20px;
 }
+
+@media screen and (max-width: 993px) {
+	.footer {
+		padding-left: 0px;
+	}
+}
