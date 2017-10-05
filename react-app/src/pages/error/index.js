@@ -5,7 +5,7 @@ import './index.css';
 
 class Error extends Component {
 	componentDidMount() {
-		document.title = "404 Not found";
+		document.title = "CrushYard - 404 Not found";
 	}
 	render() {
 		return (
