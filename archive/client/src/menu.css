@@ -1,0 +1,68 @@
+ul.topnav {
+  list-style-type: none;
+  overflow: hidden;
+  background-color: white;
+  /*background-color: rgba(255, 255, 255, 0.5);*/
+  width: 100%;
+  color: white;
+}
+
+ul.topnav li {
+	display: inline;
+}
+
+ul.topnav li {
+  display: inline-block;
+  padding: 20px 30px;
+  transition: 0.4s;
+  font-size: 17px;
+}
+
+.link_menu {
+	text-decoration: none;
+	/*color: black;*/
+	color: #36343a;
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+	/*color: #f2f2f2;*/
+}
+
+ul.topnav li:hover {
+	background-color: #555;
+	/*background-color: #555;*/
+}
+
+ul.topnav li.icon {
+	display: none;
+}
+
+@media screen and (max-width:800px) {
+  ul.topnav li:not(:first-child) {display: none;}
+  ul.topnav li.icon {
+    float: right;
+    display: inline-block;
+	margin-right: 30px;
+  }
+}
+
+@media screen and (max-width:800px) {
+  ul.topnav.responsive {position: relative;}
+  ul.topnav.responsive li.icon {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  ul.topnav.responsive li {
+    float: none;
+    display: inline;
+  }
+  ul.topnav.responsive li {
+    display: block;
+    text-align: left;
+  }
+}
+
+.IconHeader {
+	font-size: 15px;
+}

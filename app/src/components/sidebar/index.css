@@ -1,0 +1,24 @@
+.sideBarDiv {
+	margin-top: 67px;
+	position: absolute;
+	bottom: 0;
+}
+.sideNavMenu {
+	font-size: 20px;
+	margin-left: 30px;
+}
+.sideNavMenu:hover {
+	background-color: #232323;
+	cursor: pointer;
+}
+
+@media screen and (min-width: 993px) {
+	.sideNavMenu {
+		display: none;
+	}
+}
+@media screen and (max-width: 993px) {
+	.sideBarDiv {
+		margin-top: 67px;
+	}
+}
