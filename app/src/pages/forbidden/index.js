@@ -5,17 +5,16 @@ import { Link } from 'react-router-dom';
 import '../../index.css';
 import './index.css';
 
-class Profile extends Component {
+class Forbidden extends Component {
 	componentDidMount() {
-		document.title = "Profile";
+		document.title = "CrushYard - Forbidden";
 	}
 	render() {
 		return (
 			<div className="content">
 				<Row>
 					<Col m={12} s={12}>
-						<Card title='Profile page'>Welcome to the profile page.
-						</Card>
+						<Card title='502 FORBIDDEN'>LIMITED ACCESS</Card>
 					</Col>
 				</Row>
 			</div>
@@ -23,4 +22,4 @@ class Profile extends Component {
 	}
 }
 
-export default Profile;
+export default Forbidden;

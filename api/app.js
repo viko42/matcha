@@ -28,7 +28,7 @@ mongoose.connect('mongodb://localhost/matchadb', { useMongoClient: true });
 app.use(function(req, res, next) {
 	res.header("Access-Control-Allow-Origin", "*");
 	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT');
-	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, authorization");
 	next();
 });
 
@@ -39,9 +39,3 @@ routes(app);
 app.listen(port);
 
 console.log('\x1Bc\x1b[32mApi compiled successfully on port:'+port+'\x1b[0m\n'+moment().format('HH:mm:ss'));
-// console.log("\
-// ############################################\n\
-// #                                          #\n\
-// #         App started "+port+"                 #\n\
-// #                " + moment().format('HH:mm:ss') + "                  #\n\
-// ############################################");

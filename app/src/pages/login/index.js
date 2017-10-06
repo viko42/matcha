@@ -42,37 +42,48 @@ class Login extends Component {
 					swal("Error", response.data.errors.swal, "error");
 				return ;
 			}
-			console.log(response);
 			// self.props.router.push('/home')
 			localStorage.setItem('auth', response.data.token);
 			swal("Summary", "Successfully connected !", "success");
-			// self.props.history.push('/');
 		});
 	}
-	render() {
-		return (
-			<div className="content">
-				<Row>
-					{/* <Col m={12} s={12}>
-						<Card title='Inscription à CrushYard'>Connexion sur CrushYard<p/></Card>
-					</Col> */}
-					<form onSubmit={this.login}>
-						<Col m={12} s={12}>
-							<Card title="Vos données de connexion">
-								<Row>
-									<Input type="email" name='email' label="Your email" error={this.state.errors && this.state.errors.email ? this.state.errors.email : null} onChange={this.handleInputChange} s={12}/>
-									<Input type="password" name='password' label="Your password" error={this.state.errors.password ? this.state.errors.password : null} onChange={this.handleInputChange} s={12} />
-									<Col s={12}><Link to="/" className="pull-right">Mot de passe oublié</Link></Col>
-									<Col s={12}><Button className="pull-left" waves='light'>LOGIN</Button></Col>
+	ifConnected() {
+		if (!localStorage.getItem('auth'))
+			return (
+				<div className="content">
+					<Row>
+						<form onSubmit={this.login}>
+							<Col m={12} s={12}>
+								<Card title="Vos données de connexion">
+									<Row>
+										<Input type="email" name='email' label="Your email" error={this.state.errors && this.state.errors.email ? this.state.errors.email : null} onChange={this.handleInputChange} s={12}/>
+										<Input type="password" name='password' label="Your password" error={this.state.errors.password ? this.state.errors.password : null} onChange={this.handleInputChange} s={12} />
+										<Col s={12}><Link to="/" className="pull-right">Mot de passe oublié</Link></Col>
+										<Col s={12}><Button className="pull-left" waves='light'>LOGIN</Button></Col>
 
-									{/* <ProgressBar /> */}
-								</Row>
-							</Card>
-						</Col>
-					</form>
-				</Row>
-			</div>
-		);
+										{/* <ProgressBar /> */}
+									</Row>
+								</Card>
+							</Col>
+						</form>
+					</Row>
+				</div>
+			);
+		else
+			return (
+				<div className="content">
+					<Row>
+						<form onSubmit={this.login}>
+							<Col m={12} s={12}>
+								<Card title="Vous êtes déjà connecté"></Card>
+							</Col>
+						</form>
+					</Row>
+				</div>
+			);
+	}
+	render() {
+		return this.ifConnected();
 	}
 }
 
