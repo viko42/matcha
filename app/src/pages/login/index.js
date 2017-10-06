@@ -44,6 +44,7 @@ class Login extends Component {
 			}
 			console.log(response);
 			// self.props.router.push('/home')
+			localStorage.setItem('auth', response.data.token);
 			swal("Summary", "Successfully connected !", "success");
 			// self.props.history.push('/');
 		});

@@ -26,6 +26,9 @@ const Services = (props, data, callback) => {
 	axios({
 		method: tabs[props].method,
 		url: tabs[props].url,
+		headers: {
+			'authorization': localStorage.getItem('auth')
+		},
 		data: data
 	}).then(function (res) {
 		return callback(null, res);
