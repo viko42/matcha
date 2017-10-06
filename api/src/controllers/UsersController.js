@@ -128,19 +128,25 @@ exports.delete = function(req, res) {
 exports.login = function(req, res) {
 	var auth = req.body;
 
-	if (!auth || !auth.email || !auth.password)
-		return s.forbidden(res, "connection refused");
+	if (!auth)
+		return s.forbidden(res, {errors: {message: 'connection refused'}});
+
+	if (!auth.email)
+		return s.forbidden(res, {errors: {email: 'Champs manquant'}});
+
+	if (!auth.password)
+		return s.forbidden(res, {errors: {password: 'Champs manquant'}});
 
 	Users.findOne({email: auth.email}, function(err, user) {
 		if (err)
 			return s.serverError(res, err);
 
 		if (!user)
-			return s.notFound(res, "User not found");
+			return s.notFound(res, {errors: {swal: 'User not found'}});
 
 		bcrypt.compare(auth.password, user.password, function (err, result) {
 			if (result === false)
-				return s.forbidden(res, "incorrect password");
+				return s.forbidden(res, {errors: {swal: "incorrect password"}});
 
 			var token = jwt.sign({id: user.id}, 'ilovescotchyscotch', {
 				expiresIn: 1440 // expires in 24 hours

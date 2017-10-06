@@ -10,10 +10,10 @@ exports.badRequest = function(res, err) {
 
 exports.notFound = function(res, err) {
 	console.log('Service notFound', err);
-	return res.status(404).json({error: err});
+	return res.status(404).json(err);
 };
 
 exports.forbidden = function(res, err) {
 	console.log('Service forbidden', err);
-	return res.status(401).json({error: err});
+	return res.status(401).json(err);
 };
