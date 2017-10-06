@@ -19,9 +19,11 @@ exports.list = function (req, res) {
 };
 
 exports.create = function(req, res) {
-	var new_user = new Users(req.body);
+	var new_user = req.body;
+	// var new_user = new Users(req.body);
 
 	console.log(new_user);
+
 	if (!new_user)
 		return s.badRequest(res, "Missing input")
 
@@ -36,9 +38,22 @@ exports.create = function(req, res) {
 
 	if (new_user.password !== new_user.confirmpass)
 		return s.badRequest(res, {errors: {confirmpass: 'Les mots de passe ne sont pas identiques'}});
-	// if (!new_user.cpass)
-	// 	return s.badRequest(res, {errors: {email: 'Password manquant'}});
- // || !new_user.email || !new_user.password || !new_user.firstName || !new_user.lastName)
+
+	if (!new_user.lastName)
+		return s.badRequest(res, {errors: {lastName: 'Champs manquant'}});
+
+	if (!new_user.firstName)
+		return s.badRequest(res, {errors: {firstName: 'Champs manquant'}});
+
+	if (!new_user.phone)
+		return s.badRequest(res, {errors: {phone: 'Champs manquant'}});
+
+	if (!new_user.birth)
+		return s.badRequest(res, {errors: {birth: 'Champs manquant'}});
+
+	if (!new_user.sexe)
+		return s.badRequest(res, {errors: {swal: 'Champs sexe manquant'}});
+
 	async.waterfall([
 		function (callback) {
 			Users.findOne({email: new_user.email}, function(err, user) {
@@ -46,7 +61,8 @@ exports.create = function(req, res) {
 					return callback(err);
 
 				if (user)
-					return callback("Email already in our db");
+					return callback({errors: {email: "This email is already in use"}});
+
 				callback();
 			});
 		},
@@ -60,6 +76,7 @@ exports.create = function(req, res) {
 			});
 		},
 		function (callback) {
+			new_user = new Users(req.body);
 			new_user.save(function(err, user) {
 				if (err)
 					return callback(err);
