@@ -1,16 +1,28 @@
 import axios from 'axios';
+const apiUrl = "http://localhost:8080";
 
-const apiUrl = "http://localhost:8080/";
 const tabs = {
+
+	//###################################################################
+	// 							Users
+	//###################################################################
+
 	'createUser': {
 		'method': 'POST',
-		'url': apiUrl + 'users/create'
-	}
+		'url': apiUrl + '/users/create'
+	},
+
+	//###################################################################
+	// 							Login
+	//###################################################################
+
+	'loginUser': {
+		'method': 'POST',
+		'url': apiUrl + '/login'
+	},
 }
 
 const Services = (props, data, callback) => {
-	console.log('Services');
-	console.log(data);
 	axios({
 		method: tabs[props].method,
 		url: tabs[props].url,

@@ -35,17 +35,18 @@ class Login extends Component {
 		e.preventDefault();
 		const self = this;
 
-		// services('loginUser', self.state, function (err, response) {
-		// 	if (err) {
-		// 		// self.props.router.push('/home')
-		// 		self.setState({errors: response.data.errors})
-		// 		if (response.data.errors.swal)
-		// 			swal("Error", response.data.errors.swal, "error");
-		// 		return ;
-		// 	}
-		// 	// swal("Summary", "Successfully registered !", "success");
-		// 	self.props.history.push('/');
-		// });
+		services('loginUser', self.state, function (err, response) {
+			if (err) {
+				self.setState({errors: response.data.errors})
+				if (response.data.errors.swal)
+					swal("Error", response.data.errors.swal, "error");
+				return ;
+			}
+			console.log(response);
+			// self.props.router.push('/home')
+			swal("Summary", "Successfully connected !", "success");
+			// self.props.history.push('/');
+		});
 	}
 	render() {
 		return (
