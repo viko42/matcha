@@ -3,3 +3,37 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+.pull-right {
+	float: right;
+}
+.pull-left {
+	float: left;
+}
+
+.input-field label:not(.label-icon).active {
+	width: -webkit-stretch;
+}
+
+label {
+	width: 100%;
+}
+label:after {
+	-moz-transition-property: all !important;
+	-o-transition-property: all !important;
+	-webkit-transition-property: all !important;
+	transition-property: all !important;
+	font-size: 0.8rem;
+	-moz-transform: none;
+	-ms-transform: none;
+	-o-transform: none;
+	-webkit-transform: none;
+	transform: none;
+}
+
+label:not(.active):after {
+	-moz-transform: translateY(-140%);
+	-ms-transform: translateY(-140%);
+	-o-transform: translateY(-140%);
+	-webkit-transform: translateY(-140%);
+	transform: translateY(-140%);
+}

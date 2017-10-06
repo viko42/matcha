@@ -1,26 +1,25 @@
-import React from 'react';
 import axios from 'axios';
-import $ from 'jquery';
-const apiUrl = "http://localhost:8080/";
 
+const apiUrl = "http://localhost:8080/";
 const tabs = {
 	'createUser': {
 		'method': 'POST',
-		'url': 'http://localhost:8080/users/create'
+		'url': apiUrl + 'users/create'
 	}
 }
 
 const Services = (props, data, callback) => {
+	console.log('Services');
+	console.log(data);
 	axios({
 		method: tabs[props].method,
 		url: tabs[props].url,
 		data: data
 	}).then(function (res) {
-		console.log('OK');
+		return callback(null, res);
 	}).catch(function (err) {
-		if (err.response) {
-			callback(null, err.response);
-		}
+		if (err.response)
+			return callback(err.response.data.errors, err.response);
 	});
 }
 

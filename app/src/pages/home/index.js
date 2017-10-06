@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Col, Card, Row } from 'react-materialize';
 import {Link} from 'react-router-dom';
 
+import '../../index.css';
 import './index.css';
 
 class App extends Component {

@@ -23,7 +23,7 @@ class Header extends React.Component {
 			<Navbar brand='CrushYard' className="navbar" right>
 				<NavItem href='#'><Icon>search</Icon></NavItem>
 				<span className="dropDrownNavbar">
-					<Dropdown constrainwidth="false" stoppropagation="true" trigger={
+					<Dropdown data-constrainwidth="false" data-stoppropagation="true" trigger={
 						<li data-beloworigin="true" data-activates='dropdown_0'><a><Icon>more_vert</Icon></a></li>
 					}>
 						<NavItem href="#/profile">My profile</NavItem>
