@@ -19,6 +19,14 @@ var UsersSchema = new Schema({
 		type: String,
 		required: true
 	},
+	birth: {
+		type: String,
+		required: false
+	},
+	phone: {
+		type: String,
+		required: false
+	},
 	data: {
 		type: Object,
 		required: false,

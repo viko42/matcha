@@ -24,6 +24,8 @@ exports.authorization = function(req, res, next) {
 
 				if (!user)
 					return callback('User not found');
+
+				req.connectedAs = user;
 				return callback();
 			});
 		},

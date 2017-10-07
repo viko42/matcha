@@ -149,9 +149,9 @@ exports.login = function(req, res) {
 				return s.forbidden(res, {errors: {swal: "incorrect password"}});
 
 			var token = jwt.sign({id: user.id}, 'ilovescotchyscotch', {
-				expiresIn: 1440 // expires in 24 hours
+				// expiresIn: 1440 // expires in 24 hours
 	        });
-			return res.status(200).json({data: {firstName: user.firstName, lastName: user.lastName, email: user.email}, token: token});
+			return res.status(200).json({data: {firstName: user.firstName, lastName: user.lastName, email: user.email, phone: user.phone, birth: user.birth}, token: token});
 		});
 	});
 }
