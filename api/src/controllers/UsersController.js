@@ -151,7 +151,7 @@ exports.login = function(req, res) {
 			var token = jwt.sign({id: user.id}, 'ilovescotchyscotch', {
 				expiresIn: 1440 // expires in 24 hours
 	        });
-			return res.status(200).json({message: "Logged!", token: token});
+			return res.status(200).json({data: {firstName: user.firstName, lastName: user.lastName, email: user.email}, token: token});
 		});
 	});
 }

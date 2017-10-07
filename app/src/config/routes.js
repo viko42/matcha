@@ -5,13 +5,12 @@ import Home				from '../pages/home';
 import HomeGuest		from '../pages/home';
 
 import Profile			from '../pages/profile';
+import Account			from '../pages/account';
 import Login			from '../pages/login';
 import Register			from '../pages/register';
 
 import NotFound			from '../pages/error';
 import Forbidden		from '../pages/forbidden';
-
-import { Row, Col, Card} from 'react-materialize';
 
 const Authorization = function (component, roles) {
 	if (!localStorage.getItem('auth'))
@@ -31,6 +30,7 @@ const Routes = (props) => (
 	<Switch>
 		<Route exact path='/' component={isConnected(Home, HomeGuest)}/>
 		<Route path='/profile' component={Authorization(Profile, ['User', 'Admin'])}/>
+		<Route path='/account' component={Authorization(Account, ['User', 'Admin'])}/>
 		{/* <Route path='/administration' component={Authorization(Admin, ['Admin'])}/> */}
 		<Route path='/register' component={Register}/>
 		<Route path='/login' component={Login}/>

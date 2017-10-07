@@ -1,16 +1,15 @@
 import React from 'react';
 import './index.css';
+import {Redirect} from 'react-router-dom';
 import { Navbar, NavItem, Icon, Dropdown } from 'react-materialize';
 
 class Header extends React.Component {
-	static navigationOptions = ({ navigation, screenProps }) => ({ })
 	constructor(props) {
 		super(props);
 
-		navigation.setParams({test: 'ok'})
-		console.log(navigation.state.params);
-		this.state = {connected: localStorage.getItem('auth') ? 'true' : 'false'};
-		// this.handleInputChange = this.handleInputChange.bind(this);
+		this.state = {};
+
+		this.logout = this.logout.bind(this);
 	}
 	componentDidMount() {
 		var nav = document.getElementsByClassName('col s12')[0];
@@ -27,15 +26,21 @@ class Header extends React.Component {
 		nav = document.querySelectorAll('[data-activates="nav-mobile"]')[0];
 		nav.setAttribute("style", "display: none;");
 	}
-	logout() {
+	logout(e) {
+		e.preventDefault();
 		localStorage.removeItem('auth');
-		this.props.history.push('/');
+		this.setState({redirect: true})
 	}
 	render() {
+		if (this.state.redirect) {
+			return <Redirect to="/" />;
+		}
 		return (
 			<Navbar brand='CrushYard' className="navbar" right>
+				<NavItem href='#'><Icon>notifications</Icon></NavItem>
+				<NavItem href='#'><Icon>chat</Icon></NavItem>
 				<NavItem href='#'><Icon>search</Icon></NavItem>
-				{ this.state.connected === 'true' && <span className="dropDrownNavbar">
+				{ localStorage.getItem('auth') && <span className="dropDrownNavbar">
 					<Dropdown data-constrainwidth="false" data-stoppropagation="true" trigger={
 						<li data-beloworigin="true" data-activates='dropdown_0'><a><Icon>more_vert</Icon></a></li>
 					}>

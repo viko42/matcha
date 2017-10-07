@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
 import { Col, Card, Row } from 'react-materialize';
-import { Link } from 'react-router-dom';
 
 import '../../index.css';
 import './index.css';
+
+import Header from '../../components/header/index'
+import SideBar from '../../components/sidebar/index'
+import Footer from '../../components/footer/index'
 
 class Profile extends Component {
 	componentDidMount() {
@@ -11,13 +14,17 @@ class Profile extends Component {
 	}
 	render() {
 		return (
-			<div className="content">
-				<Row>
-					<Col m={12} s={12}>
-						<Card title='Profile page'>Welcome to the profile page.
-						</Card>
-					</Col>
-				</Row>
+			<div>
+				<Header />
+				<SideBar />
+				<div className="content">
+					<Row>
+						<Col m={12} s={12}>
+							<Card title='Profile page'>Edit your profile page</Card>
+						</Col>
+					</Row>
+				</div>
+				<Footer />
 			</div>
 		);
 	}
