@@ -41,8 +41,8 @@ class SideBar extends Component {
 					trigger={<Button>SIDE NAV DEMO</Button>}
 				className="side-nav fixed sideBarDiv">
 					<SideNavItem href='#/' icon='cloud'>Retour à la page d'accueil</SideNavItem>
-					<SideNavItem href='#register'>Inscription</SideNavItem>
 					<SideNavItem href='#login'>Se connecter</SideNavItem>
+					<SideNavItem href='#register'>Inscription</SideNavItem>
 					<SideNavItem divider />
 					<SideNavItem subheader>Aide</SideNavItem>
 					<SideNavItem waves href='#support'>Contactez-nous</SideNavItem>
@@ -66,7 +66,7 @@ class SideBar extends Component {
 					<SideNavItem subheader>Panel</SideNavItem>
 					<SideNavItem waves href='#account'>Mon compte</SideNavItem>
 					<SideNavItem waves href='#third'>Crushs</SideNavItem>
-					<SideNavItem waves href='#third'>Messagerie</SideNavItem>
+					<SideNavItem waves href='#inbox'>Messagerie</SideNavItem>
 					<SideNavItem divider />
 					<SideNavItem subheader>Aide</SideNavItem>
 					<SideNavItem waves href='#support'>Contactez-nous</SideNavItem>

@@ -1,7 +1,7 @@
 import React from 'react';
 import './index.css';
 import {Redirect} from 'react-router-dom';
-import { Navbar, NavItem, Icon, Dropdown } from 'react-materialize';
+import { Navbar, NavItem, Icon, Dropdown, Badge } from 'react-materialize';
 
 class Header extends React.Component {
 	constructor(props) {
@@ -28,12 +28,11 @@ class Header extends React.Component {
 	}
 	logout(e) {
 		e.preventDefault();
-		localStorage.removeItem('auth');
 		this.setState({redirect: true})
 	}
 	render() {
 		if (this.state.redirect) {
-			return <Redirect to="/" />;
+			return <Redirect to="/logout" />;
 		}
 		return (
 			<Navbar brand='CrushYard' className="navbar" right>

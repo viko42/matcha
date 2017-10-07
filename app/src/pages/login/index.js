@@ -46,7 +46,6 @@ class Login extends Component {
 					swal("Error", response.data.errors.swal, "error");
 				return ;
 			}
-			// self.props.router.push('/home')
 			localStorage.setItem('auth', response.data.token);
 			localStorage.setItem('user', JSON.stringify(response.data.data));
 			swal("Summary", "Successfully connected !", "success");
@@ -69,8 +68,6 @@ class Login extends Component {
 											<Input type="password" name='password' label="Your password" error={this.state.errors.password ? this.state.errors.password : null} onChange={this.handleInputChange} s={12} />
 											<Col s={12}><Link to="/" className="pull-right">Mot de passe oublié</Link></Col>
 											<Col s={12}><Button className="pull-left" waves='light'>LOGIN</Button></Col>
-
-											{/* <ProgressBar /> */}
 										</Row>
 									</Card>
 								</Col>
