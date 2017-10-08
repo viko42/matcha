@@ -29,6 +29,20 @@ const tabs = {
 		'method': 'PUT',
 		'url': apiUrl + '/account/update'
 	},
+
+	//###################################################################
+	// 							Messages
+	//###################################################################
+
+	'getMyInbox': {
+		'method': 'GET',
+		'url': apiUrl + '/inbox'
+	},
+
+	// 'sendMessage': {
+	// 	'method': 'POST',
+	// 	'url': apiUrl + '/inbox/send'
+	// },
 }
 
 const Services = (props, data, callback) => {
@@ -46,7 +60,7 @@ const Services = (props, data, callback) => {
 		if (err.response && err.response.data === 'invalid token') {
 			localStorage.removeItem('auth');
 			localStorage.removeItem('user');
-			window.reload();
+			window.location.reload();
 			return callback(err.response.data.errors, err.response);
 		}
 		if (err.response)

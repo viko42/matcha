@@ -64,12 +64,12 @@ class SideBar extends Component {
 					{/* <SideNavItem href='#/' icon='cloud'>Retour à la page d'accueil</SideNavItem> */}
 					{/* <SideNavItem divider /> */}
 					<SideNavItem subheader>Panel</SideNavItem>
-					<SideNavItem waves href='#account'>Mon compte</SideNavItem>
-					<SideNavItem waves href='#third'>Crushs</SideNavItem>
-					<SideNavItem waves href='#inbox'>Messagerie</SideNavItem>
+					<SideNavItem waves href='#account' icon="person">Mon compte</SideNavItem>
+					<SideNavItem waves href='#third' icon="people">Crushs</SideNavItem>
+					<SideNavItem waves href='#inbox' icon="message">Messagerie</SideNavItem>
 					<SideNavItem divider />
 					<SideNavItem subheader>Aide</SideNavItem>
-					<SideNavItem waves href='#support'>Contactez-nous</SideNavItem>
+					<SideNavItem waves icon="help" href='#support'>Contactez-nous</SideNavItem>
 				</SideNav>
 				);
 	}

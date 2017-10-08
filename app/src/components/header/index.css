@@ -37,3 +37,12 @@ ul.select-dropdown,ul.dropdown-content{
 .navbar .hide-on-med-and-down {
 	right: 0;
 }
+
+@media screen and (max-width: 992px) {
+	.show-in-small {
+		display: inherit!important
+	}
+	.hide-in-small {
+		display: none!important
+	}
+}

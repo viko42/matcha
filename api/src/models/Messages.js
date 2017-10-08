@@ -7,12 +7,12 @@ var MessagesSchema = new Schema({
 		required: true
 	},
 	sender: {
-		type: String,
-		required: true
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'Users'
 	},
-	recipent: {
-		type: String,
-		required: true
+	conversation: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'Conversations'
 	},
 	// localization: {
 	// 	type: String
@@ -20,11 +20,11 @@ var MessagesSchema = new Schema({
 	// created_at: {
 	// 	type: Date
 	// },
-	data: {
-		type: Object,
-		required: false,
-		default: {}
-	},
+	// data: {
+	// 	type: Object,
+	// 	required: false,
+	// 	default: {}
+	// },
 	status: {
 		type: [{
 			type: String,

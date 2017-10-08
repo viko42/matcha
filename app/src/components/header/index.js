@@ -1,7 +1,9 @@
 import React from 'react';
-import './index.css';
 import {Redirect} from 'react-router-dom';
 import { Navbar, NavItem, Icon, Dropdown, Badge } from 'react-materialize';
+import './index.css';
+
+import $ from 'jquery';
 
 class Header extends React.Component {
 	constructor(props) {
@@ -25,6 +27,8 @@ class Header extends React.Component {
 		// Disable the older home button
 		nav = document.querySelectorAll('[data-activates="nav-mobile"]')[0];
 		nav.setAttribute("style", "display: none;");
+
+		$('body').addClass('loaded');
 	}
 	logout(e) {
 		e.preventDefault();
@@ -35,20 +39,21 @@ class Header extends React.Component {
 			return <Redirect to="/logout" />;
 		}
 		return (
-			<Navbar brand='CrushYard' className="navbar" right>
-				<NavItem href='#'><Icon>notifications</Icon></NavItem>
-				<NavItem href='#'><Icon>chat</Icon></NavItem>
-				<NavItem href='#'><Icon>search</Icon></NavItem>
-				{ localStorage.getItem('auth') && <span className="dropDrownNavbar">
+			<Navbar brand='CrushYard' className="navbar show-in-small" right>
+				<NavItem className="show-in-small" href='#'><Icon>notifications</Icon></NavItem>
+				<NavItem className="hide-in-small" href='#'><Icon>chat</Icon></NavItem>
+				<NavItem className="hide-in-small" href='#'><Icon>search</Icon></NavItem>
+				{/* { localStorage.getItem('auth') && */}
+				<span className="dropDrownNavbar">
 					<Dropdown data-constrainwidth="false" data-stoppropagation="true" trigger={
 						<li data-beloworigin="true" data-activates='dropdown_0'><a><Icon>more_vert</Icon></a></li>
 					}>
 						<NavItem href="#/profile">My profile</NavItem>
-						<NavItem href="/profile/edit">Edit my profile</NavItem>
+						<NavItem href="#/profile/edit">Edit my profile</NavItem>
 						<NavItem divider />
 						<NavItem onClick={this.logout}>Logout</NavItem>
 					</Dropdown>
-				</span> }
+				</span>
 			</Navbar>
 		);
 	}
