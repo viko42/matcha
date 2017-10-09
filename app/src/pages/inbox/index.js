@@ -1,20 +1,29 @@
 import React, { Component } from 'react';
 import { Col, Card, Row, Collapsible, CollapsibleItem, Chip, Icon, Input, Button } from 'react-materialize';
 import services from '../../config/services';
-import _ from 'underscore';
-import socketIOClient from "socket.io-client";
+// import _ from 'underscore';
+import io from "socket.io-client";
 
 import '../../index.css';
 import './index.css';
 
 import swal		from 'sweetalert';
-import moment	from 'moment';
+// import moment	from 'moment';
 import $		from 'jquery';
 
 import Header from '../../components/header/index'
 import SideBar from '../../components/sidebar/index'
 import Footer from '../../components/footer/index'
 
+const socket = io.connect('http://localhost:8080', {
+	query: {token: localStorage.getItem('auth')}
+});
+
+socket.on('emitDuServeur', function(data) {
+	console.log('MyMessage');
+	console.log(data);
+});
+// console.log(socket.connect;
 class Inbox extends Component {
 	constructor(props) {
 		super(props);
@@ -22,78 +31,13 @@ class Inbox extends Component {
 		this.state = {
 			response: false,
 	        endpoint: "http://127.0.0.1:8080",
-			messageLog: [],
-			inbox: [
-				{
-					'name': 'Jane Doe',
-					'id': 'test',
-					'premium': false,
-					'last_activity': '0000-00-00',
-					'messages': [
-						{
-							'sender': "0",
-							'content': "Bonjour",
-							'date': '02/04/2017 12:00'
-						},
-						{
-							'sender': "1",
-							'content': "Salut !",
-							'date': '02/04/2017 12:02'
-						},
-						{
-							'sender': "0",
-							'content': "Tu vas bien ?",
-							'date': '02/04/2017 12:03'
-						},
-						{
-							'sender': "1",
-							'content': "Super merci !",
-							'date': '02/04/2017 12:04'
-						},
-						{
-							'sender': "0",
-							'content': "TOP",
-							'date': '02/04/2017 12:05'
-						}
-					]
-				},
-				{
-					'name': 'Jean Caisse',
-					'id': 'test2',
-					'premium': false,
-					'last_activity': '0000-00-00',
-					'messages': [
-						{
-							'sender': "0",
-							'content': "Coucou",
-							'date': '02/04/2017 12:01'
-						},
-						{
-							'sender': "1",
-							'content': "Tu vas bien !",
-							'date': '02/04/2017 12:01'
-						},
-						{
-							'sender': "0",
-							'content': "Non pas top",
-							'date': '02/04/2017 12:02'
-						},
-						{
-							'sender': "1",
-							'content': "abon??",
-							'date': '02/04/2017 12:03'
-						},
-						{
-							'sender': "1",
-							'content': "tla??",
-							'date': '02/04/2017 12:04'
-						}
-					]
-				}
-			]
+			inbox: []
 		};
-		this.submitMessage = this.submitMessage.bind(this);
+
+		// console.log('Connected ?');
+		// console.log(socket);
 		this.getMyInbox = this.getMyInbox.bind(this);
+		this.submitMessage = this.submitMessage.bind(this);
 	}
 	submitMessage(e) {
 		e.preventDefault();
@@ -101,21 +45,31 @@ class Inbox extends Component {
 		if (!e.target.message || e.target.message.value.length < 1)
 			return ;
 
-		const self = this;
-		const actualInbox = self.state.inbox;
+		// const self = this;
+		// const actualInbox = self.state.inbox;
 
-		for (var i = 0; i < actualInbox.length; i++) {
-			if (actualInbox[i].id === e.target.to.value) {
-				actualInbox[i].messages.push({
-					'sender': "1",
-					'content': e.target.message.value,
-					'date': moment().format('DD/MM h:mm a')
-				});
-			}
-		}
+		// services('sendMessage', {message: e.target.message.value, id: e.target.conversationId.value}, function (err, response) {
+		// 	if (err) {
+		// 		self.setState({errors: response.data.errors})
+		// 		if (response.data.errors.swal)
+		// 			swal("Error", response.data.errors.swal, "error");
+		// 		return ;
+		// 	}
+		// 	console.log(response.data);
+		// 	self.getMyInbox();
+		// });
+
+		// const { endpoint } = this.state;
+		// const socket = socketIOClient(endpoint);
+		// socket.emit('chat message', e.target.message.value);
+
+		socket.emit('test', e.target.message.value);
+
 		e.target.message.value = "";
-		self.setState({inbox: actualInbox});
+
+		// self.setState({inbox: actualInbox});
 		$('#footer')[0].scrollIntoView(true);
+
 	}
 	getMyInbox() {
 		const self = this;
@@ -127,15 +81,46 @@ class Inbox extends Component {
 					swal("Error", response.data.errors.swal, "error");
 				return ;
 			}
-			// swal("Summary", "Successfully registered !", "success");
-			// self.props.history.push('/');
+			// console.log(response.data);
+			self.setState({inbox: response.data.inbox})
+			self.getAllUser();
+		});
+	}
+
+	componentDidMount() {
+		document.title = "Inbox";
+		// const self = this;
+
+		// console.log(this.state.response);
+		this.getMyInbox();
+	}
+	deleteMessageInbox() {
+		swal({
+			title: "Delete this conversation ?",
+			text: "You will delete this conversation for ever",
+			type: "warning",
+			buttons: {
+				cancel: true,
+				confirm: true,
+			},
 		});
 	}
 	getAllUser() {
+		// const self = this;
 		var messages = [];
 		var message = [];
 
+		// console.log('Get All messages : ', this.state.inbox.length);
 		for (var i = 0; i < this.state.inbox.length; i++) {
+			if (this.state.inbox[i].messages.length < 1) {
+				message.push(
+					<div key={i} className="chat-bubble">
+						<p className='messageChat system'>
+							Start your chat now !
+						</p>
+					</div>
+				);
+			}
 			for (var m = 0; m < this.state.inbox[i].messages.length; m++) {
 				message.push(
 					<div title={this.state.inbox[i].messages[m].date} key={m} className="chat-bubble">
@@ -154,15 +139,15 @@ class Inbox extends Component {
 						<div>
 							<Chip>
 								<img src='img/yuna.jpg' alt='Contact Person' />
-								{this.state.inbox[i].name}
+								{this.state.inbox[i].firstName} {this.state.inbox[i].lastName}
 							</Chip>
 							<a onClick={this.deleteMessageInbox} className="pull-right deleteMessageInbox"><Icon>delete_forever</Icon></a>
 						</div>}>
 					{message}
 					<Row>
 						<form onSubmit={this.submitMessage}>
-							<Input type="text" name="message" label="Write here to answer" s={12} />
-							<input type="hidden" name="to" value={this.state.inbox[i].id}/>
+							<Input type="text" name="message" label="Write here to answer" autoComplete="off" s={12} />
+							<input type="hidden" name="conversationId" value={this.state.inbox[i].id}/>
 							<Col s={12}><Button ref={m}>SEND</Button></Col>
 						</form>
 					</Row>
@@ -170,33 +155,10 @@ class Inbox extends Component {
 			);
 			message = [];
 		}
+		// self.setState({messages: messages})
 		return (
 			messages
 		);
-	}
-	componentDidMount() {
-		const { endpoint } = this.state;
-		const socket = socketIOClient(endpoint);
-		const self = this;
-
-		socket.on("FromAPI", function (data) {
-			console.log(data);
-			self.setState({ response: data.tmp });
-		});
-		// console.log(this.state.response);
-		document.title = "Inbox";
-		this.getMyInbox();
-	}
-	deleteMessageInbox() {
-		swal({
-			title: "Delete this conversation ?",
-			text: "You will delete this conversation for ever",
-			type: "warning",
-			buttons: {
-				cancel: true,
-				confirm: true,
-			},
-		});
 	}
 	render() {
 		const { response } = this.state;

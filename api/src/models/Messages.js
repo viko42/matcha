@@ -17,9 +17,10 @@ var MessagesSchema = new Schema({
 	// localization: {
 	// 	type: String
 	// },
-	// created_at: {
-	// 	type: Date
-	// },
+	created_at: {
+		type: Date,
+		required: true
+	},
 	// data: {
 	// 	type: Object,
 	// 	required: false,

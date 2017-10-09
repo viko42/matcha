@@ -39,14 +39,13 @@ const tabs = {
 		'url': apiUrl + '/inbox'
 	},
 
-	// 'sendMessage': {
-	// 	'method': 'POST',
-	// 	'url': apiUrl + '/inbox/send'
-	// },
+	'sendMessage': {
+		'method': 'POST',
+		'url': apiUrl + '/inbox/send'
+	},
 }
 
 const Services = (props, data, callback) => {
-	console.log('Service');
 	axios({
 		method: tabs[props].method,
 		url: tabs[props].url,

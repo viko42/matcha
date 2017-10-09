@@ -16,7 +16,9 @@ class Login extends Component {
 		super(props);
 
 		this.state = {
-			errors: {}
+			errors: {},
+			response: false,
+	        endpoint: "http://127.0.0.1:8080"
 		};
 
 		this.login = this.login.bind(this);

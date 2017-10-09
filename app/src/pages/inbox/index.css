@@ -51,7 +51,15 @@
     background-color: #41a7ff;
     color: white;
 }
-
+.system {
+	width: fit-content;
+	margin-left: auto;
+	margin-right: auto;
+	left: 0;
+	right: 0;
+	background-color: #980ebb;
+	color: white;
+}
 /*p .me::after {
       content: "";
       position: absolute;
