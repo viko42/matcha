@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Col, Card, Row, Collapsible, CollapsibleItem, Chip, Icon, Input, Button } from 'react-materialize';
 import services from '../../config/services';
 import _ from 'underscore';
+import socketIOClient from "socket.io-client";
 
 import '../../index.css';
 import './index.css';
@@ -19,6 +20,8 @@ class Inbox extends Component {
 		super(props);
 
 		this.state = {
+			response: false,
+	        endpoint: "http://127.0.0.1:8080",
 			messageLog: [],
 			inbox: [
 				{
@@ -172,6 +175,15 @@ class Inbox extends Component {
 		);
 	}
 	componentDidMount() {
+		const { endpoint } = this.state;
+		const socket = socketIOClient(endpoint);
+		const self = this;
+
+		socket.on("FromAPI", function (data) {
+			console.log(data);
+			self.setState({ response: data.tmp });
+		});
+		// console.log(this.state.response);
 		document.title = "Inbox";
 		this.getMyInbox();
 	}
@@ -187,6 +199,7 @@ class Inbox extends Component {
 		});
 	}
 	render() {
+		const { response } = this.state;
 		return (
 			<div>
 				<Header />
@@ -194,7 +207,7 @@ class Inbox extends Component {
 				<div className="content">
 					<Row>
 						<Col m={12} s={12}>
-							<Card title='Inbox page'>All your inbox messages</Card>
+							<Card title='Inbox page'>All your inbox messages {response}</Card>
 						</Col>
 						<Col m={12} s={12}>
 							<Collapsible accordion>

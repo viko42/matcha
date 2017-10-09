@@ -43,7 +43,6 @@ class Header extends React.Component {
 				<NavItem className="show-in-small" href='#'><Icon>notifications</Icon></NavItem>
 				<NavItem className="hide-in-small" href='#'><Icon>chat</Icon></NavItem>
 				<NavItem className="hide-in-small" href='#'><Icon>search</Icon></NavItem>
-				{/* { localStorage.getItem('auth') && */}
 				<span className="dropDrownNavbar">
 					<Dropdown data-constrainwidth="false" data-stoppropagation="true" trigger={
 						<li data-beloworigin="true" data-activates='dropdown_0'><a><Icon>more_vert</Icon></a></li>
