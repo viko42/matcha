@@ -4,13 +4,19 @@ import { Navbar, NavItem, Icon, Dropdown, Badge } from 'react-materialize';
 import './index.css';
 
 import $ from 'jquery';
+import Footer from '../footer'
+import SideBar from '../sidebar'
+import io from "socket.io-client";
+const socket = io.connect('http://localhost:8080', {
+	query: {token: localStorage.getItem('auth')}
+});
 
 class Header extends React.Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {};
-
+		global.socket = socket;
 		this.logout = this.logout.bind(this);
 	}
 	componentDidMount() {
@@ -39,11 +45,13 @@ class Header extends React.Component {
 			return <Redirect to="/logout" />;
 		}
 		return (
+			<div>
 			<Navbar brand='CrushYard' className="navbar show-in-small" right>
 				<NavItem className="show-in-small" href='#'><Icon>notifications</Icon></NavItem>
 				<NavItem className="hide-in-small" href='#'><Icon>chat</Icon></NavItem>
 				<NavItem className="hide-in-small" href='#'><Icon>search</Icon></NavItem>
-				<span className="dropDrownNavbar">
+
+				{ localStorage.getItem('auth') && <span className="dropDrownNavbar">
 					<Dropdown data-constrainwidth="false" data-stoppropagation="true" trigger={
 						<li data-beloworigin="true" data-activates='dropdown_0'><a><Icon>more_vert</Icon></a></li>
 					}>
@@ -52,8 +60,12 @@ class Header extends React.Component {
 						<NavItem divider />
 						<NavItem onClick={this.logout}>Logout</NavItem>
 					</Dropdown>
-				</span>
+				</span> }
 			</Navbar>
+			<SideBar/>
+			{this.props.children}
+			<Footer/>
+			</div>
 		);
 	}
 }

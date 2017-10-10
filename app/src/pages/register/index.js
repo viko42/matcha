@@ -7,8 +7,6 @@ import '../../index.css';
 import './index.css';
 
 import Header from '../../components/header/index'
-import SideBar from '../../components/sidebar/index'
-import Footer from '../../components/footer/index'
 
 class Register extends Component {
 	constructor(props) {
@@ -60,9 +58,7 @@ class Register extends Component {
 	}
 	render() {
 		return (
-			<div>
-				<Header />
-				<SideBar />
+			<Header>
 				<div className="content">
 					<Row>
 						<Col m={12} s={12}>
@@ -98,8 +94,7 @@ class Register extends Component {
 						</form>
 					</Row>
 				</div>
-				<Footer />
-			</div>
+			</Header>
 		);
 	}
 }

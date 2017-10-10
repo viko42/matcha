@@ -2,15 +2,18 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import registerServiceWorker from './registerServiceWorker';
 import {HashRouter} from 'react-router-dom'
-// import socketIOClient from "socket.io-client";
 
 import Routes from './config/routes';
-// import App from './App';
+import Header from './components/header/index'
+import SideBar from './components/sidebar/index'
 
 ReactDOM.render((
   	<HashRouter>
-		{/* <App/> */}
-		<Routes />
+		<div>
+			{/* <Header/> */}
+			{/* <SideBar/> */}
+			<Routes />
+		</div>
 	</HashRouter>
 ), document.getElementById('root'))
 

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Col, Card, Row, Collapsible, CollapsibleItem, Chip, Icon, Input, Button } from 'react-materialize';
 import services from '../../config/services';
 // import _ from 'underscore';
-import io from "socket.io-client";
 
 import '../../index.css';
 import './index.css';
@@ -12,17 +11,7 @@ import swal		from 'sweetalert';
 import $		from 'jquery';
 
 import Header from '../../components/header/index'
-import SideBar from '../../components/sidebar/index'
-import Footer from '../../components/footer/index'
 
-const socket = io.connect('http://localhost:8080', {
-	query: {token: localStorage.getItem('auth')}
-});
-
-socket.on('emitDuServeur', function(data) {
-	console.log('MyMessage');
-	console.log(data);
-});
 // console.log(socket.connect;
 class Inbox extends Component {
 	constructor(props) {
@@ -33,7 +22,6 @@ class Inbox extends Component {
 	        endpoint: "http://127.0.0.1:8080",
 			inbox: []
 		};
-
 		// console.log('Connected ?');
 		// console.log(socket);
 		this.getMyInbox = this.getMyInbox.bind(this);
@@ -45,28 +33,23 @@ class Inbox extends Component {
 		if (!e.target.message || e.target.message.value.length < 1)
 			return ;
 
-		// const self = this;
-		// const actualInbox = self.state.inbox;
+		const send = {
+			message: e.target.message.value,
+			conversationId: e.target.conversationId.value
+		}
 
-		// services('sendMessage', {message: e.target.message.value, id: e.target.conversationId.value}, function (err, response) {
+		// services('sendMessage', {message: send.message, id: send.conversationId}, function (err, response) {
 		// 	if (err) {
-		// 		self.setState({errors: response.data.errors})
+		// 		this.setState({errors: response.data.errors})
 		// 		if (response.data.errors.swal)
 		// 			swal("Error", response.data.errors.swal, "error");
 		// 		return ;
 		// 	}
 		// 	console.log(response.data);
-		// 	self.getMyInbox();
 		// });
-
-		// const { endpoint } = this.state;
-		// const socket = socketIOClient(endpoint);
-		// socket.emit('chat message', e.target.message.value);
-
-		socket.emit('test', e.target.message.value);
+		global.socket.emit('send message', send);
 
 		e.target.message.value = "";
-
 		// self.setState({inbox: actualInbox});
 		$('#footer')[0].scrollIntoView(true);
 
@@ -93,6 +76,10 @@ class Inbox extends Component {
 
 		// console.log(this.state.response);
 		this.getMyInbox();
+		global.socket.on('message sent', function (data) {
+			console.log('Message sent--  message from server');
+			console.log(data);
+		})
 	}
 	deleteMessageInbox() {
 		swal({
@@ -163,9 +150,7 @@ class Inbox extends Component {
 	render() {
 		const { response } = this.state;
 		return (
-			<div>
-				<Header />
-				<SideBar />
+			<Header>
 				<div className="content">
 					<Row>
 						<Col m={12} s={12}>
@@ -178,8 +163,7 @@ class Inbox extends Component {
 						</Col>
 					</Row>
 				</div>
-				<Footer />
-			</div>
+			</Header>
 		);
 	}
 }

@@ -7,6 +7,14 @@ var bcrypt		= require('bcrypt');
 var Conversations	= mongoose.model('Conversations');
 var Messages		= mongoose.model('Messages');
 
+exports.get_messages = function (data) {
+	console.log('get_messages');
+	console.log(data);
+	return (
+		{getMessage: 'OKMon POTE'}
+	);
+};
+
 exports.inbox = function(req, res) {
 	// const user = new Users(req.connectedAs);
 	console.log('Calling INBOX');
@@ -92,10 +100,16 @@ exports.inbox = function(req, res) {
 	})
 };
 
-exports.send = function(req, res) {
-	const	userId			= req.connectedAs._id;
-	const	conversationId	= req.body.id;
-	const	messageSent		= req.body.message;
+// exports.send = function(req, res) {
+exports.send = function(data, socket) {
+	// const	userId			= req.connectedAs._id;
+	// const	conversationId	= req.body.id;
+	// const	messageSent		= req.body.message;
+	const	userId			= data.userId;
+	const	conversationId	= data.conversationId;
+	const	messageSent		= data.message;
+	// console.log(data);
+		// console.log(socket);
 
 	async.waterfall([
 
@@ -130,8 +144,13 @@ exports.send = function(req, res) {
 		}
 	], function (err) {
 		if (err)
-			return s.serverError(res, err);
-		return res.status(200).json({sent: {} });
+			return console.log(err);
+		console.log('Message Sent ! via controller');
+
+		socket.emit('message sent', exports.get_messages({userId: socket.handshake.query.userId, ...data}));
+		// if (err)
+		// 	return s.serverError(res, err);
+		// return res.status(200).json({sent: {} });
 	})
 };
 

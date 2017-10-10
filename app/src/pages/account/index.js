@@ -7,9 +7,7 @@ import $ from 'jquery';
 import '../../index.css';
 import './index.css';
 
-import Header from '../../components/header/index'
-import SideBar from '../../components/sidebar/index'
-import Footer from '../../components/footer/index'
+import Header from '../../components/header'
 
 class Account extends Component {
 	constructor(props) {
@@ -49,9 +47,7 @@ class Account extends Component {
 	}
 	render() {
 		return (
-			<div>
-				<Header />
-				<SideBar />
+			<Header>
 				<div className="content">
 					<Row>
 						<Col m={12} s={12}>
@@ -73,8 +69,7 @@ class Account extends Component {
 						</Col>
 					</Row>
 				</div>
-				<Footer />
-			</div>
+			</Header>
 		);
 	}
 }

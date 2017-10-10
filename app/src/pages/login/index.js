@@ -8,8 +8,6 @@ import '../../index.css';
 import './index.css';
 
 import Header from '../../components/header/index'
-import SideBar from '../../components/sidebar/index'
-import Footer from '../../components/footer/index'
 
 class Login extends Component {
 	constructor(props) {
@@ -57,9 +55,9 @@ class Login extends Component {
 	ifConnected() {
 		if (!localStorage.getItem('auth'))
 			return (
-				<div>
-					<Header />
-					<SideBar />
+				<Header>
+					{/* <Header />
+					<SideBar /> */}
 					<div className="content">
 						<Row>
 							<form onSubmit={this.login}>
@@ -76,14 +74,11 @@ class Login extends Component {
 							</form>
 						</Row>
 					</div>
-					<Footer/>
-				</div>
+				</Header>
 			);
 		else
 			return (
-				<div>
-					<Header />
-					<SideBar />
+				<Header>
 					<div className="content">
 						<Row>
 							<form onSubmit={this.login}>
@@ -93,8 +88,7 @@ class Login extends Component {
 							</form>
 						</Row>
 					</div>
-					<Footer />
-				</div>
+				</Header>
 			);
 	}
 	render() {

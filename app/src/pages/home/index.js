@@ -6,8 +6,6 @@ import '../../index.css';
 import './index.css';
 
 import Header from '../../components/header/index'
-import SideBar from '../../components/sidebar/index'
-import Footer from '../../components/footer/index'
 
 class App extends Component {
 	componentDidMount() {
@@ -16,9 +14,7 @@ class App extends Component {
 	ifConnected() {
 		if (!localStorage.getItem('auth'))
 			return (
-				<div>
-					<Header />
-					<SideBar />
+				<Header>
 					<div className="content">
 						<Row>
 							<Col m={12} s={12}>
@@ -49,14 +45,11 @@ class App extends Component {
 							</Col>
 						</Row>
 					</div>
-					<Footer/>
-				</div>
+				</Header>
 			);
 		else
 			return (
-				<div>
-					<Header />
-					<SideBar />
+				<Header>
 					<div className="content">
 						<Row>
 							<Col m={12} s={12}>
@@ -69,7 +62,7 @@ class App extends Component {
 							</Col>
 						</Row>
 					</div>
-				</div>
+				</Header>
 			);
 
 	}
