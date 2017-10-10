@@ -14,29 +14,25 @@ exports.sockets = function (socket) {
 		updateUser.save(function (err, userSaved) {
 			if (err)
 				return ;
-			console.log('User updated socket in DB!');
+			// console.log('User updated socket in DB!');
 		});
 	})
 
 	socket.on('send message', function(data){
 		console.log('Send Message');
-		console.log(data);
 		Messages.send({userId: socket.handshake.query.userId, ...data}, socket);
   	});
-	// socket.on('received message', function(data){
-	// 	console.log('received Message');
-	// 	console.log(data);
-	//
- //  	});
-	socket.on('test', function (msg) {
-		console.log('TEST --- ');
-		console.log(msg);
 
-		Users.findOne({'email': 'tam@live.fr'}, function (err, us) {
-			socket.to(us.data.socketid).emit('emitDuServeur', msg);
-			// socket.emit('emitDuServeur', {msg: "EN DIRECT DU SERVEUR"});
-			console.log('Sent to ' + us.data.socketid);
-		});
+	// socket.on('conversation read', function (data) {
+	// 	// console.log(data);
+	// });
+
+	socket.on('give messages from conversation', function (data) {
+		console.log('give messages from conversation');
+		Messages.get_messages({userId: socket.handshake.query.userId, conversationId: data}, socket, function (messages) {
+			Messages.setAsRead({userId: socket.handshake.query.userId, conversationId: data}, socket);
+			socket.emit('give messages from conversation', messages);
+		})
 	});
 	socket.on("disconnect", function () {
 		Users.findOne({"_id": socket.handshake.query.userId}).exec(function (err, userFound) {

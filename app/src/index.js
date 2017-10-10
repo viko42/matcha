@@ -4,16 +4,10 @@ import registerServiceWorker from './registerServiceWorker';
 import {HashRouter} from 'react-router-dom'
 
 import Routes from './config/routes';
-import Header from './components/header/index'
-import SideBar from './components/sidebar/index'
 
 ReactDOM.render((
   	<HashRouter>
-		<div>
-			{/* <Header/> */}
-			{/* <SideBar/> */}
-			<Routes />
-		</div>
+		<Routes />
 	</HashRouter>
 ), document.getElementById('root'))
 

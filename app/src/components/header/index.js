@@ -1,6 +1,6 @@
 import React from 'react';
 import {Redirect} from 'react-router-dom';
-import { Navbar, NavItem, Icon, Dropdown, Badge } from 'react-materialize';
+import { Navbar, NavItem, Icon, Dropdown } from 'react-materialize';
 import './index.css';
 
 import $ from 'jquery';

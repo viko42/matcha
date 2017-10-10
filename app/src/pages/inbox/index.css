@@ -81,3 +81,10 @@ padding: 11px;
 .collapsible-send {
 
 }
+.notification-bubble-chat {
+	border-radius: 100%;
+    background: red;
+    margin-left: 10px;
+    padding: 5px;
+    color: white;
+}

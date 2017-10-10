@@ -1,19 +1,16 @@
 import React, { Component } from 'react';
 import { Col, Card, Row, Collapsible, CollapsibleItem, Chip, Icon, Input, Button } from 'react-materialize';
 import services from '../../config/services';
-// import _ from 'underscore';
 
 import '../../index.css';
 import './index.css';
 
 import swal		from 'sweetalert';
-// import moment	from 'moment';
-import $		from 'jquery';
+import moment	from 'moment';
 
 import Header from '../../components/header/index'
 import {logoName, apiUrl} from '../../config/crushyard'
 
-// console.log(socket.connect;
 class Inbox extends Component {
 	constructor(props) {
 		super(props);
@@ -23,10 +20,11 @@ class Inbox extends Component {
 	        endpoint: apiUrl,
 			inbox: []
 		};
-		// console.log('Connected ?');
-		// console.log(socket);
+
 		this.getMyInbox = this.getMyInbox.bind(this);
+		this.focusBox = this.focusBox.bind(this);
 		this.submitMessage = this.submitMessage.bind(this);
+		this.selectConversation = this.selectConversation.bind(this);
 	}
 	submitMessage(e) {
 		e.preventDefault();
@@ -39,24 +37,14 @@ class Inbox extends Component {
 			conversationId: e.target.conversationId.value
 		}
 
-		// services('sendMessage', {message: send.message, id: send.conversationId}, function (err, response) {
-		// 	if (err) {
-		// 		this.setState({errors: response.data.errors})
-		// 		if (response.data.errors.swal)
-		// 			swal("Error", response.data.errors.swal, "error");
-		// 		return ;
-		// 	}
-		// 	console.log(response.data);
-		// });
 		global.socket.emit('send message', send);
-		console.log(e.target.id);
-		console.log(e.target.conversationId.value);
-		this.focus(e.target.conversationId.value);
 		e.target.message.value = "";
-		// self.setState({inbox: actualInbox});
 	}
-	focus(value) {
-		$('#'+value)[0].scrollIntoView(true);
+	focusBox() {
+		if (this.state.selectedBoxMessage <= this.state.inbox.length && this.state.selectedBoxMessage >= 0) {
+			var objDiv = document.getElementById("box-message"+this.state.selectedBoxMessage);
+			objDiv.scrollTop = objDiv.scrollHeight;
+		}
 	}
 	getMyInbox() {
 		const self = this;
@@ -68,29 +56,64 @@ class Inbox extends Component {
 					swal("Error", response.data.errors.swal, "error");
 				return ;
 			}
-			// console.log(response.data);
+
 			self.setState({inbox: response.data.inbox})
 			self.getAllUser();
 		});
 	}
 
 	componentWillMount() {
-		document.title = `${logoName} Inbox`;
+		document.title = `${logoName} - Inbox`;
 	}
-
+	giveIndexConversation(id) {
+		for (var i = 0; i < this.state.inbox.length; i++) {
+			if (this.state.inbox[i].id === id)
+				return i;
+		}
+		return -1;
+	}
 	componentDidMount() {
 		const self = this;
 
 		this.getMyInbox();
 		global.socket.on('message sent', function (data) {
-			self.getMyInbox();
+			let index = self.giveIndexConversation(data.conversationId);
 
-			console.log($('#box-message'));
+			if (index !== -1)
+				this.emit('give messages from conversation', self.state.inbox[index].id);
+		})
+		global.socket.on('give messages from conversation', function (data) {
+			var inbox = self.state.inbox;
+
+			for (var i = 0; i < inbox.length; i++) {
+				if (inbox[i].id === data.conversationId) {
+					inbox[i].messages = data.messages;
+					break ;
+				}
+			}
+			self.setState({inbox: inbox});
+
+			if (self.state.selectedBoxMessage === self.giveIndexConversation(data.conversationId))
+				console.log("Le dialogue est lu");
+			else {
+				console.log('Des messages sont en attente de lecture');
+				return ;
+			}
+			self.getAllUser();
+			self.focusBox(self.state.selectedBoxMessage);
 		})
 		global.socket.on('receive message', function (data) {
-			self.getMyInbox();
+			let index = self.giveIndexConversation(data.conversationId);
+
+			if (index !== -1)
+				this.emit('give messages from conversation', self.state.inbox[index].id);
 		})
 	}
+	componentWillUnmount() {
+		global.socket.off('message sent');
+		global.socket.off('give messages from conversation');
+	}
+
 	deleteMessageInbox() {
 		swal({
 			title: "Delete this conversation ?",
@@ -102,12 +125,22 @@ class Inbox extends Component {
 			},
 		});
 	}
-	getAllUser() {
-		// const self = this;
-		var messages = [];
-		var message = [];
 
-		// console.log('Get All messages : ', this.state.inbox.length);
+	selectConversation(which) {
+		const self = this;
+
+		if (!Number.isInteger(which) || which > self.state.inbox.length)
+			return ;
+
+		if (self.state.selectedBoxMessage === which)
+			return self.state.selectedBoxMessage = -1;
+
+		self.state.selectedBoxMessage = which;
+		global.socket.emit('give messages from conversation', self.state.inbox[self.state.selectedBoxMessage].id);
+	}
+ 	getAllUser() {
+		var messages = [], message = [];
+
 		for (var i = 0; i < this.state.inbox.length; i++) {
 			if (this.state.inbox[i].messages.length < 1) {
 				message.push(
@@ -120,12 +153,12 @@ class Inbox extends Component {
 			}
 			for (var m = 0; m < this.state.inbox[i].messages.length; m++) {
 				message.push(
-					<div title={this.state.inbox[i].messages[m].created_at} key={m} className="chat-bubble">
+					<div title={moment(this.state.inbox[i].messages[m].created_at).format('DD/MM/YYYY HH:MM')} key={m} className="chat-bubble">
 						<p key={m} className={this.state.inbox[i].messages[m].sender === '1' ? 'messageChat me' : 'messageChat them'}>
 							{this.state.inbox[i].messages[m].message}
 						</p>
 						{(!this.state.inbox[i].messages[m + 1] || (this.state.inbox[i].messages[m].sender !== this.state.inbox[i].messages[m + 1].sender)) && <div className={this.state.inbox[i].messages[m].sender === '1' ? 'message-date pull-right' : 'message-date'}>
-							{this.state.inbox[i].messages[m].created_at}
+							{moment(this.state.inbox[i].messages[m].created_at).format('DD/MM HH:MM')}
 						</div> }
 					</div>
 				);
@@ -137,10 +170,11 @@ class Inbox extends Component {
 							<Chip>
 								<img src='img/yuna.jpg' alt='Contact Person' />
 								{this.state.inbox[i].firstName} {this.state.inbox[i].lastName}
+								{this.state.inbox[i].unread > 0 && <span className="notification-bubble-chat">{this.state.inbox[i].unread}</span>}
 							</Chip>
 							<a onClick={this.deleteMessageInbox} className="pull-right deleteMessageInbox"><Icon>delete_forever</Icon></a>
 						</div>}>
-						<div id="box-message" className="myMessages">
+						<div id={'box-message' + i} className="myMessages">
 							{message}
 						</div>
 					<div className="collapsible-send">
@@ -156,24 +190,18 @@ class Inbox extends Component {
 			);
 			message = [];
 		}
-		// self.setState({messages: messages})
-		// return (
-		// 	messages
-		// );
 		this.setState({allMyMessages: messages});
 	}
 	render() {
-		const { response } = this.state;
 		return (
 			<Header>
 				<div className="content">
 					<Row>
 						<Col m={12} s={12}>
-							<Card title='Inbox page'>All your inbox messages {response}</Card>
+							<Card title='Inbox page'>All your inbox messages</Card>
 						</Col>
 						<Col m={12} s={12}>
-							<Collapsible accordion>
-								{/* {this.getAllUser()} */}
+							<Collapsible accordion onSelect={this.selectConversation}>
 								{this.state.allMyMessages}
 							</Collapsible>
 						</Col>
