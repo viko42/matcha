@@ -11,6 +11,7 @@ import swal		from 'sweetalert';
 import $		from 'jquery';
 
 import Header from '../../components/header/index'
+import {logoName, apiUrl} from '../../config/crushyard'
 
 // console.log(socket.connect;
 class Inbox extends Component {
@@ -19,7 +20,7 @@ class Inbox extends Component {
 
 		this.state = {
 			response: false,
-	        endpoint: "http://127.0.0.1:8080",
+	        endpoint: apiUrl,
 			inbox: []
 		};
 		// console.log('Connected ?');
@@ -48,11 +49,14 @@ class Inbox extends Component {
 		// 	console.log(response.data);
 		// });
 		global.socket.emit('send message', send);
-
+		console.log(e.target.id);
+		console.log(e.target.conversationId.value);
+		this.focus(e.target.conversationId.value);
 		e.target.message.value = "";
 		// self.setState({inbox: actualInbox});
-		$('#footer')[0].scrollIntoView(true);
-
+	}
+	focus(value) {
+		$('#'+value)[0].scrollIntoView(true);
 	}
 	getMyInbox() {
 		const self = this;
@@ -70,15 +74,21 @@ class Inbox extends Component {
 		});
 	}
 
-	componentDidMount() {
-		document.title = "Inbox";
-		// const self = this;
+	componentWillMount() {
+		document.title = `${logoName} Inbox`;
+	}
 
-		// console.log(this.state.response);
+	componentDidMount() {
+		const self = this;
+
 		this.getMyInbox();
 		global.socket.on('message sent', function (data) {
-			console.log('Message sent--  message from server');
-			console.log(data);
+			self.getMyInbox();
+
+			console.log($('#box-message'));
+		})
+		global.socket.on('receive message', function (data) {
+			self.getMyInbox();
 		})
 	}
 	deleteMessageInbox() {
@@ -110,12 +120,12 @@ class Inbox extends Component {
 			}
 			for (var m = 0; m < this.state.inbox[i].messages.length; m++) {
 				message.push(
-					<div title={this.state.inbox[i].messages[m].date} key={m} className="chat-bubble">
+					<div title={this.state.inbox[i].messages[m].created_at} key={m} className="chat-bubble">
 						<p key={m} className={this.state.inbox[i].messages[m].sender === '1' ? 'messageChat me' : 'messageChat them'}>
-							{this.state.inbox[i].messages[m].content}
+							{this.state.inbox[i].messages[m].message}
 						</p>
 						{(!this.state.inbox[i].messages[m + 1] || (this.state.inbox[i].messages[m].sender !== this.state.inbox[i].messages[m + 1].sender)) && <div className={this.state.inbox[i].messages[m].sender === '1' ? 'message-date pull-right' : 'message-date'}>
-							{this.state.inbox[i].messages[m].date}
+							{this.state.inbox[i].messages[m].created_at}
 						</div> }
 					</div>
 				);
@@ -130,22 +140,27 @@ class Inbox extends Component {
 							</Chip>
 							<a onClick={this.deleteMessageInbox} className="pull-right deleteMessageInbox"><Icon>delete_forever</Icon></a>
 						</div>}>
-					{message}
+						<div id="box-message" className="myMessages">
+							{message}
+						</div>
+					<div className="collapsible-send">
 					<Row>
 						<form onSubmit={this.submitMessage}>
 							<Input type="text" name="message" label="Write here to answer" autoComplete="off" s={12} />
-							<input type="hidden" name="conversationId" value={this.state.inbox[i].id}/>
-							<Col s={12}><Button ref={m}>SEND</Button></Col>
+							<Col s={12}><Button>SEND</Button></Col>
+							<input type="hidden" name="conversationId" id={this.state.inbox[i].id} value={this.state.inbox[i].id}/>
 						</form>
 					</Row>
+					</div>
 				</CollapsibleItem>
 			);
 			message = [];
 		}
 		// self.setState({messages: messages})
-		return (
-			messages
-		);
+		// return (
+		// 	messages
+		// );
+		this.setState({allMyMessages: messages});
 	}
 	render() {
 		const { response } = this.state;
@@ -158,7 +173,8 @@ class Inbox extends Component {
 						</Col>
 						<Col m={12} s={12}>
 							<Collapsible accordion>
-								{this.getAllUser()}
+								{/* {this.getAllUser()} */}
+								{this.state.allMyMessages}
 							</Collapsible>
 						</Col>
 					</Row>

@@ -6,13 +6,30 @@ var moment		= require('moment');
 var bcrypt		= require('bcrypt');
 var Conversations	= mongoose.model('Conversations');
 var Messages		= mongoose.model('Messages');
+var Users			= mongoose.model('Users');
 
-exports.get_messages = function (data) {
+exports.get_messages = function (data, socket, callback) {
 	console.log('get_messages');
-	console.log(data);
-	return (
-		{getMessage: 'OKMon POTE'}
-	);
+	var messages = [];
+
+	Conversations.findOne({'_id': data.conversationId}).exec(function (err, conversationFound) {
+		if (err || !conversationFound)
+			return {errors: {swal: "Conversation not found"}}
+
+		Messages.find({conversation: data.conversationId}).exec(function (err, messagesFound) {
+			if (err)
+				return {errors: "error db"};
+
+			for (var i = 0; i < messagesFound.length; i++) {
+				messages.push({
+					message: messagesFound[i].message,
+					sender: String(messagesFound[i].sender) == String(socket.handshake.query.userId) ? "1" : "0",
+					created_at: messagesFound[i].created_at
+				});
+			}
+			return callback({messages, conversationId: data.conversationId});
+		})
+	})
 };
 
 exports.inbox = function(req, res) {
@@ -55,8 +72,8 @@ exports.inbox = function(req, res) {
 						// console.log(allMessages[key].sender);
 						// console.log(userId);
 						allMessages[key] = {
-							content: allMessages[key].message,
-							date: allMessages[key].created_at,
+							message: allMessages[key].message,
+							created_at: allMessages[key].created_at,
 							sender: String(allMessages[key].sender) == String(userId) ? '1' : '0'
 						}
 					}
@@ -108,9 +125,7 @@ exports.send = function(data, socket) {
 	const	userId			= data.userId;
 	const	conversationId	= data.conversationId;
 	const	messageSent		= data.message;
-	// console.log(data);
-		// console.log(socket);
-
+	var		receiverSocketId;
 	async.waterfall([
 
 		// Search Conversation
@@ -121,8 +136,23 @@ exports.send = function(data, socket) {
 
 				if (!conversationFound)
 					return callback('Conversation not Found');
+
+				receiverSocketId = String(userId) == conversationFound.sender ? conversationFound.recipent : conversationFound.sender;
 				return callback();
 			});
+		},
+
+		function (callback) {
+			Users.findOne({'_id': receiverSocketId}).exec(function (err, userFound) {
+				if (err)
+					return callback(err);
+
+				if (!userFound)
+					return callback('Receiver not found');
+
+				receiverSocketId = userFound.data.socketid;
+				return callback();
+			})
 		},
 
 		// push the message
@@ -147,10 +177,11 @@ exports.send = function(data, socket) {
 			return console.log(err);
 		console.log('Message Sent ! via controller');
 
-		socket.emit('message sent', exports.get_messages({userId: socket.handshake.query.userId, ...data}));
-		// if (err)
-		// 	return s.serverError(res, err);
-		// return res.status(200).json({sent: {} });
+		exports.get_messages({userId: socket.handshake.query.userId, ...data}, socket, function (data) {
+			socket.emit('message sent', data);
+			socket.to(receiverSocketId).emit('receive message', "message du serveur");
+			console.log('Sent to ' + receiverSocketId);
+		})
 	})
 };
 

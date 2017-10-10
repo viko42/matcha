@@ -8,6 +8,7 @@ import '../../index.css';
 import './index.css';
 
 import Header from '../../components/header'
+import {logoName} from '../../config/crushyard'
 
 class Account extends Component {
 	constructor(props) {
@@ -19,7 +20,7 @@ class Account extends Component {
 		this.handleInputChange	= this.handleInputChange.bind(this);
 	}
 	componentDidMount() {
-		document.title = "Account";
+		document.title = `${logoName} - Account`;
 	}
 	updateAccount() {
 		const self = this;

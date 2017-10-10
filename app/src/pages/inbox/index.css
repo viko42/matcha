@@ -27,6 +27,8 @@
   max-width: 75%;
   clear: both;
   position: relative;
+  top: 1px;
+  bottom: 30px;
 }
 
 .them {
@@ -34,17 +36,6 @@
 	background-color: rgb(17, 169, 43);
     color: white;
 }
-
-/*.them::after {
-      content: "";
-      position: absolute;
-      left: -0.5em;
-      bottom: 0;
-      width: 0.5em;
-      height: 1em;
-      border-right: 0.5em solid rgb(17, 169, 43);
-      border-bottom-right-radius: 1em 0.5em;
-    }*/
 
 .me {
     float: right;
@@ -60,16 +51,6 @@
 	background-color: #980ebb;
 	color: white;
 }
-/*p .me::after {
-      content: "";
-      position: absolute;
-      right: -0.5em;
-      bottom: 0;
-      width: 0.5em;
-      height: 1em;
-      border-left: 0.5em solid #41a7ff;
-      border-bottom-left-radius: 1em 0.5em;
-}*/
 .iconChatSender .chip {
 	display: inherit;
 	background-color: white;
@@ -86,4 +67,17 @@
 	font-size: 11px;
 	left:0;
     position: relative;
+	top: 1px;
+	bottom: 30px;
+}
+.collapsible-body {
+padding: 11px;
+
+}
+.myMessages {
+	height: 500px;
+	overflow-y: scroll;
+}
+.collapsible-send {
+
 }

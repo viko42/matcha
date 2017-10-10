@@ -5,10 +5,11 @@ import '../../index.css';
 import './index.css';
 
 import Header from '../../components/header'
+import {logoName} from '../../config/crushyard'
 
 class Profile extends Component {
 	componentDidMount() {
-		document.title = "Profile";
+		document.title = `${logoName} - Profile`;
 	}
 	render() {
 		return (

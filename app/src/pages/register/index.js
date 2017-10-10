@@ -7,6 +7,7 @@ import '../../index.css';
 import './index.css';
 
 import Header from '../../components/header/index'
+import {logoName} from '../../config/crushyard'
 
 class Register extends Component {
 	constructor(props) {
@@ -28,7 +29,7 @@ class Register extends Component {
 		this.handleInputChange = this.handleInputChange.bind(this);
 	}
 	componentDidMount() {
-		document.title = "Register";
+		document.title = `${logoName} - Register`;
 	}
 	componentWillMount() {
 	    this.initialState = this.state

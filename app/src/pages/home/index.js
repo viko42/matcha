@@ -6,10 +6,11 @@ import '../../index.css';
 import './index.css';
 
 import Header from '../../components/header/index'
+import {logoName} from '../../config/crushyard'
 
 class App extends Component {
 	componentDidMount() {
-		document.title = "Home";
+		document.title = `${logoName} - Home`;
 	}
 	ifConnected() {
 		if (!localStorage.getItem('auth'))

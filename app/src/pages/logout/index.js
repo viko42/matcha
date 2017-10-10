@@ -5,10 +5,11 @@ import '../../index.css';
 import './index.css';
 
 import swal from 'sweetalert';
+import {logoName} from '../../config/crushyard'
 
 class Logout extends Component {
 	componentDidMount() {
-		document.title = "CrushYard - Loggin off";
+		document.title = `${logoName} - Loggin off`;
 	}
 	componentWillUnmount() {
 		localStorage.removeItem('user');

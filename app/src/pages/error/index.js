@@ -6,10 +6,11 @@ import '../../index.css';
 import './index.css';
 
 import Header from '../../components/header'
+import {logoName} from '../../config/crushyard'
 
 class Error extends Component {
 	componentDidMount() {
-		document.title = "CrushYard - 404 Not found";
+		document.title = `${logoName} - 404 Not found`;
 	}
 	render() {
 		return (

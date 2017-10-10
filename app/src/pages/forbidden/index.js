@@ -5,10 +5,11 @@ import '../../index.css';
 import './index.css';
 
 import Header from '../../components/header/index'
+import {logoName} from '../../config/crushyard'
 
 class Forbidden extends Component {
 	componentDidMount() {
-		document.title = "CrushYard - Forbidden";
+		document.title =  `${logoName} - Forbidden`;
 	}
 	render() {
 		return (
