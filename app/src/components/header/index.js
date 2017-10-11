@@ -7,16 +7,13 @@ import $ from 'jquery';
 import Footer from '../footer'
 import SideBar from '../sidebar'
 import io from "socket.io-client";
-const socket = io.connect('http://localhost:8080', {
-	query: {token: localStorage.getItem('auth')}
-});
 
 class Header extends React.Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {};
-		global.socket = socket;
+
 		this.logout = this.logout.bind(this);
 	}
 	componentDidMount() {
@@ -33,6 +30,11 @@ class Header extends React.Component {
 		// Disable the older home button
 		nav = document.querySelectorAll('[data-activates="nav-mobile"]')[0];
 		nav.setAttribute("style", "display: none;");
+
+		this.socket = io.connect('http://localhost:8080', {
+			query: {token: localStorage.getItem('auth')}
+		});
+		global.socket = this.socket;
 
 		$('body').addClass('loaded');
 	}
