@@ -3,17 +3,17 @@
 	position: absolute;
 	bottom: 0;
 }
-.sideNavMenu {
+/*.testButton {
 	font-size: 20px;
 	margin-left: 30px;
-}
-.sideNavMenu:hover {
+}*/
+.testButton:hover {
 	background-color: #232323;
 	cursor: pointer;
 }
 
 @media screen and (min-width: 993px) {
-	.sideNavMenu {
+	.testButton {
 		display: none;
 	}
 }
@@ -21,4 +21,13 @@
 	.sideBarDiv {
 		margin-top: 67px;
 	}
+}
+.testButton {
+	position: absolute;
+	z-index: 50;
+	font-size: 21px;
+	margin-left: 30px;
+	margin-top: 20px;
+	color: white;
+	cursor: pointer;
 }

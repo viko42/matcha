@@ -38,7 +38,7 @@ class SideBar extends Component {
 		if (!localStorage.getItem('auth'))
 			return (
 				<SideNav
-					trigger={<Button>SIDE NAV DEMO</Button>}
+					trigger={<h1 className="testButton">☰</h1>}
 				className="side-nav fixed sideBarDiv">
 					<SideNavItem href='#/' icon='cloud'>Retour à la page d'accueil</SideNavItem>
 					<SideNavItem href='#login'>Se connecter</SideNavItem>

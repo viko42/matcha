@@ -136,6 +136,7 @@ class Inbox extends Component {
 			return self.state.selectedBoxMessage = -1;
 
 		self.state.selectedBoxMessage = which;
+		console.log('Emit - give messages');
 		global.socket.emit('give messages from conversation', self.state.inbox[self.state.selectedBoxMessage].id);
 	}
  	getAllUser() {

@@ -37,3 +37,13 @@ label:not(.active):after {
 	-webkit-transform: translateY(-140%);
 	transform: translateY(-140%);
 }
+.content {
+	padding-top: 50px;
+}
+
+@media screen and (min-width: 993px) {
+	.content {
+		padding-left: 330px;
+		padding-right: 33px;
+	}
+}
