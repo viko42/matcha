@@ -43,16 +43,36 @@ const tabs = {
 		'method': 'POST',
 		'url': apiUrl + '/inbox/send'
 	},
+
+	//###################################################################
+	// 							Profile
+	//###################################################################
+
+	'getProfile': {
+		'method': 'GET',
+		'url': apiUrl + '/profile/'
+	},
+
+	'updateProfile': {
+		'method': 'PUT',
+		'url': apiUrl + '/profile/update'
+	},
 }
 
 const Services = (props, data, callback) => {
+	var get_data = data.getData ? data.getData : '';
+
+	console.log(tabs[props].url + get_data);
 	axios({
 		method: tabs[props].method,
-		url: tabs[props].url,
+		url: tabs[props].url + get_data,
 		headers: {
 			'authorization': localStorage.getItem('auth')
 		},
-		data: data
+		data: {
+			...data,
+			socketId: global.socket.id
+		}
 	}).then(function (res) {
 		return callback(null, res);
 	}).catch(function (err) {

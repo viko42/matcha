@@ -12,30 +12,32 @@ var Users		= mongoose.model('Users');
 // };
 
 
-exports.userProfile = function(req, res) {
-	var profile = req.params;
-
-	if (!profile.id)
-		return s.badRequest(res, "Missing profile ID")
-
-	async.waterfall([
-		function (callback) {
-			Users.findOne({'_id': profile.id}, function(err, user) {
-				if (err)
-					return callback(err);
-
-				if (!user)
-					return callback("User not found");
-
-				profile = {
-					surnom: user.firstName
-				};
-				callback();
-			});
-		},
-	], function (err) {
-		if (err)
-			return s.serverError(res, err);
-		return res.status(200).json({profile});
-	})
+exports.getProfile = function(req, res) {
+	// var profile = req.params;
+	console.log(req.body);
+	console.log(req.params);
+	//
+	// if (!profile.id)
+	// 	return s.badRequest(res, "Missing profile ID")
+	//
+	// async.waterfall([
+	// 	function (callback) {
+	// 		Users.findOne({'_id': profile.id}, function(err, user) {
+	// 			if (err)
+	// 				return callback(err);
+	//
+	// 			if (!user)
+	// 				return callback("User not found");
+	//
+	// 			profile = {
+	// 				surnom: user.firstName
+	// 			};
+	// 			callback();
+	// 		});
+	// 	},
+	// ], function (err) {
+	// 	if (err)
+	// 		return s.serverError(res, err);
+		return res.status(200).json({profile: {lastName: 'Victor', firstName: 'Lancien'}});
+	// })
 };

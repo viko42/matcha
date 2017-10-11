@@ -80,33 +80,36 @@ class Inbox extends Component {
 			let index = self.giveIndexConversation(data.conversationId);
 
 			if (index !== -1)
-				this.emit('give messages from conversation', self.state.inbox[index].id);
+				this.emit('give messages from conversation', {id: self.state.inbox[index].id, unread: false});
 		})
 		global.socket.on('give messages from conversation', function (data) {
 			var inbox = self.state.inbox;
 
 			for (var i = 0; i < inbox.length; i++) {
 				if (inbox[i].id === data.conversationId) {
-					inbox[i].messages = data.messages;
+					inbox[i].messages	= data.messages;
+					inbox[i].unread		= data.unread;
 					break ;
 				}
 			}
 			self.setState({inbox: inbox});
 
-			if (self.state.selectedBoxMessage === self.giveIndexConversation(data.conversationId))
+			self.getAllUser();
+			if (self.state.selectedBoxMessage === self.giveIndexConversation(data.conversationId)) {
+
 				console.log("Le dialogue est lu");
+				self.focusBox(self.state.selectedBoxMessage);
+				console.log(data);
+			}
 			else {
 				console.log('Des messages sont en attente de lecture');
-				return ;
 			}
-			self.getAllUser();
-			self.focusBox(self.state.selectedBoxMessage);
 		})
 		global.socket.on('receive message', function (data) {
 			let index = self.giveIndexConversation(data.conversationId);
 
 			if (index !== -1)
-				this.emit('give messages from conversation', self.state.inbox[index].id);
+				this.emit('give messages from conversation', {id: self.state.inbox[index].id, unread: self.state.selectedBoxMessage === self.giveIndexConversation(data.conversationId) ? false : true});
 		})
 	}
 	componentWillUnmount() {
@@ -117,7 +120,7 @@ class Inbox extends Component {
 	deleteMessageInbox() {
 		swal({
 			title: "Delete this conversation ?",
-			text: "You will delete this conversation for ever",
+			text: "You will cancel your crush",
 			type: "warning",
 			buttons: {
 				cancel: true,
@@ -136,7 +139,8 @@ class Inbox extends Component {
 			return self.state.selectedBoxMessage = -1;
 
 		self.state.selectedBoxMessage = which;
-		global.socket.emit('give messages from conversation', self.state.inbox[self.state.selectedBoxMessage].id);
+		console.log('Emit - give messages');
+		global.socket.emit('give messages from conversation', {id: self.state.inbox[self.state.selectedBoxMessage].id, unread: (self.state.selectedBoxMessage === self.giveIndexConversation(self.state.inbox[which].id)) ? false : true});
 	}
  	getAllUser() {
 		var messages = [], message = [];

@@ -17,33 +17,37 @@ exports.setAsRead	= function (data, socket) {
 		Users.findOne({'_id': data.userId}).exec(function(err, userRead ) {
 			if (err)
 				return ;
-
+				
 			console.log(num.n + ' messages lus par ' + userRead.email);
 		})
     });
 };
 
 exports.get_messages = function (data, socket, callback) {
-	var messages = [];
+	var messages	= [];
+	var userId		= socket.handshake.query.userId;
 
 	Conversations.findOne({'_id': data.conversationId}).populate('sender').populate('recipent').exec(function (err, conversationFound) {
 		if (err || !conversationFound)
 			return {errors: {swal: "Conversation not found"}}
 
-		// console.log('Conversation entre ' + conversationFound.sender.firstName + ' et ' + conversationFound.recipent.firstName);
 		Messages.find({conversation: data.conversationId}).exec(function (err, messagesFound) {
 			if (err)
 				return {errors: "error db"};
 
-			// console.log('Nombre de message entre eux: ' + messagesFound.length);
-			for (var i = 0; i < messagesFound.length; i++) {
-				messages.push({
-					message: messagesFound[i].message,
-					sender: String(messagesFound[i].sender) == String(socket.handshake.query.userId) ? "1" : "0",
-					created_at: messagesFound[i].created_at
-				});
-			}
-			return callback({messages, conversationId: data.conversationId});
+			Messages.count({status: 'sended', conversation: data.conversationId,  sender: {"$ne": userId} }).exec(function (err, nbMessagesUnread) {
+				if (err)
+					console.log('Unable to get unread message from this conversation - ' + data.conversationId);
+
+				for (var i = 0; i < messagesFound.length; i++) {
+					messages.push({
+						message: messagesFound[i].message,
+						sender: String(messagesFound[i].sender) == String(userId) ? "1" : "0",
+						created_at: messagesFound[i].created_at
+					});
+				}
+				return callback({messages, conversationId: data.conversationId, unread: nbMessagesUnread});
+			});
 		})
 	})
 };
@@ -77,22 +81,6 @@ exports.inbox = function(req, res) {
 		function (callback) {
 			async.forEachOf(listConversations, function (conversation, keyConv, next_conversation) {
 
-				// console.log('key: ' + key);
-				// Messages.find({conversation: conversation.id}).exec(function (err, allMessages) {
-				// 	if (err)
-				// 		return next_conversation(err);
-				//
-				// 	// listConversations[keyConv].messages = [];
-				// 	for (key in allMessages) {
-				// 		allMessages[key] = {
-				// 			message: allMessages[key].message,
-				// 			created_at: allMessages[key].created_at,
-				// 			sender: String(allMessages[key].sender) == String(userId) ? '1' : '0'
-				// 		}
-				// 	}
-				// 	listMessages.push({conversationId: conversation.id, messages: allMessages});
-				// 	return next_conversation();
-				// });
 				Messages.count({status: 'sended', conversation: conversation.id,  sender: {"$ne": userId} }).exec(function (err, nbMessagesUnread) {
 					if (err)
 						return next_conversation(err);
@@ -123,31 +111,6 @@ exports.inbox = function(req, res) {
 				return callback();
 			})
 		},
-		// function (callback) {
-		// 	for (key in listConversations) {
-		// 		listConversations[key] = {
-		// 			sender: {
-		// 				email: listConversations[key].sender.email,
-		// 				firstName: listConversations[key].sender.firstName,
-		// 				lastName: listConversations[key].sender.lastName
-		// 			},
-		// 			recipent: {
-		// 				email: listConversations[key].recipent.email,
-		// 				firstName: listConversations[key].recipent.firstName,
-		// 				lastName: listConversations[key].recipent.lastName
-		// 			},
-		// 			firstName: String(userId) == listConversations[key].sender.id ? listConversations[key].recipent.firstName : listConversations[key].sender.firstName,
-		// 			lastName: String(userId) == listConversations[key].sender.id ? listConversations[key].recipent.lastName : listConversations[key].sender.lastName,
-		// 			premium: listConversations[key].premium,
-		// 			last_activity: listConversations[key].last_activity,
-		// 			// messages: listMessages[key].messages,
-		// 			messages: [],
-		// 			unread: 0,
-		// 			id: listConversations[key].id
-		// 		}
-		// 	}
-		// 	return callback();
-		// },
 
 	], function (err) {
 		if (err)

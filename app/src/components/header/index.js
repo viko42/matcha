@@ -21,10 +21,10 @@ class Header extends React.Component {
 
 		// Create the Home button
 		var node = document.createElement("a");
-		var textnode = document.createTextNode("☰");
-		node.setAttribute("data-activates", "sidenav_2");
+		// var textnode = document.createTextNode("☰");
+		node.setAttribute("data-activates", "sidenav_0");
 		node.setAttribute("class", "sideNavMenu");
-		node.appendChild(textnode);
+		// node.appendChild(textnode);
 		nav.appendChild(node);
 
 		// Disable the older home button

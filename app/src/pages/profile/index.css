@@ -1,0 +1,58 @@
+.profile-header-bloc {
+	border:solid;
+	height:100px;
+	width:100px;
+	display:inline-block;
+	/*margin-top: 100px;*/
+}
+
+.medium {
+}
+
+.profile-header-avatar {
+	position: absolute;
+	top: 0px;
+	z-index: 1;
+	height:100px;
+	width:100px;
+}
+
+.profile-avatar {
+	width: inherit;
+	height: inherit;
+	border-radius: 100%;
+	/*background-image: 'img/avatar.jpg'*/
+}
+.links-header {
+	height:100px;
+	position: relative;
+}
+.link-name {
+	margin-left: 130px;
+	/*top:0px;*/
+	position: absolute;
+	font-size: 20px;
+    font-weight: 100;
+    font-family: sans-serif;
+    -webkit-font-smoothing: antialiased;
+	color:black;
+}
+
+.header-score {
+	position: absolute;
+	bottom: 0px;
+	right: 0;
+}
+
+.header-speak {
+
+}
+.side-crush {
+	background-color: #5c92f5;
+	text-align: center;
+}
+.side-crush-text {
+	color: white;
+	font-size: 20px;
+	font-weight: 200;
+}

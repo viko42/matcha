@@ -128,6 +128,8 @@ exports.delete = function(req, res) {
 exports.login = function(req, res) {
 	var auth = req.body;
 
+	console.log(auth);
+
 	if (!auth)
 		return s.forbidden(res, {errors: {message: 'connection refused'}});
 
@@ -136,6 +138,9 @@ exports.login = function(req, res) {
 
 	if (!auth.password)
 		return s.forbidden(res, {errors: {password: 'Champs manquant'}});
+
+	if (!auth.socketId)
+		return s.forbidden(res, {errors: {swal: 'Rechargez la page'}});
 
 	Users.findOne({email: auth.email}, function(err, user) {
 		if (err)
@@ -151,7 +156,14 @@ exports.login = function(req, res) {
 			var token = jwt.sign({id: user.id}, 'ilovescotchyscotch', {
 				// expiresIn: 1440 // expires in 24 hours
 	        });
-			return res.status(200).json({data: {firstName: user.firstName, lastName: user.lastName, email: user.email, phone: user.phone, birth: user.birth}, token: token});
+			// var toUpdate = new Users(user);
+			// toUpdate.save(function (err, userSaved) {
+				// if (err)
+					// console.log('Unable to update socket');
+
+				// console.log('Socket of a guest as been saved to the logged user');
+				return res.status(200).json({data: {firstName: user.firstName, lastName: user.lastName, email: user.email, phone: user.phone, birth: user.birth}, token: token});
+			// })
 		});
 	});
 }

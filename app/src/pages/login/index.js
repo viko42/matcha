@@ -9,6 +9,7 @@ import './index.css';
 
 import Header from '../../components/header/index'
 import {logoName} from '../../config/crushyard'
+// import io from "socket.io-client";
 
 class Login extends Component {
 	constructor(props) {

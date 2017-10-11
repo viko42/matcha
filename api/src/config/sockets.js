@@ -3,6 +3,8 @@ const Users			= mongoose.model('Users');
 const Messages		= require('../controllers/MessagesController');
 
 exports.sockets = function (socket) {
+	if (socket.handshake.query.userId === 'guest')
+		return console.log('New Guest connected');
 	console.log("New client connected")
 	// console.log(socket.handshake.query.userId);
 	Users.findOne({"_id": socket.handshake.query.userId}).exec(function (err, userFound) {
@@ -23,14 +25,13 @@ exports.sockets = function (socket) {
 		Messages.send({userId: socket.handshake.query.userId, ...data}, socket);
   	});
 
-	// socket.on('conversation read', function (data) {
-	// 	// console.log(data);
-	// });
-
 	socket.on('give messages from conversation', function (data) {
 		console.log('give messages from conversation');
-		Messages.get_messages({userId: socket.handshake.query.userId, conversationId: data}, socket, function (messages) {
-			Messages.setAsRead({userId: socket.handshake.query.userId, conversationId: data}, socket);
+		Messages.get_messages({userId: socket.handshake.query.userId, conversationId: data.id}, socket, function (messages) {
+			if (data.unread === false) {
+				Messages.setAsRead({userId: socket.handshake.query.userId, conversationId: data.id}, socket);
+				messages.unread = 0;
+			}
 			socket.emit('give messages from conversation', messages);
 		})
 	});

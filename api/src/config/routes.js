@@ -16,7 +16,8 @@ module.exports = function (app) {
 	var Profile = require('../controllers/ProfileController');
 	//--------------------------------------------------------------------
 
-	app.route('/profile/:id')	.get(isConnected.authorization, Profile.userProfile);
+	app.route('/profile/:id')	.get(isConnected.authorization, Profile.getProfile);
+	// app.route('/profile/update')	.put(isConnected.authorization, Profile.updateProfile);
 
 	//####################################################################
 	//						Account

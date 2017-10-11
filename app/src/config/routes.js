@@ -30,14 +30,14 @@ const isConnected = function (connected, notConnected) {
 
 const Routes = (props) => (
 	<Switch>
-		<Route exact path='/'	component={isConnected(Home, HomeGuest)}/>
-		<Route path='/profile'	component={Authorization(Profile, ['User', 'Admin'])}/>
-		<Route path='/account'	component={Authorization(Account, ['User', 'Admin'])}/>
-		<Route path='/inbox'	component={Authorization(Inbox, ['User', 'Admin'])}/>
+		<Route exact path='/'		component={isConnected(Home, HomeGuest)}/>
+		<Route path='/profile/:id'	component={Authorization(Profile, ['User', 'Admin'])}/>
+		<Route path='/account'		component={Authorization(Account, ['User', 'Admin'])}/>
+		<Route path='/inbox'		component={Authorization(Inbox, ['User', 'Admin'])}/>
 		{/* <Route path='/administration' component={Authorization(Admin, ['Admin'])}/> */}
-		<Route path='/register'	component={Register}/>
-		<Route path='/login'	component={Login}/>
-		<Route path='/logout'	component={Logout}/>
+		<Route path='/register'		component={Register}/>
+		<Route path='/login'		component={Login}/>
+		<Route path='/logout'		component={Logout}/>
 		<Route component={NotFound}/>
     </Switch>
 );
