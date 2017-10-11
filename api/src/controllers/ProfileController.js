@@ -38,6 +38,13 @@ exports.getProfile = function(req, res) {
 	// ], function (err) {
 	// 	if (err)
 	// 		return s.serverError(res, err);
-		return res.status(200).json({profile: {lastName: 'Victor', firstName: 'Lancien'}});
+		return res.status(200).json({
+			profile: {
+				lastName: 'Victor',
+				firstName: 'Lancien',
+				aboutMe: "I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.",
+				
+			}
+		});
 	// })
 };

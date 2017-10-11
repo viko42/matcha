@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './index.css';
-import { SideNav, SideNavItem, Button } from 'react-materialize';
+import { SideNav, SideNavItem } from 'react-materialize';
 import $ from 'jquery';
 
 window.onhashchange = function () {

@@ -1,6 +1,7 @@
 const mongoose		= require('mongoose');
 const Users			= mongoose.model('Users');
 const Messages		= require('../controllers/MessagesController');
+const moment		= require('moment');
 
 exports.sockets = function (socket) {
 	if (socket.handshake.query.userId === 'guest')
@@ -12,7 +13,8 @@ exports.sockets = function (socket) {
 			return ;
 
 		var updateUser = new Users(userFound);
-		updateUser.data.socketid = socket.id;
+		updateUser.data.socketid	= socket.id;
+		updateUser.data.status		= 'online';
 		updateUser.save(function (err, userSaved) {
 			if (err)
 				return ;
@@ -41,7 +43,9 @@ exports.sockets = function (socket) {
 				return ;
 
 			var updateUser = new Users(userFound);
-			updateUser.data.socketid = 'not connected';
+			updateUser.data.socketid = null;
+			updateUser.data.status			= 'offline';
+			updateUser.data.last_activity	= moment().format();
 			updateUser.save(function (err, userSaved) {
 				if (err)
 					return ;

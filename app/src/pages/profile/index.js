@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Col, Card, Row, CardTitle, Collection, CollectionItem, Chip, Input, Button, Icon } from 'react-materialize';
+import { Col, Card, Row, Collection, CollectionItem, Chip, Input, Button, Icon } from 'react-materialize';
 import swal from 'sweetalert';
 import services from '../../config/services';
 
@@ -16,6 +16,7 @@ class Profile extends Component {
 		this.state = {
 			getData: props.match.params.id,
 			profile: {},
+			aboutMe: false,
 			messagesRender: [],
 			messages: [
 			{
@@ -35,8 +36,23 @@ class Profile extends Component {
 
 		this.getPublications = this.getPublications.bind(this);
 		this.addMessage = this.addMessage.bind(this);
-	}
+		this.toggleButton = this.toggleButton.bind(this);
 
+	}
+	toggleButton(button, e) {
+		e.preventDefault();
+		var value;
+
+		if (String(button) === "about-me") {
+			if (this.state.aboutMe === true) {
+				value = document.getElementById(button).value;
+				console.log('Envoi au serveur');
+				console.log(value);
+			}
+			this.setState({aboutMe: this.state.aboutMe ? false : true});
+		}
+		// console.log(e);
+	}
 	getPublications() {
 		var messages = this.state.messages;
 		var renduMessage = [];
@@ -85,6 +101,7 @@ class Profile extends Component {
 			self.getPublications();
 		});
 	}
+
 	componentWillMount() {
 		document.title = `${logoName} - Profile`;
 	}
@@ -106,19 +123,57 @@ class Profile extends Component {
 									</div>
 								]}>
 								<div className="profile-header-avatar">
-									<img className="profile-avatar" src="img/avatar.jpg" />
+									<img alt="avatar" className="profile-avatar" src="img/avatar.jpg" />
 								</div>
 
 							</Card>
 						</Col>
 
+						<Col l={12} m={12} s={12}>
+							<Card>
+								<Row>
+									<form onSubmit={this.addMessage}>
+										<Input s={12} label="Publiez un message" name="message" autoComplete="off" type="text" ></Input>
+										<Button>Publier<Icon right>send</Icon></Button>
+									</form>
+								</Row>
+							</Card>
+						</Col>
+
 						{/* Content of my sidebar Profile */}
-						<Col l={3} m={4} s={12}>
+						<Col l={4} m={4} s={12}>
+							<Card className="side-crush hi-icon-wrap hi-icon-effect-9 hi-icon-effect-9a about-me ">
+								{!this.state.aboutMe	&& <div><a onClick={this.toggleButton.bind(this, 'about-me')}>
+									<Icon name="about-me" className="hi-icon hi-icon-pencil f-white">edit</Icon></a>
+									<div className="about-me-title">About me</div>
+									{!this.state.aboutMe	&& <div className="side-crush-text">{profile.aboutMe}</div>}
+							</div>}
+								{this.state.aboutMe		&& <div><a onClick={this.toggleButton.bind(this, 'about-me')}>
+									<Icon className="hi-icon hi-icon-pencil f-white">done</Icon></a>
+									<div className="about-me-title">About me</div>
+									{this.state.aboutMe		&& <Row><div className="side-crush-text"><textarea className="materialize-textarea" id="about-me" type="text" defaultValue={profile.aboutMe}></textarea></div></Row>}
+								</div>}
+							</Card>
 							<Card className="side-crush">
 								<div className="side-crush-text">240 Crush(s)</div>
 							</Card>
-							<Collection>
 
+							<Card>
+								<div className="box-details-name">
+									<Icon>wc</Icon>Sexe
+								</div>
+								<div className="box-details-content">
+									Homme
+								</div>
+								<hr className="fullhr"/>
+								<div className="box-details-name">
+									<Icon>power</Icon>Orientation
+								</div>
+								<div className="box-details-content">
+									Hetéro
+								</div>
+							</Card>
+							<Collection>
 								<CollectionItem><center>Films</center>
 									<Chip>La grande vadrouille</Chip>
 									<Chip>Forrest Gump</Chip>
@@ -139,26 +194,9 @@ class Profile extends Component {
 									<Chip>Cyrano de Bergerac</Chip>
 								</CollectionItem>
 							</Collection>
-							<Card title="SideBar">
-								This is my sideBar
-							</Card>
-							<Card title="SideBar">
-								This is my sideBar
-							</Card>
 						</Col>
-
 						{/* Content of my profile */}
-						<Col l={9} m={6} s={12}>
-							<Card>
-								<Row>
-									<form onSubmit={this.addMessage}>
-										<Input s={12} label="Publiez un message" name="message" autoComplete="off" type="text" ></Input>
-										<Button>Publier<Icon right>send</Icon></Button>
-									</form>
-								</Row>
-							</Card>
-						</Col>
-						<Col l={9} m={6} s={12}>
+						<Col l={8} m={8} s={12}>
 							{this.state.messagesRender}
 						</Col>
 					</Row>
