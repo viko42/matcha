@@ -35,7 +35,6 @@ class Header extends React.Component {
 			query: {token: localStorage.getItem('auth')}
 		});
 		global.socket = this.socket;
-
 		$('body').addClass('loaded');
 	}
 	logout(e) {
@@ -43,9 +42,8 @@ class Header extends React.Component {
 		this.setState({redirect: true})
 	}
 	render() {
-		if (this.state.redirect) {
+		if (this.state.redirect)
 			return <Redirect to="/logout" />;
-		}
 		return (
 			<div>
 			<Navbar brand='CrushYard' className="navbar show-in-small" right>
@@ -57,7 +55,7 @@ class Header extends React.Component {
 					<Dropdown data-constrainwidth="false" data-stoppropagation="true" trigger={
 						<li data-beloworigin="true" data-activates='dropdown_0'><a><Icon>more_vert</Icon></a></li>
 					}>
-						<NavItem href="#/profile">My profile</NavItem>
+						<NavItem href="#/profile/me">My profile</NavItem>
 						<NavItem href="#/profile/edit">Edit my profile</NavItem>
 						<NavItem divider />
 						<NavItem onClick={this.logout}>Logout</NavItem>

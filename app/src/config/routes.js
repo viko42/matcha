@@ -11,7 +11,8 @@ import Logout			from '../pages/logout';
 import Register			from '../pages/register';
 import Inbox			from '../pages/inbox';
 
-import NotFound			from '../pages/error';
+import NotFound			from '../pages/notfound';
+import Error			from '../pages/error';
 import Forbidden		from '../pages/forbidden';
 
 const Authorization = function (component, roles) {
@@ -22,7 +23,7 @@ const Authorization = function (component, roles) {
 
 const isConnected = function (connected, notConnected) {
 	console.log('isConnected method');
-	// return component;
+
 	if (localStorage.getItem('auth') === null)
 		return notConnected;
 	return connected;
@@ -38,6 +39,7 @@ const Routes = (props) => (
 		<Route path='/register'		component={Register}/>
 		<Route path='/login'		component={Login}/>
 		<Route path='/logout'		component={Logout}/>
+		<Route path='/maintenance'	component={Error}/>
 		<Route component={NotFound}/>
     </Switch>
 );

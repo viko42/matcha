@@ -44,7 +44,7 @@
 	right: 0;
 }
 .card-header .card-content {
-	background-color: #f3f3f3;
+	background-color: rgb(253, 253, 253);
 }
 .side-crush {
 	background-color: rgb(73, 106, 181);
@@ -78,11 +78,14 @@
 	color:white;
 	padding-bottom: 30px;
 }
-.about-me {
+.bg-blue {
+	background-color: #4a6ab4;
+}
+.bg-skinblue {
 	background-color: #5c92f5;
 }
 .hi-icon-wrap {
-	margin: 0 auto;
+	/*margin: 0 auto;*/
 }
 
 .hi-icon {
@@ -139,4 +142,11 @@
 }
 .hidden {
 	/*display:none;*/
+}
+.add {
+	right: 0;
+	top: -45px;
+	margin:0;
+	padding: 0;
+	position: absolute;
 }

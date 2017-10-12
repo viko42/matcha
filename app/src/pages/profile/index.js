@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Col, Card, Row, Collection, CollectionItem, Chip, Input, Button, Icon } from 'react-materialize';
+import { Col, Card, Row, Collection, CollectionItem, Chip, Input, Button, Icon, Carousel } from 'react-materialize';
 import swal from 'sweetalert';
 import services from '../../config/services';
+// import FileBase64 from 'react-file-base64'; Pour upload
 
 import '../../index.css';
 import './index.css';
@@ -39,10 +40,20 @@ class Profile extends Component {
 		this.toggleButton = this.toggleButton.bind(this);
 
 	}
+	showPictures() {
+		var pictures = [];
+		for (var i = 0; i < this.state.profile.pictures.length; i++) {
+			let name = this.state.profile.pictures[i].code + this.state.profile.pictures[i].data;
+			pictures.push(
+				<img alt="avatar" src={name}/>
+			);
+		}
+		return pictures;
+	}
 	toggleButton(button, e) {
 		e.preventDefault();
 		var value;
-
+		console.log(document.getElementById("carousel"));
 		if (String(button) === "about-me") {
 			if (this.state.aboutMe === true) {
 				value = document.getElementById(button).value;
@@ -50,6 +61,14 @@ class Profile extends Component {
 				console.log(value);
 			}
 			this.setState({aboutMe: this.state.aboutMe ? false : true});
+		}
+		if (String(button) === "whyMe") {
+			if (this.state.whyMe === true) {
+				value = document.getElementById(button).value;
+				console.log('Envoi au serveur');
+				console.log(value);
+			}
+			this.setState({whyMe: this.state.whyMe ? false : true});
 		}
 		// console.log(e);
 	}
@@ -99,6 +118,7 @@ class Profile extends Component {
 			}
 			self.setState({profile: response.data.profile});
 			self.getPublications();
+			console.log(response.data.profile);
 		});
 	}
 
@@ -107,6 +127,7 @@ class Profile extends Component {
 	}
 	render() {
 		const { profile } = this.state;
+
 		return (
 			<Header>
 				<div className="content">
@@ -117,6 +138,10 @@ class Profile extends Component {
 								actions={[
 									<div key='header' className="links-header">
 										<a className="link-name">{profile.firstName} {profile.lastName}</a>
+										<div className="add">
+										<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Want to crush ?"><Button floating large className='green' waves='light' icon='check' /></a>
+										<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Reject this profile"><Button floating large className='red' waves='light' icon='close' /></a>
+									</div>
 										<div className="header-score">
 											Popularity: 538 !
 										</div>
@@ -129,7 +154,7 @@ class Profile extends Component {
 							</Card>
 						</Col>
 
-						<Col l={12} m={12} s={12}>
+						{/* <Col l={12} m={12} s={12}>
 							<Card>
 								<Row>
 									<form onSubmit={this.addMessage}>
@@ -138,22 +163,11 @@ class Profile extends Component {
 									</form>
 								</Row>
 							</Card>
-						</Col>
+						</Col> */}
 
 						{/* Content of my sidebar Profile */}
 						<Col l={4} m={4} s={12}>
-							<Card className="side-crush hi-icon-wrap hi-icon-effect-9 hi-icon-effect-9a about-me ">
-								{!this.state.aboutMe	&& <div><a onClick={this.toggleButton.bind(this, 'about-me')}>
-									<Icon name="about-me" className="hi-icon hi-icon-pencil f-white">edit</Icon></a>
-									<div className="about-me-title">About me</div>
-									{!this.state.aboutMe	&& <div className="side-crush-text">{profile.aboutMe}</div>}
-							</div>}
-								{this.state.aboutMe		&& <div><a onClick={this.toggleButton.bind(this, 'about-me')}>
-									<Icon className="hi-icon hi-icon-pencil f-white">done</Icon></a>
-									<div className="about-me-title">About me</div>
-									{this.state.aboutMe		&& <Row><div className="side-crush-text"><textarea className="materialize-textarea" id="about-me" type="text" defaultValue={profile.aboutMe}></textarea></div></Row>}
-								</div>}
-							</Card>
+
 							<Card className="side-crush">
 								<div className="side-crush-text">240 Crush(s)</div>
 							</Card>
@@ -197,7 +211,39 @@ class Profile extends Component {
 						</Col>
 						{/* Content of my profile */}
 						<Col l={8} m={8} s={12}>
-							{this.state.messagesRender}
+							<Card className="side-crush hi-icon-wrap hi-icon-effect-9 hi-icon-effect-9a bg-skinblue ">
+								{!this.state.aboutMe	&& <div><a onClick={this.toggleButton.bind(this, 'about-me')}>
+									<Icon name="about-me" className="hi-icon hi-icon-pencil f-white">edit</Icon></a>
+									<div className="about-me-title">About me</div>
+									{!this.state.aboutMe	&& <div className="side-crush-text">{profile.aboutMe}</div>}
+							</div>}
+								{this.state.aboutMe		&& <div><a onClick={this.toggleButton.bind(this, 'about-me')}>
+									<Icon className="hi-icon hi-icon-pencil f-white">done</Icon></a>
+									<div className="about-me-title">About me</div>
+									{this.state.aboutMe		&& <Row><div className="side-crush-text"><textarea placeholder="Ecrivez-votre texte" className="materialize-textarea" id="about-me" type="text" defaultValue={profile.aboutMe}></textarea></div></Row>}
+								</div>}
+							</Card>
+
+							<Card className="side-crush hi-icon-wrap hi-icon-effect-9 hi-icon-effect-9a bg-blue ">
+								{!this.state.whyMe	&& <div><a onClick={this.toggleButton.bind(this, 'whyMe')}>
+									<Icon name="whyMe" className="hi-icon hi-icon-pencil f-white">edit</Icon></a>
+									<div className="about-me-title">Why me ?</div>
+									{!this.state.whyMe	&& <div className="side-crush-text">{profile.whyMe}</div>}
+							</div>}
+								{this.state.whyMe		&& <div><a onClick={this.toggleButton.bind(this, 'whyMe')}>
+									<Icon className="hi-icon hi-icon-pencil f-white">done</Icon></a>
+									<div className="about-me-title">Why me ?</div>
+									{this.state.whyMe		&& <Row><div className="side-crush-text"><textarea placeholder="Ecrivez-votre texte" className="materialize-textarea" id="whyMe" type="text" defaultValue={profile.whyMe}></textarea></div></Row>}
+								</div>}
+							</Card>
+
+							{profile.pictures && profile.pictures.length &&
+								<Carousel id="carousel" images={[
+										<img src={profile.pictures[0].code + profile.pictures[0].data}/>
+										// <img src={profile.pictures[2].code + profile.pictures[2].data}/>
+									]} /> }
+
+							{/* {this.state.messagesRender} */}
 						</Col>
 					</Row>
 				</div>
