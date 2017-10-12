@@ -10,27 +10,35 @@
 }
 
 .profile-header-avatar {
-	position: absolute;
+	/*position: absolute;*/
 	top: 0px;
 	z-index: 1;
 	height:100px;
 	width:100px;
+	margin-left: auto;
+	margin-right: auto;
+	position: relative;
 }
 
 .profile-avatar {
 	width: inherit;
 	height: inherit;
 	border-radius: 100%;
+	/*position: relative;*/
 	/*background-image: 'img/avatar.jpg'*/
 }
 .links-header {
 	height:100px;
 	position: relative;
+	text-align: center;
+
 }
 .link-name {
-	margin-left: 130px;
+	/*margin-left: 70px;*/
+	margin-left: auto;
+	margin-right: auto;
 	/*top:0px;*/
-	position: absolute;
+	/*position: absolute;*/
 	font-size: 20px;
     font-weight: 100;
     font-family: sans-serif;
@@ -47,12 +55,18 @@
 	background-color: rgb(253, 253, 253);
 }
 .side-crush {
-	background-color: rgb(73, 106, 181);
+	/*background-color: blue;*/
+	    background: linear-gradient(141deg, #0fb8ad 0%, #1fc8db 51%, #2cb5e8 75%);
 	text-align: center;
 }
 .side-crush-text {
-	color: white;
+	color: black;
+	/*color: white;*/
 	font-size: 20px;
+
+}
+
+.f-weight-200 {
 	font-weight: 200;
 }
 
@@ -75,7 +89,7 @@
 	text-align: center;
 	font-size: 30px;
 	top:0;
-	color:white;
+	color:black;
 	padding-bottom: 30px;
 }
 .bg-blue {
@@ -138,15 +152,61 @@
 	color: #fff;
 }
 .f-white {
-	color:white;
+	color: white;
 }
-.hidden {
-	/*display:none;*/
+.f-black {
+	color: black;
 }
-.add {
+/*.hi-icon-black {
+	/*box-shadow: 0 0 0 10px rgb(245, 245, 245);*/
+	/*color: black;
+}*/
+/*.hi-icon-black:hover {
+	box-shadow: 0 0 0 10px rgb(245, 245, 245);
+	color: black;
+}*/
+.hi-icon-effect-9a .hi-icon:hover {
+	color: black;
+	box-shadow: 0 0 0 10px rgb(0, 0, 0);
+}
+.yes-crush {
 	right: 0;
 	top: -45px;
 	margin:0;
 	padding: 0;
 	position: absolute;
+}
+.no-crush {
+	right: 0;
+	top: -45px;
+	margin:0;
+	padding: 0;
+	position: absolute;
+}
+
+.carousel-item {
+	display: inherit;
+}
+.hidden {
+
+}
+.yes-crush {
+	right: 90px;
+}
+@media screen and (max-width: 993px) {
+	.yes-crush {
+		left: 0;
+		text-align: left;
+	}
+	.no-crush {
+		right: 0;
+	}
+	.profile-header-avatar {
+		/*position: absolute;*/
+		/*margin-left: auto;
+		margin-right: auto;*/
+	}
+}
+.uploadHidden {
+	visibility: hidden;
 }

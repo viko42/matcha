@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { Col, Card, Row, Collection, CollectionItem, Chip, Input, Button, Icon, Carousel } from 'react-materialize';
 import swal from 'sweetalert';
 import services from '../../config/services';
-// import FileBase64 from 'react-file-base64'; Pour upload
+import $ from 'jquery';
+import FileBase64 from 'react-file-base64';
 
 import '../../index.css';
 import './index.css';
@@ -17,43 +18,29 @@ class Profile extends Component {
 		this.state = {
 			getData: props.match.params.id,
 			profile: {},
-			aboutMe: false,
-			messagesRender: [],
-			messages: [
-			{
-				content: 'Premier message',
-				created_at: '0000-00-00'
-			},
-			{
-				content: 'Deuz message',
-				created_at: '0000-00-00'
-			},
-			{
-				content: 'Trois message',
-				created_at: '0000-00-00'
-			}
-		]
 		};
 
 		this.getPublications = this.getPublications.bind(this);
 		this.addMessage = this.addMessage.bind(this);
 		this.toggleButton = this.toggleButton.bind(this);
+		this.handleUpload = this.handleUpload.bind(this);
+
+	}
+	like() {
 
 	}
 	showPictures() {
 		var pictures = [];
 		for (var i = 0; i < this.state.profile.pictures.length; i++) {
 			let name = this.state.profile.pictures[i].code + this.state.profile.pictures[i].data;
-			pictures.push(
-				<img alt="avatar" src={name}/>
-			);
+			pictures.push(name);
 		}
 		return pictures;
 	}
 	toggleButton(button, e) {
 		e.preventDefault();
 		var value;
-		console.log(document.getElementById("carousel"));
+
 		if (String(button) === "about-me") {
 			if (this.state.aboutMe === true) {
 				value = document.getElementById(button).value;
@@ -121,7 +108,14 @@ class Profile extends Component {
 			console.log(response.data.profile);
 		});
 	}
+	handleUpload(event) {
+		const target = event.target, file = target.files[0];
 
+		console.log(file);
+
+		this.setState({file: event.target.files[0]});
+
+	}
 	componentWillMount() {
 		document.title = `${logoName} - Profile`;
 	}
@@ -138,10 +132,12 @@ class Profile extends Component {
 								actions={[
 									<div key='header' className="links-header">
 										<a className="link-name">{profile.firstName} {profile.lastName}</a>
-										<div className="add">
-										<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Want to crush ?"><Button floating large className='green' waves='light' icon='check' /></a>
-										<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Reject this profile"><Button floating large className='red' waves='light' icon='close' /></a>
-									</div>
+										<div className="yes-crush">
+											<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Want to crush ?"><Button floating large className='green' waves='light' icon='check' /></a>
+										</div>
+										<div className="no-crush">
+											<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Reject this profile"><Button floating large className='red' waves='light' icon='close' /></a>
+										</div>
 										<div className="header-score">
 											Popularity: 538 !
 										</div>
@@ -211,39 +207,41 @@ class Profile extends Component {
 						</Col>
 						{/* Content of my profile */}
 						<Col l={8} m={8} s={12}>
-							<Card className="side-crush hi-icon-wrap hi-icon-effect-9 hi-icon-effect-9a bg-skinblue ">
+							<Card className="hi-icon-wrap hi-icon-effect-9 hi-icon-effect-9a ">
 								{!this.state.aboutMe	&& <div><a onClick={this.toggleButton.bind(this, 'about-me')}>
-									<Icon name="about-me" className="hi-icon hi-icon-pencil f-white">edit</Icon></a>
+									<Icon name="about-me" className="hi-icon hi-icon-pencil f-black">edit</Icon></a>
 									<div className="about-me-title">About me</div>
-									{!this.state.aboutMe	&& <div className="side-crush-text">{profile.aboutMe}</div>}
+									{!this.state.aboutMe	&& <div className="side-crush-text f-weight-200">{profile.aboutMe}</div>}
 							</div>}
 								{this.state.aboutMe		&& <div><a onClick={this.toggleButton.bind(this, 'about-me')}>
-									<Icon className="hi-icon hi-icon-pencil f-white">done</Icon></a>
+									<Icon className="hi-icon hi-icon-pencil f-black">done</Icon></a>
 									<div className="about-me-title">About me</div>
-									{this.state.aboutMe		&& <Row><div className="side-crush-text"><textarea placeholder="Ecrivez-votre texte" className="materialize-textarea" id="about-me" type="text" defaultValue={profile.aboutMe}></textarea></div></Row>}
+									{this.state.aboutMe		&& <Row><div className="side-crush-text f-weight-200"><textarea placeholder="Ecrivez-votre texte" className="materialize-textarea" id="about-me" type="text" defaultValue={profile.aboutMe}></textarea></div></Row>}
 								</div>}
 							</Card>
 
-							<Card className="side-crush hi-icon-wrap hi-icon-effect-9 hi-icon-effect-9a bg-blue ">
+							<Card className="hi-icon-wrap hi-icon-effect-9 hi-icon-effect-9a">
 								{!this.state.whyMe	&& <div><a onClick={this.toggleButton.bind(this, 'whyMe')}>
-									<Icon name="whyMe" className="hi-icon hi-icon-pencil f-white">edit</Icon></a>
+									<Icon name="whyMe" className="hi-icon hi-icon-pencil f-black">edit</Icon></a>
 									<div className="about-me-title">Why me ?</div>
-									{!this.state.whyMe	&& <div className="side-crush-text">{profile.whyMe}</div>}
+									{!this.state.whyMe	&& <div className="side-crush-text f-weight-200">{profile.whyMe}</div>}
 							</div>}
 								{this.state.whyMe		&& <div><a onClick={this.toggleButton.bind(this, 'whyMe')}>
-									<Icon className="hi-icon hi-icon-pencil f-white">done</Icon></a>
+									<Icon className="hi-icon hi-icon-pencil f-black">done</Icon></a>
 									<div className="about-me-title">Why me ?</div>
-									{this.state.whyMe		&& <Row><div className="side-crush-text"><textarea placeholder="Ecrivez-votre texte" className="materialize-textarea" id="whyMe" type="text" defaultValue={profile.whyMe}></textarea></div></Row>}
+									{this.state.whyMe		&& <Row><div className="side-crush-text f-weight-200"><textarea placeholder="Ecrivez-votre texte" className="materialize-textarea" id="whyMe" type="text" defaultValue={profile.whyMe}></textarea></div></Row>}
 								</div>}
 							</Card>
 
 							{profile.pictures && profile.pictures.length &&
-								<Carousel id="carousel" images={[
-										<img src={profile.pictures[0].code + profile.pictures[0].data}/>
-										// <img src={profile.pictures[2].code + profile.pictures[2].data}/>
-									]} /> }
+								<Card className="hi-icon-wrap hi-icon-effect-9 hi-icon-effect-9a">
+									<label htmlFor="file"><Icon id="addImage" name="whyMe" className="hi-icon hi-icon-pencil f-black">add_a_photo</Icon></label>
 
-							{/* {this.state.messagesRender} */}
+									<Carousel id="carousel" images={this.showPictures()} />
+									  <input type="file" id="file" className="" accept="image/*" name="imageUpload" multiple onChange={this.handleUpload} />
+									  <Button onClick={this.addByClick}></Button>
+								</Card>
+							}
 						</Col>
 					</Row>
 				</div>

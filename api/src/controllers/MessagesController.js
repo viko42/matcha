@@ -17,7 +17,7 @@ exports.setAsRead	= function (data, socket) {
 		Users.findOne({'_id': data.userId}).exec(function(err, userRead ) {
 			if (err)
 				return ;
-				
+
 			console.log(num.n + ' messages lus par ' + userRead.email);
 		})
     });
@@ -123,8 +123,10 @@ exports.send = function(data, socket) {
 	const	userId			= data.userId;
 	const	conversationId	= data.conversationId;
 	const	messageSent		= data.message;
+	var		userEmit;
 	var		receiverSocketId;
 
+	const maxNotification = function (msg) { var rsp = ""; for (var i = 0; i < msg.length; i++) { rsp += msg[i]; if (i > 20) { rsp += '...'; break; } } return rsp; };
 	async.waterfall([
 
 		// Search Conversation
@@ -139,6 +141,19 @@ exports.send = function(data, socket) {
 				receiverSocketId = String(userId) == conversationFound.sender ? conversationFound.recipent : conversationFound.sender;
 				return callback();
 			});
+		},
+
+		function (callback) {
+			Users.findOne({'_id': userId}).exec(function (err, userEmitFound) {
+				if (err)
+					return callback(err);
+
+				if (!userEmitFound)
+					return callback('Receiver not found');
+
+				userEmit = userEmitFound.firstName;
+				return callback();
+			})
 		},
 
 		function (callback) {
@@ -177,6 +192,7 @@ exports.send = function(data, socket) {
 		exports.get_messages({userId: socket.handshake.query.userId, ...data}, socket, function (data) {
 			socket.emit('message sent', data);
 			socket.to(receiverSocketId).emit('receive message', {conversationId: conversationId});
+			socket.to(receiverSocketId).emit('test_message', {message: userEmit+" : "+ maxNotification(messageSent), status: 'success'});
 		})
 	})
 };

@@ -11,6 +11,9 @@ var Users		= mongoose.model('Users');
 // 	// })
 // };
 
+exports.uploadImage = function(req, res) {
+	
+};
 
 exports.getProfile = function(req, res) {
 	// var profile = req.params;

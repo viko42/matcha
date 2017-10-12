@@ -57,6 +57,11 @@ const tabs = {
 		'method': 'PUT',
 		'url': apiUrl + '/profile/update'
 	},
+
+	'uploadImage': {
+		'method': 'POST',
+		'url': apiUrl + '/profile/upload'
+	}
 }
 
 const Services = (props, data, callback) => {

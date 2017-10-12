@@ -115,6 +115,7 @@ class Inbox extends Component {
 	componentWillUnmount() {
 		global.socket.off('message sent');
 		global.socket.off('give messages from conversation');
+		global.socket.off('receive message');
 	}
 
 	deleteMessageInbox() {
