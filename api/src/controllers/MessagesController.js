@@ -176,7 +176,7 @@ exports.send = function(data, socket) {
 				sender: userId,
 				conversation: conversationId,
 				status: "sended",
-				created_at: moment().format("DD/MM/YYYY HH:MM")
+				created_at: moment()
 			});
 
 			new_message.save(function (err, messageSaved) {
