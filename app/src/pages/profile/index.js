@@ -3,7 +3,7 @@ import { Col, Card, Row, Collection, CollectionItem, Chip, Input, Button, Icon, 
 import swal from 'sweetalert';
 import services from '../../config/services';
 import $ from 'jquery';
-import FileBase64 from 'react-file-base64';
+// import FileBase64 from 'react-file-base64';
 
 import '../../index.css';
 import './index.css';
