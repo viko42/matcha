@@ -9,10 +9,10 @@ import $ from 'jquery';
 import Footer from '../footer'
 import SideBar from '../sidebar'
 import io from "socket.io-client";
-const { urlApp } = require('../../config/crushyard');
+const { urlApp, apiUrl } = require('../../config/crushyard');
 
 var NotificationSystem = require('react-notification-system'); //https://github.com/igorprado/react-notification-system
-var socket = io.connect('http://localhost:8080', {
+var socket = io.connect(apiUrl, {
 	query: {token: localStorage.getItem('auth')}
 });
 global.socket = socket;
