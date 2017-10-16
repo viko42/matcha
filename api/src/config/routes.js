@@ -47,6 +47,13 @@ module.exports = function (app) {
 	// app.route('/messages/delete')			.delete(isConnected.authorization, Messages.delete);
 
 	//####################################################################
+	//						Search
+	var Search = require('../controllers/SearchController');
+	//--------------------------------------------------------------------
+
+	app.route('/find')					.post(isConnected.authorization, Search.find);
+
+	//####################################################################
 	//						Auth
 	//--------------------------------------------------------------------
 

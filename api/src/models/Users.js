@@ -41,4 +41,11 @@ var UsersSchema = new Schema({
 	}
 });
 
+UsersSchema.methods.clearData = function (params, callback) {
+	for (var i = 0; i < params.length; i++) {
+		console.log(params[i]);
+	}
+	return callback();
+};
+
 module.exports = mongoose.model('Users', UsersSchema);

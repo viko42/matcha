@@ -1,5 +1,5 @@
 import React from 'react';
-import {Redirect, Router} from 'react-router-dom';
+// import {Redirect, Router} from 'react-router-dom';
 
 // import history from './history.js'
 import { Navbar, NavItem, Icon, Dropdown } from 'react-materialize';
@@ -74,17 +74,16 @@ class Header extends React.Component {
 		return (
 			<div>
 	        	<NotificationSystem ref="notificationSystem" />
-				<Navbar brand='CrushYard' className="navbar show-in-small" right>
-					<NavItem className="show-in-small" href='#'><Icon>notifications</Icon></NavItem>
-					<NavItem className="hide-in-small" href='#'><Icon>chat</Icon></NavItem>
-					<NavItem className="hide-in-small" href='#'><Icon>search</Icon></NavItem>
+				<Navbar href='#/' brand='CrushYard' className="navbar show-in-small" right>
+					<NavItem className="show-in-small" href='#/'><Icon>notifications</Icon></NavItem>
+					<NavItem className="hide-in-small" href='#/'><Icon>chat</Icon></NavItem>
+					<NavItem className="hide-in-small" href='#/search'><Icon>search</Icon></NavItem>
 
 					{ localStorage.getItem('auth') && <span className="dropDrownNavbar">
 						<Dropdown data-constrainwidth="false" data-stoppropagation="true" trigger={
 							<li data-beloworigin="true" data-activates='dropdown_0'><a><Icon>more_vert</Icon></a></li>
 						}>
 							<NavItem href="#/profile/me">My profile</NavItem>
-							<NavItem href="#/profile/edit">Edit my profile</NavItem>
 							<NavItem divider />
 							<NavItem onClick={this.logout}>Logout</NavItem>
 						</Dropdown>

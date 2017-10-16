@@ -81,6 +81,16 @@ const tabs = {
 		'method': 'GET',
 		'url': apiUrl + '/crushs/'
 	},
+
+	//###################################################################
+	// 							Search
+	//###################################################################
+
+	'find': {
+		'method': 'POST',
+		'url': apiUrl + '/find'
+	},
+
 }
 
 const Services = (props, data, callback) => {

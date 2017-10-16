@@ -50,3 +50,45 @@ label:not(.active):after {
 		padding-right: 33px;
 	}
 }
+@media only screen and (min-width: 1500px) {
+	.row .col.xl3 {
+		width: 25%;
+	}
+}
+
+.crush-tag-card {
+	background-image: url(http://www.mygraphichunt.com/wp-content/uploads/2017/04/free-abstract-background-1-vector.jpg);
+    background-position-y: -179px;
+	color:white;
+}
+.crush-tag-name {
+	margin-right: 70px;
+	right: 0;
+	position: absolute;
+	margin-top: 12px;
+}
+.crush-tag-age {
+	/*display: inline-block;*/
+}
+.crush-tag-avatar {
+	display: inline-block;
+	right: 0;
+	position: relative;
+}
+.crush-tag-img {
+	height: 64px;
+	width: 64px;
+	border-radius: 50%;
+}
+.crush-tag-buttons {
+	float: right;
+	margin-top: 15px;
+}
+.crush-tag-buttons-close {
+	float: left;
+	top: -10px;
+	left: -17px;
+	position: absolute;
+}
+.actions-tag {
+}

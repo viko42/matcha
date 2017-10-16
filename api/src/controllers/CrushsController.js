@@ -92,6 +92,21 @@ exports.removeCrush = function (req, res) {
 				});
 			});
 		},
+		function (callback) {
+			Conversations.findOne({$or: [{sender: userId, recipent: crushTarget}, {sender: crushTarget, recipent: userId}]}).exec(function (err, conversationFound) {
+				if (err)
+					return callback(err);
+
+				if (!conversationFound)
+					return callback();
+
+				Conversations.remove({'_id': conversationFound.id}).exec(function (err, conversationDeleted) {
+					if (err)
+						return callback(err);
+					return callback();
+				});
+			});
+		},
 	], function (err) {
 		if (err)
 			return s.notFound(res, {errors: err});

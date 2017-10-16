@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Col, Card, Row, Collection, CollectionItem, Chip, Input, Button, Icon, Carousel } from 'react-materialize';
 import swal from 'sweetalert';
 import services from '../../config/services';
-import $ from 'jquery';
 import {urlApp} from '../../config/crushyard'
 // import FileBase64 from 'react-file-base64';
 

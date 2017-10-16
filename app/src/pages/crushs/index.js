@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
-import { Table, Col, Card, Row, Collapsible, CollapsibleItem, Chip, Icon, Input, Button } from 'react-materialize';
+import { Table, Col, Card, Row, Button } from 'react-materialize';
 import services from '../../config/services';
 
 import '../../index.css';
 import './index.css';
 
 import swal		from 'sweetalert';
-import moment	from 'moment';
+
+import ReactTable from 'react-table'
+import 'react-table/react-table.css'
 
 import Header from '../../components/header/index'
 import {logoName, apiUrl} from '../../config/crushyard'
@@ -130,52 +132,56 @@ class Crushs extends Component {
 				<div className="content">
 					<Row>
 						<Col m={12} s={12}>
-							<Card title='Crushs page'>All your crushs</Card>
+							<Card title='Trouvez votre crush qui vous ressemble !'>Liste de personne ayant le plus de tag en commun avec vous ! <a href>(Voir plus)</a></Card>
 						</Col>
-						<Col s={4}>
-							<Card></Card>
+						<Col s={12} m={6} l={6} className="xl3">
+							<Card className="crush-tag-card">
+								<div className="crush-tag-buttons-close">
+									<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Cancel this crush"><Button floating className='red actions-tag' waves='light' icon='close' /></a>
+								</div>
+								<div className="crush-tag-name">Victor Lancien<br/>22 ans</div>
+								<img alt="profile" className="crush-tag-img" src="img/yuna.jpg"/>
+								<div className="crush-tag-buttons">
+									<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Speak with him"><Button floating className='blue actions-tag' waves='light' icon='message' /></a>
+								</div>
+							</Card>
 						</Col>
-						<Col s={4}>
-							<Card></Card>
-
+						<Col s={12} m={6} l={6} className="xl3">
+							<Card className="crush-tag-card">
+								<div className="crush-tag-buttons-close">
+									<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Cancel this crush"><Button floating className='red actions-tag' waves='light' icon='close' /></a>
+								</div>
+								<div className="crush-tag-name">Victor Lancien<br/>22 ans</div>
+								<img alt="profile" className="crush-tag-img" src="img/yuna.jpg"/>
+								<div className="crush-tag-buttons">
+									<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Speak with him"><Button floating className='blue actions-tag' waves='light' icon='message' /></a>
+								</div>
+							</Card>
 						</Col>
-						<Col s={4}>
-							<Card></Card>
+						<Col s={12} m={6} l={6} className="xl3">
+							<Card className="crush-tag-card">
+								<div className="crush-tag-buttons-close">
+									<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Cancel this crush"><Button floating className='red actions-tag' waves='light' icon='close' /></a>
+								</div>
+								<div className="crush-tag-name">Victor Lancien<br/>22 ans</div>
+								<img alt="profile" className="crush-tag-img" src="img/yuna.jpg"/>
+								<div className="crush-tag-buttons">
+									<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Speak with him"><Button floating className='blue actions-tag' waves='light' icon='message' /></a>
+								</div>
+							</Card>
 						</Col>
-						<Col s={12}>
-
-						<Table>
-	<thead>
-		<tr>
-			<th data-field="id">Name</th>
-			<th data-field="name">Sexe</th>
-			<th data-field="price">Age</th>
-			<th data-field="price">Localisation</th>
-			<th data-field="price">Score</th>
-			<th data-field="price">Actions</th>
-		</tr>
-	</thead>
-
-	<tbody>
-		<tr>
-			<td>Alvin</td>
-			<td>Eclair</td>
-			<td>$0.87</td>
-		</tr>
-		<tr>
-			<td>Alan</td>
-			<td>Jellybean</td>
-			<td>$3.76</td>
-		</tr>
-		<tr>
-			<td>Jonathan</td>
-			<td>Lollipop</td>
-			<td>$7.00</td>
-		</tr>
-	</tbody>
-</Table>
+						<Col s={12} m={6} l={6} className="xl3">
+							<Card className="crush-tag-card">
+								<div className="crush-tag-buttons-close">
+									<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Cancel this crush"><Button floating className='red actions-tag' waves='light' icon='close' /></a>
+								</div>
+								<div className="crush-tag-name">Victor Lancien<br/>22 ans</div>
+								<img alt="profile" className="crush-tag-img" src="img/yuna.jpg"/>
+								<div className="crush-tag-buttons">
+									<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Speak with him"><Button floating className='blue actions-tag' waves='light' icon='message' /></a>
+								</div>
+							</Card>
 						</Col>
-
 					</Row>
 				</div>
 			</Header>
