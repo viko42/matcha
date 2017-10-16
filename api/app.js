@@ -32,7 +32,7 @@ const routes		= require('./src/config/routes');
 //######################
 
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://'+process.env.IP+'/matchadb', { useMongoClient: true }, function (err) {
+mongoose.connect('mongodb://'+process.env.IP+':'+process.env.MONGOPORT+'/matchadb', { useMongoClient: true }, function (err) {
 	// if (err)
 	// 	return res.status('504').json({'error': 'ok'});
 	// console.log('Callback Mongoose');
