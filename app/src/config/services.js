@@ -61,7 +61,26 @@ const tabs = {
 	'uploadImage': {
 		'method': 'POST',
 		'url': apiUrl + '/profile/upload'
-	}
+	},
+
+	//###################################################################
+	// 							Crushs
+	//###################################################################
+
+	'doCrush': {
+		'method': 'GET',
+		'url': apiUrl + '/crushs/'
+	},
+
+	'removeCrush': {
+		'method': 'GET',
+		'url': apiUrl + '/crushs/'
+	},
+
+	'startConversation': {
+		'method': 'GET',
+		'url': apiUrl + '/crushs/'
+	},
 }
 
 const Services = (props, data, callback) => {

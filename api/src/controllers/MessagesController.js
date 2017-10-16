@@ -18,6 +18,8 @@ exports.setAsRead	= function (data, socket) {
 			if (err)
 				return ;
 
+			if (!userRead)
+				return console.log('User not found');
 			console.log(num.n + ' messages lus par ' + userRead.email);
 		})
     });

@@ -3,6 +3,7 @@ import { Col, Card, Row, Collection, CollectionItem, Chip, Input, Button, Icon, 
 import swal from 'sweetalert';
 import services from '../../config/services';
 import $ from 'jquery';
+import {urlApp} from '../../config/crushyard'
 // import FileBase64 from 'react-file-base64';
 
 import '../../index.css';
@@ -20,11 +21,62 @@ class Profile extends Component {
 			profile: {},
 		};
 
-		this.getPublications = this.getPublications.bind(this);
-		this.addMessage = this.addMessage.bind(this);
+		this.getLibrary = this.getLibrary.bind(this);
 		this.toggleButton = this.toggleButton.bind(this);
 		this.handleUpload = this.handleUpload.bind(this);
 
+	}
+	startConversation() {
+		const self = this;
+
+		services('startConversation', {getData: this.state.getData+'/start'}, function (err, response) {
+			if (err) {
+				self.setState({errors: response.data.errors})
+				if (response.data.errors.swal)
+					swal("Error", response.data.errors.swal, "error");
+				return ;
+			}
+			window.location.assign(urlApp + "/#/inbox");
+		});
+	}
+	doCrush(value) {
+		const self = this;
+		console.log(value);
+		services('doCrush', {getData: this.state.getData}, function (err, response) {
+			if (err) {
+				self.setState({errors: response.data.errors})
+				if (response.data.errors.swal)
+					swal("Error", response.data.errors.swal, "error");
+				return ;
+			}
+			swal("You send a crush", "This crush is sent. Hope he will crush with you too!", "success");
+			self.getProfile();
+		});
+	}
+	removeCrush(value) {
+		const self = this;
+
+		services('removeCrush', {getData: this.state.getData+'/remove'}, function (err, response) {
+			if (err) {
+				self.setState({errors: response.data.errors})
+				if (response.data.errors.swal)
+					swal("Error", response.data.errors.swal, "error");
+				return ;
+			}
+			swal("You deleted a crush", "Your conversation will be deleted!", "success");
+			self.getProfile();
+		});
+	}
+	getLibrary(value) {
+		var library = this.state.profile[value];
+		var libraryRender = [];
+
+		for (var i = 0; library && i < library.length; i++) {
+			libraryRender.push(
+				<Chip key={i}>{library[i]}</Chip>
+			);
+		}
+		return libraryRender;
 	}
 	like() {
 
@@ -39,61 +91,58 @@ class Profile extends Component {
 	}
 	toggleButton(button, e) {
 		e.preventDefault();
-		var value;
+		var values = {};
 
 		if (String(button) === "about-me") {
 			if (this.state.aboutMe === true) {
-				value = document.getElementById(button).value;
-				console.log('Envoi au serveur');
-				console.log(value);
+				values.aboutMe = document.getElementById(button).value;
+				console.log(values);
+				this.updateProfile(values);
 			}
 			this.setState({aboutMe: this.state.aboutMe ? false : true});
 		}
 		if (String(button) === "whyMe") {
 			if (this.state.whyMe === true) {
-				value = document.getElementById(button).value;
-				console.log('Envoi au serveur');
-				console.log(value);
+				values.whyMe = document.getElementById(button).value;
+				this.updateProfile(values);
 			}
 			this.setState({whyMe: this.state.whyMe ? false : true});
 		}
-		// console.log(e);
-	}
-	getPublications() {
-		var messages = this.state.messages;
-		var renduMessage = [];
-
-		for (var i = 0; i < messages.length; i++) {
-			renduMessage.push(
-				<Card key={i}>
-					{messages[i].content}
-				</Card>
-			);
+		if (String(button) === "myInfos") {
+			if (this.state.myInfos === true) {
+				values.myInfosSexe = document.getElementById(button+"1").value;
+				values.myInfosOrientation = document.getElementById(button+"2").value;
+				console.log(values);
+				this.updateProfile(values);
+			}
+			this.setState({myInfos: this.state.myInfos ? false : true});
 		}
-		console.log('Get Publications');
-		this.setState({messagesRender: renduMessage});
+		if (String(button) === "myLibrary") {
+			if (this.state.myLibrary === true) {
+				values.myLibraryCat = document.getElementById(button+'Cat').value;
+				values.myLibrary = document.getElementById(button).value;
+				console.log(values);
+				this.updateProfile(values);
+			}
+		}
+		if (String(button) === "myLibraryClose") {
+			this.setState({myLibrary: this.state.myLibrary ? false : true});
+		}
 	}
-	addMessage(e) {
-		e.preventDefault();
+	updateProfile(values) {
+		const self = this;
 
-		var messages = this.state.messagesRender;
-		var message = e.target.message && e.target.message.value;
-
-		console.log('message : ');
-		console.log(message);
-		if (!message)
-			return ;
-
-		messages.push(
-			// <Card key={messages.length+1}>
-			<Card key={messages.length+1}>
-				{message}
-			</Card>
-		);
-		e.target.message.value = "";
-		this.setState({messagesRender: messages})
+		services('updateProfile', values, function (err, response) {
+			if (err) {
+				self.setState({errors: response.data.errors})
+				if (response.data.errors.swal)
+					swal("Error", response.data.errors.swal, "error");
+				return ;
+			}
+			self.getProfile();
+		});
 	}
-	componentDidMount() {
+	getProfile() {
 		const self = this;
 
 		services('getProfile', self.state, function (err, response) {
@@ -101,12 +150,15 @@ class Profile extends Component {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
 					swal("Error", response.data.errors.swal, "error");
+				window.location.assign(urlApp + "/#");
 				return ;
 			}
 			self.setState({profile: response.data.profile});
-			self.getPublications();
 			console.log(response.data.profile);
 		});
+	}
+	componentDidMount() {
+		this.getProfile();
 	}
 	handleUpload(event) {
 		const target = event.target, file = target.files[0];
@@ -132,12 +184,21 @@ class Profile extends Component {
 								actions={[
 									<div key='header' className="links-header">
 										<a className="link-name">{profile.firstName} {profile.lastName}</a>
-										<div className="yes-crush">
-											<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Want to crush ?"><Button floating large className='green' waves='light' icon='check' /></a>
+										<div hidden={profile.me === true || profile.crushed === true ? true : false} className="yes-crush">
+											<a onClick={this.doCrush.bind(this, true)} className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Want to crush ?"><Button floating large className='green' waves='light' icon='check' /></a>
 										</div>
-										<div className="no-crush">
-											<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Reject this profile"><Button floating large className='red' waves='light' icon='close' /></a>
+										<div hidden={profile.me === true || profile.crushed === true ? true : false} className="no-crush">
+											<a onClick={this.doCrush.bind(this, false)} className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Reject this profile"><Button floating large className='red' waves='light' icon='close' /></a>
 										</div>
+
+										<div hidden={profile.me === true || profile.crushed === false ? true : false} className="no-crush">
+											<a onClick={this.removeCrush.bind(this, false)} className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Reject this profile"><Button floating large className='red' waves='light' icon='close' /></a>
+										</div>
+										<div hidden={profile.doubleCrush === true ? false : true} className="yes-crush">
+											<a onClick={this.startConversation.bind(this)} className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Start a conversation!"><Button floating large className='blue' waves='light' icon='speaker_notes' /></a>
+										</div>
+
+
 										<div className="header-score">
 											Popularity: 538 !
 										</div>
@@ -168,52 +229,101 @@ class Profile extends Component {
 								<div className="side-crush-text">240 Crush(s)</div>
 							</Card>
 
-							<Card>
-								<div className="box-details-name">
-									<Icon>wc</Icon>Sexe
+							<Card className="hi-icon-wrap hi-icon-effect-9 hi-icon-effect-9a ">
+								{!this.state.myInfos && profile.me && <a onClick={this.toggleButton.bind(this, 'myInfos')}>
+									<Icon name="myInfos" className="hi-icon-small hi-icon-pencil f-black">edit</Icon>
+								</a> }
+								{this.state.myInfos && profile.me  && <a onClick={this.toggleButton.bind(this, 'myInfos')}>
+									<Icon name="myInfos" className="hi-icon-small hi-icon-pencil f-black">done</Icon>
+								</a> }
+								{!this.state.myInfos &&
+								<div>
+									<div className="box-details-name">
+										<Icon>wc</Icon>Sexe
+									</div>
+									<div className="box-details-content">
+										{profile.sexe}
+									</div>
 								</div>
-								<div className="box-details-content">
-									Homme
-								</div>
+							}
+								{this.state.myInfos && profile.me  &&
+								<Row className="testViko">
+									<Input s={12} type='select' id="myInfos1" label="Sexe" defaultValue='2'>
+										<option value='Homme'>Homme</option>
+										<option value='Femme'>Femme</option>
+										<option value='N/B'>Non renseigné</option>
+									</Input>
+								</Row>
+							 }
+
+
 								<hr className="fullhr"/>
-								<div className="box-details-name">
-									<Icon>power</Icon>Orientation
-								</div>
-								<div className="box-details-content">
-									Hetéro
-								</div>
+								{!this.state.myInfos &&
+									<div>
+										<div className="box-details-name">
+											<Icon>power</Icon>Orientation
+										</div>
+										<div className="box-details-content">
+											{profile.orientation}
+										</div>
+									</div>
+								}
+								{this.state.myInfos && profile.me  &&
+									<Row className="testViko">
+										<Input s={12} type='select' id="myInfos2" label="Orientation" defaultValue='2'>
+											<option value='Hétero'>Hétéro</option>
+											<option value='Lesbienne'>Lesbienne</option>
+											<option value='Bisexuelle'>Bisexuelle</option>
+										</Input>
+									</Row>
+							}
 							</Card>
+
 							<Collection>
-								<CollectionItem><center>Films</center>
-									<Chip>La grande vadrouille</Chip>
-									<Chip>Forrest Gump</Chip>
+								<CollectionItem id="testViko" hidden={profile.me === true ? false : true} className="hi-icon-wrap hi-icon-effect-9 hi-icon-effect-9a">
+									{!this.state.myLibrary && <a className="pull-right" onClick={this.toggleButton.bind(this, 'myLibraryClose')}><Icon name="myLibrary" className="hi-icon-small hi-icon-pencil f-black">edit</Icon></a>}
+									{this.state.myLibrary && <a className="pull-right" onClick={this.toggleButton.bind(this, 'myLibraryClose')}><Icon name="myLibrary" className="hi-icon-small hi-icon-pencil f-black">done</Icon></a>}
+									<center>Add element</center>
+									{this.state.myLibrary && <Row>
+										<Input s={12} type='select' id="myLibraryCat" label="" defaultValue='2'>
+											<option value='Films'>Films</option>
+											<option value='Sport'>Sport</option>
+											<option value='Loisirs'>Loisirs</option>
+											<option value='Livres'>Livres</option>
+										</Input>
+										<Input s={12} placeholder="Ecrivez-votre texte" id="myLibrary" type="text" />
+										<a onClick={this.toggleButton.bind(this, 'myLibrary')}>
+											<Button>Add</Button>
+										</a>
+									</Row>}
 								</CollectionItem>
 
-								<CollectionItem><center>Sport</center>
-									<Chip>Judo</Chip>
-									<Chip>Bicross</Chip>
-								</CollectionItem>
+								{profile.Films !== null && <CollectionItem><center>Films</center>
+									{this.getLibrary('Films')}
+								</CollectionItem>}
 
-								<CollectionItem><center>Loisirs</center>
-									<Chip>Soiree</Chip>
-									<Chip>Fete</Chip>
-								</CollectionItem>
+								{profile.Sport !== null && <CollectionItem><center>Sport</center>
+									{this.getLibrary('Sport')}
+								</CollectionItem>}
 
-								<CollectionItem><center>Livres</center>
-									<Chip>Les plus belles histoirs</Chip>
-									<Chip>Cyrano de Bergerac</Chip>
-								</CollectionItem>
+								{profile.Loisirs !== null && <CollectionItem><center>Loisirs</center>
+									{this.getLibrary('Loisirs')}
+								</CollectionItem>}
+
+								{profile.Livres !== null && <CollectionItem><center>Livres</center>
+									{this.getLibrary('Livres')}
+								</CollectionItem>}
 							</Collection>
 						</Col>
 						{/* Content of my profile */}
 						<Col l={8} m={8} s={12}>
 							<Card className="hi-icon-wrap hi-icon-effect-9 hi-icon-effect-9a ">
-								{!this.state.aboutMe	&& <div><a onClick={this.toggleButton.bind(this, 'about-me')}>
+								{!this.state.aboutMe	&& <div ><a hidden={profile.me === true ? false : true} onClick={this.toggleButton.bind(this, 'about-me')}>
 									<Icon name="about-me" className="hi-icon hi-icon-pencil f-black">edit</Icon></a>
 									<div className="about-me-title">About me</div>
 									{!this.state.aboutMe	&& <div className="side-crush-text f-weight-200">{profile.aboutMe}</div>}
 							</div>}
-								{this.state.aboutMe		&& <div><a onClick={this.toggleButton.bind(this, 'about-me')}>
+								{this.state.aboutMe		&& <div><a hidden={profile.me === true ? false : true} onClick={this.toggleButton.bind(this, 'about-me')}>
 									<Icon className="hi-icon hi-icon-pencil f-black">done</Icon></a>
 									<div className="about-me-title">About me</div>
 									{this.state.aboutMe		&& <Row><div className="side-crush-text f-weight-200"><textarea placeholder="Ecrivez-votre texte" className="materialize-textarea" id="about-me" type="text" defaultValue={profile.aboutMe}></textarea></div></Row>}
@@ -221,12 +331,12 @@ class Profile extends Component {
 							</Card>
 
 							<Card className="hi-icon-wrap hi-icon-effect-9 hi-icon-effect-9a">
-								{!this.state.whyMe	&& <div><a onClick={this.toggleButton.bind(this, 'whyMe')}>
+								{!this.state.whyMe	&& <div><a hidden={profile.me === true ? false : true} onClick={this.toggleButton.bind(this, 'whyMe')}>
 									<Icon name="whyMe" className="hi-icon hi-icon-pencil f-black">edit</Icon></a>
 									<div className="about-me-title">Why me ?</div>
 									{!this.state.whyMe	&& <div className="side-crush-text f-weight-200">{profile.whyMe}</div>}
 							</div>}
-								{this.state.whyMe		&& <div><a onClick={this.toggleButton.bind(this, 'whyMe')}>
+								{this.state.whyMe		&& <div><a hidden={profile.me === true ? false : true} onClick={this.toggleButton.bind(this, 'whyMe')}>
 									<Icon className="hi-icon hi-icon-pencil f-black">done</Icon></a>
 									<div className="about-me-title">Why me ?</div>
 									{this.state.whyMe		&& <Row><div className="side-crush-text f-weight-200"><textarea placeholder="Ecrivez-votre texte" className="materialize-textarea" id="whyMe" type="text" defaultValue={profile.whyMe}></textarea></div></Row>}

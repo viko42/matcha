@@ -104,19 +104,26 @@
 
 .hi-icon {
 	position: absolute;
-	/*display: inline-block;*/
 	top:10px;
 	left:10px;
 	font-size: 45px;
 	cursor: pointer;
-	/*margin: 15px 30px;*/
-	/*padding: 15px;*/
-
 	width: 50px;
 	height: 50px;
 	border-radius: 50%;
-	/*text-align: center;*/
-	/*position: relative;*/
+	z-index: 1;
+	color: #fff;
+}
+
+.hi-icon-small {
+	position: absolute;
+	top:4px;
+	right:0;
+	font-size: 25px;
+	cursor: pointer;
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
 	z-index: 1;
 	color: #fff;
 }
@@ -188,7 +195,7 @@
 	display: inherit;
 }
 .hidden {
-
+	visibility: hidden;
 }
 .yes-crush {
 	right: 90px;

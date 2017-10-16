@@ -1,6 +1,6 @@
 exports.serverError = function(res, err) {
 	console.log('Service serverError', err);
-	return res.status(500).json({error: "incorrect action"});
+	return res.status(500).json({errors: "incorrect action"});
 };
 
 exports.badRequest = function(res, err) {

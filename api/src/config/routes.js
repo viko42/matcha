@@ -16,9 +16,19 @@ module.exports = function (app) {
 	var Profile = require('../controllers/ProfileController');
 	//--------------------------------------------------------------------
 
-	app.route('/profile/:id')	.get(isConnected.authorization, Profile.getProfile);
-	// app.route('/profile/update')	.put(isConnected.authorization, Profile.updateProfile);
+	app.route('/profile/:id')		.get(isConnected.authorization, Profile.getProfile);
+	app.route('/profile/update')	.put(isConnected.authorization, Profile.updateProfile);
 	// app.route('/profile/upload').get(isConnected.authorization, Profile.uploadImage);
+
+
+	//####################################################################
+	//						Crushs
+	var Crushs = require('../controllers/CrushsController');
+	//--------------------------------------------------------------------
+
+	app.route('/crushs/:id')			.get(isConnected.authorization, Crushs.doCrush);
+	app.route('/crushs/:id/remove')		.get(isConnected.authorization, Crushs.removeCrush);
+	app.route('/crushs/:id/start')		.get(isConnected.authorization, Crushs.startConversation);
 
 	//####################################################################
 	//						Account

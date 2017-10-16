@@ -76,6 +76,13 @@ exports.create = function(req, res) {
 			});
 		},
 		function (callback) {
+
+			new_user.data = {
+				profile: {
+					sexe: 'Non renseigné',
+					orientation: 'Non renseigné'
+				}
+			}
 			new_user = new Users(req.body);
 			new_user.save(function(err, user) {
 				if (err)
