@@ -54,12 +54,26 @@ class App extends Component {
 					<div className="content">
 						<Row>
 							<Col m={12} s={12}>
-								<Card title='S'>Welcome to the home page.
-									<Link to="/profile">Here</Link>
+								<Card title='Trouvez votre crush qui vous ressemble !'>Liste de personne ayant le plus de tag en commun avec vous ! <a href>(Voir plus)</a>
+
 								</Card>
 							</Col>
+							<Col s={3}>
+								<Card title=''></Card>
+							</Col>
+							<Col s={3}>
+								<Card title=''></Card>
+							</Col>
+							<Col s={3}>
+								<Card title=''></Card>
+							</Col>
+							<Col s={3}>
+								<Card title=''></Card>
+							</Col>
 							<Col m={12} s={12}>
-								<Card title='success'>Vous etes connecté en tant que:</Card>
+								<Card title='Geolocalisez vos crushs !'>Liste de personne ayant une distance rapprochée de la votre<a href>(Voir plus)</a>
+
+								</Card>
 							</Col>
 						</Row>
 					</div>
