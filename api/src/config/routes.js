@@ -26,6 +26,7 @@ module.exports = function (app) {
 	var Crushs = require('../controllers/CrushsController');
 	//--------------------------------------------------------------------
 
+	app.route('/crushs')				.get(isConnected.authorization, Crushs.listCrush);
 	app.route('/crushs/:id')			.get(isConnected.authorization, Crushs.doCrush);
 	app.route('/crushs/:id/remove')		.get(isConnected.authorization, Crushs.removeCrush);
 	app.route('/crushs/:id/start')		.get(isConnected.authorization, Crushs.startConversation);
@@ -52,6 +53,15 @@ module.exports = function (app) {
 	//--------------------------------------------------------------------
 
 	app.route('/find')					.post(isConnected.authorization, Search.find);
+
+	//####################################################################
+	//						Search
+	var Notifications = require('../controllers/NotificationsController');
+	//--------------------------------------------------------------------
+
+	app.route('/notifications')			.get(isConnected.authorization, Notifications.myNotifications);
+	app.route('/notifications/read')	.get(isConnected.authorization, Notifications.setAsRead);
+
 
 	//####################################################################
 	//						Auth

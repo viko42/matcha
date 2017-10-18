@@ -1,9 +1,10 @@
-var mongoose	= require('mongoose');
-var s			= require('../config/services');
-var async		= require('async');
-var _			= require('lodash');
-var Users		= mongoose.model('Users');
-var Crushs		= mongoose.model('Crushs');
+const mongoose	= require('mongoose');
+const s			= require('../config/services');
+const async		= require('async');
+const _			= require('lodash');
+const moment	= require('moment');
+const Users		= mongoose.model('Users');
+const Crushs	= mongoose.model('Crushs');
 
 // var bcrypt		= require('bcrypt');
 // exports.myProfile = function(req, res) {
@@ -21,8 +22,6 @@ exports.updateProfile = function (req, res) {
 	const data		= req.body;
 	var myDataProfile	= {};
 	var userData		= {};
-
-	console.log(data);
 
 	async.waterfall([
 		function (callback) {
@@ -75,9 +74,6 @@ exports.getProfile = function(req, res) {
 	var crushDone	= false;
 	var doubleCrush	= false;
 
-	console.log(req.body);
-	console.log(req.params);
-
 	if (!profile.id)
 		return s.badRequest(res, "Missing profile ID")
 
@@ -119,13 +115,14 @@ exports.getProfile = function(req, res) {
 					lastName: user.lastName,
 					me: profile.id === req.connectedAs.id ? true : false,
 					crushed: crushDone,
-					doubleCrush: doubleCrush
+					doubleCrush: doubleCrush,
+					connected: user.data.status === 'online' ? true : false,
+					last_activity: moment(user.data.last_activity).format('DD/MM HH:mm'),
 				};
 				return callback();
 			});
 		},
 	], function (err) {
-		console.log(err);
 		if (err)
 			return s.serverError(res, err);
 		return res.status(200).json({profile: profile});

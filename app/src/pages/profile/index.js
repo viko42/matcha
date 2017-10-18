@@ -48,7 +48,20 @@ class Profile extends Component {
 					swal("Error", response.data.errors.swal, "error");
 				return ;
 			}
-			swal("You send a crush", "This crush is sent. Hope he will crush with you too!", "success");
+			if (response.data.doubleCrush) {
+				swal({
+					title: "You have a new crush !",
+					text: "Speak directly with your new crush in the inbox section !",
+					type: "success"
+				}).then(() => {
+					self.startConversation();
+					global.socket.emit('send crush', {id: self.state.getData});
+				});
+			}
+			else {
+				swal("You send a crush", "This crush is sent. Hope he will crush with you too!", "success");
+				global.socket.emit('send like', {id: self.state.getData});
+			}
 			self.getProfile();
 		});
 	}
@@ -63,6 +76,7 @@ class Profile extends Component {
 				return ;
 			}
 			swal("You deleted a crush", "Your conversation will be deleted!", "success");
+			global.socket.emit('send unlike', {id: self.state.getData});
 			self.getProfile();
 		});
 	}
@@ -153,19 +167,18 @@ class Profile extends Component {
 				return ;
 			}
 			self.setState({profile: response.data.profile});
-			console.log(response.data.profile);
 		});
 	}
 	componentDidMount() {
 		this.getProfile();
+
+		global.socket.emit('send visit', {id: this.state.getData});
 	}
 	handleUpload(event) {
 		const target = event.target, file = target.files[0];
 
 		console.log(file);
-
 		this.setState({file: event.target.files[0]});
-
 	}
 	componentWillMount() {
 		document.title = `${logoName} - Profile`;
@@ -182,12 +195,13 @@ class Profile extends Component {
 								className="card-header"
 								actions={[
 									<div key='header' className="links-header">
-										<a className="link-name">{profile.firstName} {profile.lastName}</a>
+										<a className="link-name tooltipped" data-position="bottom" data-delay="50" data-tooltip={profile.connected === false ? "User offline" : "User online"}><Icon className={profile.connected ? "online" : "offline"}>wb_sunny</Icon>{profile.firstName} {profile.lastName}</a><br/>
+										{profile.connected === false && <a href>Last activity on {profile.last_activity}</a>}
 										<div hidden={profile.me === true || profile.crushed === true ? true : false} className="yes-crush">
 											<a onClick={this.doCrush.bind(this, true)} className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Want to crush ?"><Button floating large className='green' waves='light' icon='check' /></a>
 										</div>
 										<div hidden={profile.me === true || profile.crushed === true ? true : false} className="no-crush">
-											<a onClick={this.doCrush.bind(this, false)} className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Reject this profile"><Button floating large className='red' waves='light' icon='close' /></a>
+											<a onClick={this.removeCrush.bind(this, false)} className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Reject this profile"><Button floating large className='red' waves='light' icon='close' /></a>
 										</div>
 
 										<div hidden={profile.me === true || profile.crushed === false ? true : false} className="no-crush">
@@ -209,17 +223,6 @@ class Profile extends Component {
 
 							</Card>
 						</Col>
-
-						{/* <Col l={12} m={12} s={12}>
-							<Card>
-								<Row>
-									<form onSubmit={this.addMessage}>
-										<Input s={12} label="Publiez un message" name="message" autoComplete="off" type="text" ></Input>
-										<Button>Publier<Icon right>send</Icon></Button>
-									</form>
-								</Row>
-							</Card>
-						</Col> */}
 
 						{/* Content of my sidebar Profile */}
 						<Col l={4} m={4} s={12}>

@@ -6,6 +6,52 @@ var Users				= mongoose.model('Users');
 var Crushs				= mongoose.model('Crushs');
 var Conversations		= mongoose.model('Conversations');
 
+exports.listCrush		= function (req, res) {
+	const userId		= req.connectedAs.id;
+
+	var crushs = [];
+
+	async.waterfall([
+		function (callback) {
+			Crushs.find({to: userId}).populate('to').populate('from').exec(function (err, crushFound) {
+				if (err)
+					return callback(err);
+
+					console.log(crushFound);
+				async.forEachOf(crushFound, function (crush, keyCrush, next_crush) {
+
+					Crushs.findOne({'from': userId, 'to': crush._id}).exec(function (err, doubleCrushFound) {
+						if (err)
+							return next_crush(err);
+
+						console.log(crush.firstName + ' ma crush ? ');
+						console.log(doubleCrushFound);
+						if (doubleCrushFound)
+							crushs.push({firstName: crush.from.firstName, lastName: crush.from.firstName, id: crush.from.id})
+
+						next_crush();
+
+					});
+				}, function (err) {
+					if (err)
+						return callback(err);
+					return callback();
+				});
+				// for (var i = 0; i < crushFound.length; i++) {
+				// 	console.log(crushFound[i].from.firstName + ' ma like');
+				// }
+				// if (!crushFound || crushFound.length !== 2)
+				// 	return callback({swal: 'You have to crush together'});
+				// console.log(crushFound);
+				// return callback();
+			});
+		},
+	], function (err) {
+		if (err)
+			return s.notFound(res, {errors: err});
+		return res.status(200).json({message: "List Crush!", crushs: crushs});
+	});
+};
 
 exports.startConversation = function (req, res) {
 	const userId		= req.connectedAs.id;
@@ -33,27 +79,26 @@ exports.startConversation = function (req, res) {
 			});
 		},
 		function (callback) {
-			Conversations.findOne({$or: [ {sender: userId, recipent: crushTarget}, {recipent: userId, sender: crushTarget}]}).exec(function (err, convFound) {
-				if (err)
-					return callback();
-
-				if (convFound)
-					return callback('Conversation already started');
-				return callback();
-			})
-		},
-		function (callback) {
 			var new_conv = new Conversations({
 				sender: userId,
 				recipent: crushTarget,
 				premium: false,
 			});
-			new_conv.save(function (err, convSaved) {
+
+			Conversations.findOne({$or: [ {sender: userId, recipent: crushTarget}, {recipent: userId, sender: crushTarget}]}).exec(function (err, convFound) {
 				if (err)
 					return callback(err);
-				return callback();
-			});
-		}
+
+				if (convFound)
+					return callback();
+
+				new_conv.save(function (err, convSaved) {
+					if (err)
+						return callback(err);
+					return callback();
+				});
+			})
+		},
 	], function (err) {
 		if (err)
 			return s.notFound(res, {errors: err});
@@ -118,6 +163,7 @@ exports.removeCrush = function (req, res) {
 exports.doCrush = function (req, res) {
 	const userId		= req.connectedAs.id;
 	const crushTarget	= req.params.id;
+	var	  doubleCrush	= false;
 
 	async.waterfall([
 		function (callback) {
@@ -150,9 +196,20 @@ exports.doCrush = function (req, res) {
 				});
 			});
 		},
+		function (callback) {
+			Crushs.find({$or: [{from: userId, to: crushTarget}, {to: userId, from: crushTarget}]}).exec(function (err, crushTotal) {
+				if (err)
+					return callback(err);
+
+				if (crushTotal.length === 2)
+					doubleCrush = true;
+
+				return callback();
+			});
+		},
 	], function (err) {
 		if (err)
 			return s.notFound(res, {errors: err});
-		return res.status(200).json({message: "Crushed!"});
+		return res.status(200).json({message: "Crush done!", doubleCrush: doubleCrush});
 	});
 };

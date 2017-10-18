@@ -23,7 +23,7 @@ class Crushs extends Component {
 			inbox: []
 		};
 
-		// this.getMyInbox = this.getMyInbox.bind(this);
+		this.getCrush = this.getCrush.bind(this);
 	}
 	submitMessage(e) {
 		e.preventDefault();
@@ -39,19 +39,17 @@ class Crushs extends Component {
 		// global.socket.emit('send message', send);
 		// e.target.message.value = "";
 	}
-	getMyInbox() {
+	getCrush() {
 		const self = this;
 
-		services('getMyInbox', self.state, function (err, response) {
+		services('getCrush', self.state, function (err, response) {
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
 					swal("Error", response.data.errors.swal, "error");
 				return ;
 			}
-
-			self.setState({inbox: response.data.inbox})
-			self.getAllUser();
+			console.log(response.data);
 		});
 	}
 
@@ -67,6 +65,7 @@ class Crushs extends Component {
 		// 	if (index !== -1)
 		// 		this.emit('give messages from conversation', {id: self.state.inbox[index].id, unread: false});
 		// })
+		this.getCrush();
 	}
 	componentWillUnmount() {
 		// global.socket.off('message sent');

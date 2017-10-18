@@ -164,19 +164,20 @@ class Inbox extends Component {
 						</p>
 						{(!this.state.inbox[i].messages[m + 1] || (this.state.inbox[i].messages[m].sender !== this.state.inbox[i].messages[m + 1].sender)) && <div className={this.state.inbox[i].messages[m].sender === '1' ? 'message-date pull-right' : 'message-date'}>
 							{moment(this.state.inbox[i].messages[m].created_at).format('DD/MM HH:MM')}
-						</div> }
+						</div>}
 					</div>
 				);
 			}
 			messages.push(
 				<CollapsibleItem key={this.state.inbox[i].id}
 					header={
-						<div>
+						<div className={this.state.inbox[i].connected ? 'online' : 'offline'}>
 							<Chip>
 								<img src='img/yuna.jpg' alt='Contact Person' />
 								{this.state.inbox[i].firstName} {this.state.inbox[i].lastName}
 								{this.state.inbox[i].unread > 0 && <span className="notification-bubble-chat">{this.state.inbox[i].unread}</span>}
 							</Chip>
+							<a href={"#/profile/"+this.state.inbox[i].id_profile}>Visit profile</a>
 							<a onClick={this.deleteMessageInbox} className="pull-right deleteMessageInbox"><Icon>delete_forever</Icon></a>
 						</div>}>
 						<div id={'box-message' + i} className="myMessages">

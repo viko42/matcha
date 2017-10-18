@@ -89,3 +89,10 @@ padding: 11px;
     padding: 5px;
     color: white;
 }
+.online .chip {
+	background-color: #83ff88;
+}
+
+.offline .chip {
+	background-color: #ffc5c5;
+}

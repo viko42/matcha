@@ -9,7 +9,9 @@ import './index.css';
 
 import Header from '../../components/header/index'
 import {logoName} from '../../config/crushyard'
-// import io from "socket.io-client";
+import io from "socket.io-client";
+
+const { urlApp, apiUrl } = require('../../config/crushyard');
 
 class Login extends Component {
 	constructor(props) {
@@ -50,6 +52,11 @@ class Login extends Component {
 			}
 			localStorage.setItem('auth', response.data.token);
 			localStorage.setItem('user', JSON.stringify(response.data.data));
+
+			global.socket = io.connect(apiUrl, {
+				query: {token: localStorage.getItem('auth')}
+			});
+
 			swal("Summary", "Successfully connected !", "success");
 			self.setState({redirect: true});
 		});
@@ -58,8 +65,6 @@ class Login extends Component {
 		if (!localStorage.getItem('auth'))
 			return (
 				<Header>
-					{/* <Header />
-					<SideBar /> */}
 					<div className="content">
 						<Row>
 							<form onSubmit={this.login}>

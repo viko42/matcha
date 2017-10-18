@@ -1,10 +1,11 @@
-var mongoose	= require('mongoose');
-var s			= require('../config/services');
-var async		= require('async');
-var _			= require('lodash');
-var Users		= mongoose.model('Users');
-var bcrypt		= require('bcrypt');
-var jwt			= require('jsonwebtoken');
+const mongoose	= require('mongoose');
+const s			= require('../config/services');
+const async		= require('async');
+const _			= require('lodash');
+const Users		= mongoose.model('Users');
+const bcrypt	= require('bcrypt');
+const jwt		= require('jsonwebtoken');
+const moment	= require('moment');
 
 exports.list = function (req, res) {
 	Users.find({}, function (err, results) {
@@ -21,8 +22,6 @@ exports.list = function (req, res) {
 exports.create = function(req, res) {
 	var new_user = req.body;
 	// var new_user = new Users(req.body);
-
-	console.log(new_user);
 
 	if (!new_user)
 		return s.badRequest(res, "Missing input")
@@ -98,7 +97,6 @@ exports.create = function(req, res) {
 };
 
 exports.update = function(req, res) {
-	console.log(req.body.userId);
 	if (!req.body.userId)
 		return s.badRequest(res, "user ID is missing");
 
@@ -113,10 +111,9 @@ exports.update = function(req, res) {
 };
 
 exports.delete = function(req, res) {
-	console.log(req.body.userId);
-	Users.find({}, function (err, list) {
-		console.log(list);
-	})
+	// Users.find({}, function (err, list) {
+	// 	console.log(list);
+	// })
 	Users.findOne({'_id': req.body.userId}, function (err, userFound) {
 		if (err)
 			return s.serverError(res, err);
@@ -132,10 +129,25 @@ exports.delete = function(req, res) {
 	})
 };
 
+exports.logout = function (socket) {
+	Users.findOne({"_id": socket.handshake.query.userId}).exec(function (err, userFound) {
+		if (err || !userFound)
+			return ;
+
+		var updateUser = new Users(userFound);
+		updateUser.data.socketid = null;
+		updateUser.data.status			= 'offline';
+		updateUser.data.last_activity	= moment().format();
+		updateUser.save(function (err, userSaved) {
+			if (err)
+				return ;
+			console.log('User removed socket in DB!');
+		});
+	})
+};
+
 exports.login = function(req, res) {
 	var auth = req.body;
-
-	console.log(auth);
 
 	if (!auth)
 		return s.forbidden(res, {errors: {message: 'connection refused'}});

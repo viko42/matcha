@@ -217,3 +217,9 @@
 .uploadHidden {
 	visibility: hidden;
 }
+.online {
+	color: green;
+}
+.offline {
+	color: red;
+}

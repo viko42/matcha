@@ -67,6 +67,11 @@ const tabs = {
 	// 							Crushs
 	//###################################################################
 
+	'getCrush': {
+		'method': 'GET',
+		'url': apiUrl + '/crushs'
+	},
+
 	'doCrush': {
 		'method': 'GET',
 		'url': apiUrl + '/crushs/'
@@ -91,6 +96,20 @@ const tabs = {
 		'url': apiUrl + '/find'
 	},
 
+	//###################################################################
+	// 							Notifications
+	//###################################################################
+
+	'notifications': {
+		'method': 'GET',
+		'url': apiUrl + '/notifications'
+	},
+
+	'notificationsSetAsRead': {
+		'method': 'GET',
+		'url': apiUrl + '/notifications/read'
+	},
+
 }
 
 const Services = (props, data, callback) => {
@@ -113,7 +132,7 @@ const Services = (props, data, callback) => {
 		if (err.response && err.response.data === 'invalid token') {
 			localStorage.removeItem('auth');
 			localStorage.removeItem('user');
-			window.location.reload();
+			// window.location.reload();
 			return callback(err.response.data.errors, err.response);
 		}
 		if (err.response)
