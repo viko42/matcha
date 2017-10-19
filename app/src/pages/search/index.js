@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
-import { Table, Col, Card, Row, Button, Tabs, Tab, Chip } from 'react-materialize';
+import { Col, Card, Row, Button, Tabs, Tab, Chip } from 'react-materialize';
 import services from '../../config/services';
 
 import '../../index.css';
 import './index.css';
-import $ from 'jquery';
+// import $ from 'jquery';
 
 import swal		from 'sweetalert';
 
-import ReactTable from 'react-table'
-import 'react-table/react-table.css'
+// import ReactTable from 'react-table'
+// import 'react-table/react-table.css'
 
 import Header from '../../components/header/index'
 import {logoName, apiUrl} from '../../config/crushyard'

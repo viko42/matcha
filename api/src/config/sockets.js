@@ -2,6 +2,8 @@ const mongoose				= require('mongoose');
 const Users					= mongoose.model('Users');
 const Messages				= require('../controllers/MessagesController');
 const UsersController		= require('../controllers/UsersController');
+const VisitsController		= require('../controllers/VisitsController');
+const CrushsController		= require('../controllers/CrushsController');
 const moment				= require('moment');
 
 exports.sockets = function (socket) {
@@ -31,22 +33,38 @@ exports.sockets = function (socket) {
 
 	socket.on('send like', function(data){
 		console.log('Send like');
-		console.log(data);
+		CrushsController.getSocketIdTarget({userId: socket.handshake.query.userId, ...data}, socket, function (err, socketId) {
+			if (err)
+				return console.log(err);
+			socket.to(socketId).emit('receive like', {});
+		});
   	});
 
 	socket.on('send unlike', function(data){
 		console.log('Send unlike');
-		console.log(data);
+		CrushsController.getSocketIdTarget({userId: socket.handshake.query.userId, ...data}, socket, function (err, socketId) {
+			if (err)
+				return console.log(err);
+			socket.to(socketId).emit('receive unlike', {});
+		});
+	});
+
+	socket.on('send crush', function(data){
+		console.log('Send crush');
+		CrushsController.getSocketIdTarget({userId: socket.handshake.query.userId, ...data}, socket, function (err, socketId) {
+			if (err)
+			return console.log(err);
+			socket.to(socketId).emit('receive crush', {});
+		});
 	});
 
 	socket.on('send visit', function(data){
 		console.log('Send visit');
-		console.log(data);
-  	});
-
-	socket.on('send crush', function(data){
-		console.log('Send crush');
-		console.log(data);
+		VisitsController.newVisit({userId: socket.handshake.query.userId, ...data}, socket, function (err, socketId) {
+			if (err)
+				return console.log(err);
+			socket.to(socketId).emit('profile visited', {});
+		});
   	});
 
 	socket.on('give messages from conversation', function (data) {

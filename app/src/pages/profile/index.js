@@ -86,7 +86,7 @@ class Profile extends Component {
 
 		for (var i = 0; library && i < library.length; i++) {
 			libraryRender.push(
-				<Chip key={i}>{library[i]}</Chip>
+				<Chip key={i}>#{library[i]}</Chip>
 			);
 		}
 		return libraryRender;
@@ -132,7 +132,7 @@ class Profile extends Component {
 		}
 		if (String(button) === "myLibrary") {
 			if (this.state.myLibrary === true) {
-				values.myLibraryCat = document.getElementById(button+'Cat').value;
+				values.myLibraryCat = "tags";
 				values.myLibrary = document.getElementById(button).value;
 				console.log(values);
 				this.updateProfile(values);
@@ -287,12 +287,12 @@ class Profile extends Component {
 									{this.state.myLibrary && <a className="pull-right" onClick={this.toggleButton.bind(this, 'myLibraryClose')}><Icon name="myLibrary" className="hi-icon-small hi-icon-pencil f-black">done</Icon></a>}
 									<center>Add element</center>
 									{this.state.myLibrary && <Row>
-										<Input s={12} type='select' id="myLibraryCat" label="" defaultValue='2'>
+										{/* <Input s={12} type='select' id="myLibraryCat" label="" defaultValue='2'>
 											<option value='Films'>Films</option>
 											<option value='Sport'>Sport</option>
 											<option value='Loisirs'>Loisirs</option>
 											<option value='Livres'>Livres</option>
-										</Input>
+										</Input> */}
 										<Input s={12} placeholder="Ecrivez-votre texte" id="myLibrary" type="text" />
 										<a onClick={this.toggleButton.bind(this, 'myLibrary')}>
 											<Button>Add</Button>
@@ -300,7 +300,7 @@ class Profile extends Component {
 									</Row>}
 								</CollectionItem>
 
-								{profile.Films !== null && <CollectionItem><center>Films</center>
+								{/* {profile.Films !== null && <CollectionItem><center>Films</center>
 									{this.getLibrary('Films')}
 								</CollectionItem>}
 
@@ -310,10 +310,10 @@ class Profile extends Component {
 
 								{profile.Loisirs !== null && <CollectionItem><center>Loisirs</center>
 									{this.getLibrary('Loisirs')}
-								</CollectionItem>}
+								</CollectionItem>} */}
 
-								{profile.Livres !== null && <CollectionItem><center>Livres</center>
-									{this.getLibrary('Livres')}
+								{profile.tags !== null && <CollectionItem><center>Tags</center>
+									{this.getLibrary('tags')}
 								</CollectionItem>}
 							</Collection>
 						</Col>

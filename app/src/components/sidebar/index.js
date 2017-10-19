@@ -67,6 +67,8 @@ class SideBar extends Component {
 					<SideNavItem waves href='#account' icon="person">Mon compte</SideNavItem>
 					<SideNavItem waves href='#crushs' icon="people">Crushs</SideNavItem>
 					<SideNavItem waves href='#inbox' icon="message">Messagerie</SideNavItem>
+					<SideNavItem waves href='#visits' icon="hearing">Mes visites</SideNavItem>
+					<SideNavItem waves href='#likes' icon="hearing">Mes likes</SideNavItem>
 					<SideNavItem divider />
 					<SideNavItem subheader>Aide</SideNavItem>
 					<SideNavItem waves icon="help" href='#support'>Contactez-nous</SideNavItem>

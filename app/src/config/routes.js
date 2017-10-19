@@ -12,6 +12,8 @@ import Register			from '../pages/register';
 import Inbox			from '../pages/inbox';
 import Crushs			from '../pages/crushs';
 import Search			from '../pages/search';
+import Visits			from '../pages/visits';
+import Likes			from '../pages/likes';
 
 import NotFound			from '../pages/notfound';
 import Error			from '../pages/error';
@@ -39,6 +41,9 @@ const Routes = (props) => (
 		<Route path='/inbox'		component={Authorization(Inbox, ['User', 'Admin'])}/>
 		<Route path='/crushs'		component={Authorization(Crushs, ['User', 'Admin'])}/>
 		<Route path='/search'		component={Authorization(Search, ['User', 'Admin'])}/>
+		<Route path='/visits'		component={Authorization(Visits, ['User', 'Admin'])}/>
+		<Route path='/likes'		component={Authorization(Likes, ['User', 'Admin'])}/>
+
 		{/* <Route path='/administration' component={Authorization(Admin, ['Admin'])}/> */}
 		<Route path='/register'		component={Register}/>
 		<Route path='/login'		component={Login}/>

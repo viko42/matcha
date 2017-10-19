@@ -202,16 +202,30 @@ class Inbox extends Component {
 		return (
 			<Header>
 				<div className="content">
-					<Row>
-						<Col m={12} s={12}>
-							<Card title='Inbox page'>All your inbox messages</Card>
-						</Col>
-						<Col m={12} s={12}>
-							<Collapsible accordion onSelect={this.selectConversation}>
-								{this.state.allMyMessages}
-							</Collapsible>
-						</Col>
-					</Row>
+					{this.state.allMyMessages && this.state.allMyMessages.length > 0 &&
+						<Row>
+							<Col m={12} s={12}>
+								<Card title='Inbox page'>All your inbox messages</Card>
+							</Col>
+							<Col m={12} s={12}>
+								<Collapsible accordion onSelect={this.selectConversation}>
+									{this.state.allMyMessages}
+								</Collapsible>
+							</Col>
+						</Row>
+					}
+					{(!this.state.allMyMessages || this.state.allMyMessages.length < 1) &&
+						<Row>
+							<Col m={12} s={12}>
+								<Card title='Inbox page'>All your inbox messages</Card>
+							</Col>
+							<Col s={12} m={12} l={12} key='no-result'>
+								<Card className='blue-grey darken-1' textClassName='white-text' title='Aucun resultat'>
+									Vous n'avez aucun message pour l'instant !
+								</Card>
+							</Col>
+						</Row>
+					}
 				</div>
 			</Header>
 		);

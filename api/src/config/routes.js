@@ -27,6 +27,7 @@ module.exports = function (app) {
 	//--------------------------------------------------------------------
 
 	app.route('/crushs')				.get(isConnected.authorization, Crushs.listCrush);
+	app.route('/crushs/likes')			.get(isConnected.authorization, Crushs.listLikes);
 	app.route('/crushs/:id')			.get(isConnected.authorization, Crushs.doCrush);
 	app.route('/crushs/:id/remove')		.get(isConnected.authorization, Crushs.removeCrush);
 	app.route('/crushs/:id/start')		.get(isConnected.authorization, Crushs.startConversation);
@@ -69,6 +70,12 @@ module.exports = function (app) {
 
 	app.route('/login')			.post(Users.login);
 
+	//####################################################################
+	//						Search
+	var Visits = require('../controllers/VisitsController');
+	//--------------------------------------------------------------------
+
+	app.route('/visits')				.get(isConnected.authorization, Visits.listVisits);
 
 
 	//

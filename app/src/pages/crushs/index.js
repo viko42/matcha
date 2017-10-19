@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Col, Card, Row, Button } from 'react-materialize';
+import { Col, Card, Row, Button } from 'react-materialize';
 import services from '../../config/services';
 
 import '../../index.css';
@@ -7,11 +7,11 @@ import './index.css';
 
 import swal		from 'sweetalert';
 
-import ReactTable from 'react-table'
-import 'react-table/react-table.css'
+// import ReactTable from 'react-table'
+// import 'react-table/react-table.css'
 
 import Header from '../../components/header/index'
-import {logoName, apiUrl} from '../../config/crushyard'
+import {logoName, apiUrl, urlApp} from '../../config/crushyard'
 
 class Crushs extends Component {
 	constructor(props) {
@@ -23,21 +23,77 @@ class Crushs extends Component {
 			inbox: []
 		};
 
-		this.getCrush = this.getCrush.bind(this);
+		this.getCrush	= this.getCrush.bind(this);
+		this.getList	= this.getList.bind(this);
 	}
-	submitMessage(e) {
+	startConversation(e) {
 		e.preventDefault();
 
-		// if (!e.target.message || e.target.message.value.length < 1)
-		// 	return ;
-		//
-		// const send = {
-		// 	message: e.target.message.value,
-		// 	conversationId: e.target.conversationId.value
-		// }
-		//
-		// global.socket.emit('send message', send);
-		// e.target.message.value = "";
+		const self	= this;
+		const id	= e.target.profileId.value;
+
+		services('startConversation', {getData: id+'/start'}, function (err, response) {
+			if (err) {
+				self.setState({errors: response.data.errors})
+				if (response.data.errors.swal)
+					swal("Error", response.data.errors.swal, "error");
+				return ;
+			}
+			window.location.assign(urlApp + "/#/inbox");
+		});
+	}
+	removeCrush(e) {
+		e.preventDefault();
+
+		const self	= this;
+		const id	= e.target.profileId.value;
+
+		services('removeCrush', {getData: id+'/remove'}, function (err, response) {
+			if (err) {
+				self.setState({errors: response.data.errors})
+				if (response.data.errors.swal)
+					swal("Error", response.data.errors.swal, "error");
+				return ;
+			}
+			swal("You deleted a crush", "Your conversation will be deleted!", "success");
+			global.socket.emit('send unlike', {id: id});
+			self.getCrush();
+		});
+	}
+	getList(crushs) {
+		var render = [];
+
+		if (!crushs || crushs.length < 1)
+			render.push(
+				<Col s={12} m={12} l={12} key='no-result'>
+					<Card className='blue-grey darken-1' textClassName='white-text' title='Aucun resultat'>
+						Vous n'avez aucun crush pour l'instant !
+					</Card>
+				</Col>
+			);
+		for (var i = 0; i < crushs.length; i++) {
+			render.push(
+				<Col s={12} m={6} l={6} className="xl3" key={i}>
+					<Card className="crush-tag-card">
+						<div className="crush-tag-buttons-close">
+							<form onSubmit={this.removeCrush.bind(this)}>
+								<input type="hidden" name="profileId" value={crushs[i].profileId}/>
+								<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Cancel this crush"><Button floating className='red actions-tag' waves='light' icon='close' /></a>
+							</form>
+						</div>
+						<div className="crush-tag-name">{crushs[i].firstName} {crushs[i].lastName}<br/>22 ans</div>
+						<img alt="profile" className="crush-tag-img" src="img/yuna.jpg"/>
+						<div className="crush-tag-buttons">
+							<form onSubmit={this.startConversation}>
+								<input type="hidden" name="profileId" value={crushs[i].profileId}/>
+								<a className="tooltipped" onClick={this.messageCrush} data-position="bottom" data-delay="50" data-tooltip="Speak with him"><Button floating className='blue actions-tag' waves='light' icon='message' /></a>
+							</form>
+						</div>
+					</Card>
+				</Col>
+			);
+		}
+		this.setState({crushs: render});
 	}
 	getCrush() {
 		const self = this;
@@ -49,10 +105,9 @@ class Crushs extends Component {
 					swal("Error", response.data.errors.swal, "error");
 				return ;
 			}
-			console.log(response.data);
+			self.getList(response.data.crushs);
 		});
 	}
-
 	componentWillMount() {
 		document.title = `${logoName} - Crushs`;
 	}
@@ -70,61 +125,6 @@ class Crushs extends Component {
 	componentWillUnmount() {
 		// global.socket.off('message sent');
 	}
-
- // 	getAllUser() {
-	// 	var messages = [], message = [];
-	//
-	// 	for (var i = 0; i < this.state.inbox.length; i++) {
-	// 		if (this.state.inbox[i].messages.length < 1) {
-	// 			message.push(
-	// 				<div key={i} className="chat-bubble">
-	// 					<p className='messageChat system'>
-	// 						Start your chat now !
-	// 					</p>
-	// 				</div>
-	// 			);
-	// 		}
-	// 		for (var m = 0; m < this.state.inbox[i].messages.length; m++) {
-	// 			message.push(
-	// 				<div title={moment(this.state.inbox[i].messages[m].created_at).format('DD/MM/YYYY HH:MM')} key={m} className="chat-bubble">
-	// 					<p key={m} className={this.state.inbox[i].messages[m].sender === '1' ? 'messageChat me' : 'messageChat them'}>
-	// 						{this.state.inbox[i].messages[m].message}
-	// 					</p>
-	// 					{(!this.state.inbox[i].messages[m + 1] || (this.state.inbox[i].messages[m].sender !== this.state.inbox[i].messages[m + 1].sender)) && <div className={this.state.inbox[i].messages[m].sender === '1' ? 'message-date pull-right' : 'message-date'}>
-	// 						{moment(this.state.inbox[i].messages[m].created_at).format('DD/MM HH:MM')}
-	// 					</div> }
-	// 				</div>
-	// 			);
-	// 		}
-	// 		messages.push(
-	// 			<CollapsibleItem key={this.state.inbox[i].id}
-	// 				header={
-	// 					<div>
-	// 						<Chip>
-	// 							<img src='img/yuna.jpg' alt='Contact Person' />
-	// 							{this.state.inbox[i].firstName} {this.state.inbox[i].lastName}
-	// 							{this.state.inbox[i].unread > 0 && <span className="notification-bubble-chat">{this.state.inbox[i].unread}</span>}
-	// 						</Chip>
-	// 						<a onClick={this.deleteMessageInbox} className="pull-right deleteMessageInbox"><Icon>delete_forever</Icon></a>
-	// 					</div>}>
-	// 					<div id={'box-message' + i} className="myMessages">
-	// 						{message}
-	// 					</div>
-	// 				<div className="collapsible-send">
-	// 				<Row>
-	// 					<form onSubmit={this.submitMessage}>
-	// 						<Input type="text" name="message" label="Write here to answer" autoComplete="off" s={12} />
-	// 						<Col s={12}><Button>SEND</Button></Col>
-	// 						<input type="hidden" name="conversationId" id={this.state.inbox[i].id} value={this.state.inbox[i].id}/>
-	// 					</form>
-	// 				</Row>
-	// 				</div>
-	// 			</CollapsibleItem>
-	// 		);
-	// 		message = [];
-	// 	}
-	// 	this.setState({allMyMessages: messages});
-	// }
 	render() {
 		return (
 			<Header>
@@ -133,54 +133,7 @@ class Crushs extends Component {
 						<Col m={12} s={12}>
 							<Card title='Trouvez votre crush qui vous ressemble !'>Liste de personne ayant le plus de tag en commun avec vous ! <a href>(Voir plus)</a></Card>
 						</Col>
-						<Col s={12} m={6} l={6} className="xl3">
-							<Card className="crush-tag-card">
-								<div className="crush-tag-buttons-close">
-									<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Cancel this crush"><Button floating className='red actions-tag' waves='light' icon='close' /></a>
-								</div>
-								<div className="crush-tag-name">Victor Lancien<br/>22 ans</div>
-								<img alt="profile" className="crush-tag-img" src="img/yuna.jpg"/>
-								<div className="crush-tag-buttons">
-									<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Speak with him"><Button floating className='blue actions-tag' waves='light' icon='message' /></a>
-								</div>
-							</Card>
-						</Col>
-						<Col s={12} m={6} l={6} className="xl3">
-							<Card className="crush-tag-card">
-								<div className="crush-tag-buttons-close">
-									<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Cancel this crush"><Button floating className='red actions-tag' waves='light' icon='close' /></a>
-								</div>
-								<div className="crush-tag-name">Victor Lancien<br/>22 ans</div>
-								<img alt="profile" className="crush-tag-img" src="img/yuna.jpg"/>
-								<div className="crush-tag-buttons">
-									<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Speak with him"><Button floating className='blue actions-tag' waves='light' icon='message' /></a>
-								</div>
-							</Card>
-						</Col>
-						<Col s={12} m={6} l={6} className="xl3">
-							<Card className="crush-tag-card">
-								<div className="crush-tag-buttons-close">
-									<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Cancel this crush"><Button floating className='red actions-tag' waves='light' icon='close' /></a>
-								</div>
-								<div className="crush-tag-name">Victor Lancien<br/>22 ans</div>
-								<img alt="profile" className="crush-tag-img" src="img/yuna.jpg"/>
-								<div className="crush-tag-buttons">
-									<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Speak with him"><Button floating className='blue actions-tag' waves='light' icon='message' /></a>
-								</div>
-							</Card>
-						</Col>
-						<Col s={12} m={6} l={6} className="xl3">
-							<Card className="crush-tag-card">
-								<div className="crush-tag-buttons-close">
-									<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Cancel this crush"><Button floating className='red actions-tag' waves='light' icon='close' /></a>
-								</div>
-								<div className="crush-tag-name">Victor Lancien<br/>22 ans</div>
-								<img alt="profile" className="crush-tag-img" src="img/yuna.jpg"/>
-								<div className="crush-tag-buttons">
-									<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Speak with him"><Button floating className='blue actions-tag' waves='light' icon='message' /></a>
-								</div>
-							</Card>
-						</Col>
+						{this.state.crushs}
 					</Row>
 				</div>
 			</Header>

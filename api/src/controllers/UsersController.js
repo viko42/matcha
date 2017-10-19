@@ -7,6 +7,14 @@ const bcrypt	= require('bcrypt');
 const jwt		= require('jsonwebtoken');
 const moment	= require('moment');
 
+exports.block = function (req, res) {
+
+};
+
+exports.report = function (req, res) {
+
+};
+
 exports.list = function (req, res) {
 	Users.find({}, function (err, results) {
 		if (err)

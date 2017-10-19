@@ -6,7 +6,21 @@ var Users				= mongoose.model('Users');
 var Crushs				= mongoose.model('Crushs');
 var Conversations		= mongoose.model('Conversations');
 
-exports.listCrush		= function (req, res) {
+exports.getSocketIdTarget = function (data, socket, callback) {
+	const	profileId = data.id;
+
+	Users.findOne({'_id': profileId}).exec(function (err, userFound) {
+		if (err)
+			return callback(err);
+
+		if (!userFound)
+			return callback(profileId + ' not found. [CRUSHS-CONTROLLER]');
+
+		return callback(null, userFound.data.socketid);
+	});
+}
+
+exports.listLikes		= function (req, res) {
 	const userId		= req.connectedAs.id;
 
 	var crushs = [];
@@ -19,31 +33,54 @@ exports.listCrush		= function (req, res) {
 
 					console.log(crushFound);
 				async.forEachOf(crushFound, function (crush, keyCrush, next_crush) {
-
-					Crushs.findOne({'from': userId, 'to': crush._id}).exec(function (err, doubleCrushFound) {
+					Crushs.findOne({'from': userId, 'to': crush.from.id}).exec(function (err, doubleCrushFound) {
 						if (err)
 							return next_crush(err);
 
-						console.log(crush.firstName + ' ma crush ? ');
-						console.log(doubleCrushFound);
-						if (doubleCrushFound)
-							crushs.push({firstName: crush.from.firstName, lastName: crush.from.firstName, id: crush.from.id})
-
+							console.log(doubleCrushFound);
+						if (!doubleCrushFound)
+							crushs.push({firstName: crush.from.firstName, lastName: crush.from.lastName, profileId: crush.from.id})
 						next_crush();
-
 					});
 				}, function (err) {
 					if (err)
 						return callback(err);
 					return callback();
 				});
-				// for (var i = 0; i < crushFound.length; i++) {
-				// 	console.log(crushFound[i].from.firstName + ' ma like');
-				// }
-				// if (!crushFound || crushFound.length !== 2)
-				// 	return callback({swal: 'You have to crush together'});
-				// console.log(crushFound);
-				// return callback();
+			});
+		},
+	], function (err) {
+		if (err)
+			return s.notFound(res, {errors: err});
+		return res.status(200).json({message: "List Likes!", likes: crushs});
+	});
+};
+
+exports.listCrush		= function (req, res) {
+	const userId		= req.connectedAs.id;
+
+	var crushs = [];
+
+	async.waterfall([
+		function (callback) {
+			Crushs.find({to: userId}).populate('to').populate('from').exec(function (err, crushFound) {
+				if (err)
+					return callback(err);
+
+				async.forEachOf(crushFound, function (crush, keyCrush, next_crush) {
+					Crushs.findOne({'from': userId, 'to': crush.from.id}).exec(function (err, doubleCrushFound) {
+						if (err)
+							return next_crush(err);
+
+						if (doubleCrushFound)
+							crushs.push({firstName: crush.from.firstName, lastName: crush.from.lastName, profileId: crush.from.id})
+						next_crush();
+					});
+				}, function (err) {
+					if (err)
+						return callback(err);
+					return callback();
+				});
 			});
 		},
 	], function (err) {
@@ -75,6 +112,7 @@ exports.startConversation = function (req, res) {
 
 				if (!crushFound || crushFound.length !== 2)
 					return callback({swal: 'You have to crush together'});
+
 				return callback();
 			});
 		},
@@ -210,6 +248,7 @@ exports.doCrush = function (req, res) {
 	], function (err) {
 		if (err)
 			return s.notFound(res, {errors: err});
+
 		return res.status(200).json({message: "Crush done!", doubleCrush: doubleCrush});
 	});
 };

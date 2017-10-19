@@ -11,7 +11,7 @@ import Header from '../../components/header/index'
 import {logoName} from '../../config/crushyard'
 import io from "socket.io-client";
 
-const { urlApp, apiUrl } = require('../../config/crushyard');
+const { apiUrl } = require('../../config/crushyard');
 
 class Login extends Component {
 	constructor(props) {

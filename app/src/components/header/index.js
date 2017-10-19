@@ -42,7 +42,7 @@ class Header extends React.Component {
 
 		if (notifications.length < 1)
 			renderNotifications.push(
-				<div key={i} className="notif-elem-cont"><div className="notif-elem"><Icon>mail</Icon>Aucune notification</div></div>
+				<div key='no-result' className="notif-elem-cont"><div className="notif-elem"><Icon>mail</Icon>Aucune notification</div></div>
 			);
 		for (var i = 0; i < notifications.length; i++) {
 			renderNotifications.push(
@@ -120,6 +120,62 @@ class Header extends React.Component {
 				},
 			});
 		})
+
+		global.socket.on('profile visited', function (data) {
+			// self.serviceNotifications();
+			self._notificationSystem.addNotification({
+				message: "Votre profile vient d'etre visité",
+				level: 'success',
+				action: {
+					label: 'Voir',
+					callback: function() {
+						window.location.assign(urlApp + "/#/visits");
+					}
+				},
+			});
+		})
+
+		global.socket.on('receive crush', function (data) {
+			// self.serviceNotifications();
+			self._notificationSystem.addNotification({
+				message: "Vous avez un nouveau crush!",
+				level: 'success',
+				action: {
+					label: 'Voir',
+					callback: function() {
+						window.location.assign(urlApp + "/#/visits");
+					}
+				},
+			});
+		})
+
+		global.socket.on('receive unlike', function (data) {
+			// self.serviceNotifications();
+			self._notificationSystem.addNotification({
+				message: "Vous avez un like en moins!",
+				level: 'error',
+				action: {
+					label: 'Voir',
+					callback: function() {
+						window.location.assign(urlApp + "/#/visits");
+					}
+				},
+			});
+		})
+
+		global.socket.on('receive like', function (data) {
+			// self.serviceNotifications();
+			self._notificationSystem.addNotification({
+				message: "Votre profile vient d'etre liké",
+				level: 'success',
+				action: {
+					label: 'Voir',
+					callback: function() {
+						window.location.assign(urlApp + "/#/visits");
+					}
+				},
+			});
+		})
 		$('body').addClass('loaded');
 
     	this._notificationSystem = this.refs.notificationSystem;
@@ -134,6 +190,10 @@ class Header extends React.Component {
 	}
 	componentWillUnmount() {
 		global.socket.off('test_message');
+		global.socket.off('profile visited');
+		global.socket.off('receive like');
+		global.socket.off('receive unlike');
+		global.socket.off('receive crush');
 	}
 	logout(e) {
 		e.preventDefault();
