@@ -8,18 +8,19 @@ var Conversations	= mongoose.model('Conversations');
 var Notifications	= mongoose.model('Notifications');
 var Messages		= mongoose.model('Messages');
 var Users			= mongoose.model('Users');
+const thisController	= "NotificationsController";
 
 exports.setAsRead	= function (req, res) {
 	const userId = req.connectedAs.id;
 
 	Notifications.update({status: 'unread', to: userId}, {status: 'read'}, {multi: true}, function(err, num) {
 		if (!num || num.n <= 0)
-			return s.serverError(res, err);
+			return s.serverError(res, err, thisController);
 
 		Users.findOne({'_id': userId}).exec(function(err, userRead ) {
 			if (err)
-				return s.serverError(res, err);
-				
+				return s.serverError(res, err, thisController);
+
 			if (!userRead)
 				return console.log('User not found');
 			return res.status(200).json({message: 'done'});
@@ -52,7 +53,7 @@ exports.myNotifications = function (req, res) {
 		},
 	], function (err) {
 		if (err)
-			return s.serverError(res, err);
+			return s.serverError(res, err, thisController);
 
 		return res.status(200).json({notifications: notifications, unread: unread});
 	})

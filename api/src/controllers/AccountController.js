@@ -4,6 +4,7 @@ var async		= require('async');
 var _			= require('lodash');
 var bcrypt		= require('bcrypt');
 var Users		= mongoose.model('Users');
+const thisController	= "AccountController";
 
 // var bcrypt		= require('bcrypt');
 // exports.myProfile = function(req, res) {
@@ -62,7 +63,7 @@ exports.update = function(req, res) {
 		},
 	], function (err) {
 		if (err)
-			return s.serverError(res, err);
+			return s.serverError(res, err, thisController);
 		// console.log(req.connectedAs);
 		console.log(user);
 		return res.status(200).json({data: {firstName: user.firstName, lastName: user.lastName, email: user.email, phone: user.phone, birth: user.birth}});

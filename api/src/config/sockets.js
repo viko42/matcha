@@ -10,7 +10,6 @@ exports.sockets = function (socket) {
 	if (socket.handshake.query.userId === 'guest')
 		return console.log('New Guest connected');
 	console.log("New client connected")
-	// console.log(socket.handshake.query.userId);
 
 	Users.findOne({"_id": socket.handshake.query.userId}).exec(function (err, userFound) {
 		if (err || !userFound)
@@ -23,7 +22,6 @@ exports.sockets = function (socket) {
 		updateUser.save(function (err, userSaved) {
 			if (err)
 				return ;
-			console.log('User updated socket in DB!');
 		});
 	})
 
@@ -32,7 +30,6 @@ exports.sockets = function (socket) {
   	});
 
 	socket.on('send like', function(data){
-		console.log('Send like');
 		CrushsController.getSocketIdTarget({userId: socket.handshake.query.userId, ...data}, socket, function (err, socketId) {
 			if (err)
 				return console.log(err);
@@ -41,7 +38,6 @@ exports.sockets = function (socket) {
   	});
 
 	socket.on('send unlike', function(data){
-		console.log('Send unlike');
 		CrushsController.getSocketIdTarget({userId: socket.handshake.query.userId, ...data}, socket, function (err, socketId) {
 			if (err)
 				return console.log(err);
@@ -50,7 +46,6 @@ exports.sockets = function (socket) {
 	});
 
 	socket.on('send crush', function(data){
-		console.log('Send crush');
 		CrushsController.getSocketIdTarget({userId: socket.handshake.query.userId, ...data}, socket, function (err, socketId) {
 			if (err)
 			return console.log(err);
@@ -59,7 +54,6 @@ exports.sockets = function (socket) {
 	});
 
 	socket.on('send visit', function(data){
-		console.log('Send visit');
 		VisitsController.newVisit({userId: socket.handshake.query.userId, ...data}, socket, function (err, socketId) {
 			if (err)
 				return console.log(err);

@@ -8,6 +8,7 @@ var Conversations	= mongoose.model('Conversations');
 var Notifications	= mongoose.model('Notifications');
 var Messages		= mongoose.model('Messages');
 var Users			= mongoose.model('Users');
+const thisController	= "MessagesController";
 
 exports.setAsRead	= function (data, socket) {
 	Messages.update({status: 'sended', conversation: data.conversationId, sender: {"$ne": data.userId}}, {status: 'readed'}, {multi: true}, function(err, num) {
@@ -115,7 +116,7 @@ exports.inbox = function(req, res) {
 
 	], function (err) {
 		if (err)
-			return s.serverError(res, err);
+			return s.serverError(res, err, thisController);
 		return res.status(200).json({inbox: inbox });
 	})
 };
@@ -129,8 +130,8 @@ exports.send = function(data, socket) {
 	var		receiverId;
 
 	const maxNotification = function (msg) { var rsp = ""; for (var i = 0; i < msg.length; i++) { rsp += msg[i]; if (i > 20) { rsp += '...'; break; } } return rsp; };
+	
 	async.waterfall([
-
 		// Search Conversation
 		function (callback) {
 			Conversations.findOne({'_id': conversationId}).exec(function (err, conversationFound) {
@@ -207,7 +208,7 @@ exports.send = function(data, socket) {
 		},
 	], function (err) {
 		if (err)
-			return console.log(err);
+			return console.log(thisController, err);
 
 		exports.get_messages({userId: socket.handshake.query.userId, ...data}, socket, function (data) {
 			socket.emit('message sent', data);
@@ -227,7 +228,7 @@ exports.delete = function(req, res) {
 		},
 	], function (err) {
 		if (err)
-			return s.serverError(res, err);
+			return s.serverError(res, err, thisController);
 		console.log(req.connectedAs);
 		return res.status(200).json({deleted: {} });
 	})

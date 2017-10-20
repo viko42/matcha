@@ -14,8 +14,6 @@ const io			= socketIo(server);
 
 const jwt			= require('jsonwebtoken');
 
-
-
 mongoose.plugin(require('meanie-mongoose-to-json'));
 
 require("fs").readdirSync("./src/models").forEach(function(file) {
@@ -50,13 +48,15 @@ app.use(function(req, res, next) {
 	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT');
 	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, authorization");
 	if (!mongoose.connection.readyState) {
-		console.log('Unable');
 		return res.status(503).json({message: "impossible de se connecter"});
 	}
 	next();
 });
 
-app.use(bodyParser.urlencoded({ extended: true }));
+// var bodyParser = require('body-parser');
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+// app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 //######################
@@ -67,7 +67,6 @@ io.use(function(socket, next) {
 	if (!mongoose.connection.readyState)
 		return next(new Error('Server error'));
 	if (socket.handshake.query && socket.handshake.query.token){
-		console.log('Verification');
 		jwt.verify(socket.handshake.query.token, 'ilovescotchyscotch', function(err, decoded) {
 			if (err) {
 				return next();

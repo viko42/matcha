@@ -5,6 +5,7 @@ var _					= require('lodash');
 var Users				= mongoose.model('Users');
 var Crushs				= mongoose.model('Crushs');
 var Conversations		= mongoose.model('Conversations');
+const thisController	= "SearchController";
 
 exports.find = function (req, res) {
 	const	userId		= req.connectedAs.id;
@@ -32,7 +33,7 @@ exports.find = function (req, res) {
 		},
 	], function (err) {
 		if (err)
-			return s.notFound(res, {errors: err});
+			return s.notFound(res, {errors: err}, thisController);
 		return res.status(200).json({message: "Crushed!", users: results});
 	});
 };

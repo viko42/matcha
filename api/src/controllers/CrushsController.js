@@ -5,6 +5,7 @@ var _					= require('lodash');
 var Users				= mongoose.model('Users');
 var Crushs				= mongoose.model('Crushs');
 var Conversations		= mongoose.model('Conversations');
+const thisController	= "CrushsController";
 
 exports.getSocketIdTarget = function (data, socket, callback) {
 	const	profileId = data.id;
@@ -51,7 +52,7 @@ exports.listLikes		= function (req, res) {
 		},
 	], function (err) {
 		if (err)
-			return s.notFound(res, {errors: err});
+			return s.notFound(res, {errors: err}, thisController);
 		return res.status(200).json({message: "List Likes!", likes: crushs});
 	});
 };
@@ -85,7 +86,7 @@ exports.listCrush		= function (req, res) {
 		},
 	], function (err) {
 		if (err)
-			return s.notFound(res, {errors: err});
+			return s.notFound(res, {errors: err}, thisController);
 		return res.status(200).json({message: "List Crush!", crushs: crushs});
 	});
 };
@@ -139,7 +140,7 @@ exports.startConversation = function (req, res) {
 		},
 	], function (err) {
 		if (err)
-			return s.notFound(res, {errors: err});
+			return s.notFound(res, {errors: err}, thisController);
 		return res.status(200).json({message: "Conversation started!"});
 	});
 };
@@ -192,7 +193,7 @@ exports.removeCrush = function (req, res) {
 		},
 	], function (err) {
 		if (err)
-			return s.notFound(res, {errors: err});
+			return s.notFound(res, {errors: err}, thisController);
 		return res.status(200).json({message: "Crush removed!"});
 	});
 };
@@ -247,7 +248,7 @@ exports.doCrush = function (req, res) {
 		},
 	], function (err) {
 		if (err)
-			return s.notFound(res, {errors: err});
+			return s.notFound(res, {errors: err}, thisController);
 
 		return res.status(200).json({message: "Crush done!", doubleCrush: doubleCrush});
 	});

@@ -16,9 +16,13 @@ module.exports = function (app) {
 	var Profile = require('../controllers/ProfileController');
 	//--------------------------------------------------------------------
 
-	app.route('/profile/:id')		.get(isConnected.authorization, Profile.getProfile);
-	app.route('/profile/update')	.put(isConnected.authorization, Profile.updateProfile);
-	// app.route('/profile/upload').get(isConnected.authorization, Profile.uploadImage);
+	app.route('/profile/:id')			.get(isConnected.authorization, Profile.getProfile);
+	app.route('/profile/update')		.put(isConnected.authorization, Profile.updateProfile);
+	app.route('/profile/upload')		.post(isConnected.authorization, Profile.uploadImage);
+	app.route('/profile/avatar/delete')	.post(isConnected.authorization, Profile.deleteAvatar);
+	app.route('/profile/avatar/change')	.post(isConnected.authorization, Profile.changeAvatar);
+
+	app.route('/profile/avatar/find/:id')	.get(Profile.findAvatar);
 
 
 	//####################################################################

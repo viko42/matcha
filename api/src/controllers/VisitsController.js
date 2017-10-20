@@ -9,6 +9,7 @@ var Notifications	= mongoose.model('Notifications');
 var Messages		= mongoose.model('Messages');
 var Users			= mongoose.model('Users');
 var Visits			= mongoose.model('Visits');
+var thisController	= "VisitsController";
 
 exports.listVisits		= function (req, res) {
 	const userId		= req.connectedAs.id;
@@ -34,7 +35,7 @@ exports.listVisits		= function (req, res) {
 		},
 	], function (err) {
 		if (err)
-			return s.notFound(res, {errors: err});
+			return s.notFound(res, {errors: err}, thisController);
 		return res.status(200).json({message: "List Visitors!", visitors: visitors});
 	});
 };
@@ -42,6 +43,9 @@ exports.listVisits		= function (req, res) {
 exports.newVisit = function (data, socket, callback) {
 	const	visitor = data.userId;
 	const	profileId = data.id;
+
+	if (profileId === 'me')
+		return callback();
 
 	const new_visit = new Visits({
 		visitor: visitor,

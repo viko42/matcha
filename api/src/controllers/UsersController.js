@@ -6,6 +6,7 @@ const Users		= mongoose.model('Users');
 const bcrypt	= require('bcrypt');
 const jwt		= require('jsonwebtoken');
 const moment	= require('moment');
+const thisController	= "UsersController";
 
 exports.block = function (req, res) {
 
@@ -18,7 +19,7 @@ exports.report = function (req, res) {
 exports.list = function (req, res) {
 	Users.find({}, function (err, results) {
 		if (err)
-			return s.serverError(res, err);
+			return s.serverError(res, err, thisController);
 
 		// for (key in results) {
 		// 	results[key] = _.pick(results[key], ['id', 'email', 'firstName', 'lastName', 'password']);
@@ -99,21 +100,21 @@ exports.create = function(req, res) {
 		},
 	], function (err) {
 		if (err)
-			return s.badRequest(res, err);
+			return s.badRequest(res, err, thisController);
 		return res.status(200).json({message: "User created."});
 	})
 };
 
 exports.update = function(req, res) {
 	if (!req.body.userId)
-		return s.badRequest(res, "user ID is missing");
+		return s.badRequest(res, "user ID is missing", thisController);
 
 	// if (you == userId)
 	//
 
 	Users.findOneAndUpdate({_id: req.body.userId}, req.body, {new: true}, function(err, user) {
 		if (err)
-			return s.serverError(res, err);
+			return s.serverError(res, err, thisController);
 		res.status(200).json({message: "User updated"});
 	});
 };
@@ -124,14 +125,14 @@ exports.delete = function(req, res) {
 	// })
 	Users.findOne({'_id': req.body.userId}, function (err, userFound) {
 		if (err)
-			return s.serverError(res, err);
+			return s.serverError(res, err, thisController);
 
 		if (!userFound)
-			return s.badRequest(res, "User not found");
+			return s.badRequest(res, "User not found", thisController);
 
 		Users.remove({'_id': req.body.userId}, function(err, user) {
 			if (err)
-				return s.serverError(res, err);
+				return s.serverError(res, err, thisController);
 			return res.status(200).json({message: "User removed!"});
 		});
 	})
@@ -158,27 +159,27 @@ exports.login = function(req, res) {
 	var auth = req.body;
 
 	if (!auth)
-		return s.forbidden(res, {errors: {message: 'connection refused'}});
+		return s.forbidden(res, {errors: {message: 'connection refused'}}, thisController);
 
 	if (!auth.email)
-		return s.forbidden(res, {errors: {email: 'Champs manquant'}});
+		return s.forbidden(res, {errors: {email: 'Champs manquant'}}, thisController);
 
 	if (!auth.password)
-		return s.forbidden(res, {errors: {password: 'Champs manquant'}});
+		return s.forbidden(res, {errors: {password: 'Champs manquant'}}, thisController);
 
 	if (!auth.socketId)
-		return s.forbidden(res, {errors: {swal: 'Rechargez la page'}});
+		return s.forbidden(res, {errors: {swal: 'Rechargez la page'}}, thisController);
 
 	Users.findOne({email: auth.email}, function(err, user) {
 		if (err)
-			return s.serverError(res, err);
+			return s.serverError(res, err, thisController);
 
 		if (!user)
-			return s.notFound(res, {errors: {swal: 'User not found'}});
+			return s.notFound(res, {errors: {swal: 'User not found'}}, thisController);
 
 		bcrypt.compare(auth.password, user.password, function (err, result) {
 			if (result === false)
-				return s.forbidden(res, {errors: {swal: "incorrect password"}});
+				return s.forbidden(res, {errors: {swal: "incorrect password"}}, thisController);
 
 			var token = jwt.sign({id: user.id}, 'ilovescotchyscotch', {
 				// expiresIn: 1440 // expires in 24 hours
