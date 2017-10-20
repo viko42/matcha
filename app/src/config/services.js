@@ -63,6 +63,21 @@ const tabs = {
 		'url': apiUrl + '/profile/upload'
 	},
 
+	'deleteAvatar': {
+		'method': 'POST',
+		'url': apiUrl + '/profile/avatar/delete'
+	},
+
+	'changeAvatar': {
+		'method': 'POST',
+		'url': apiUrl + '/profile/avatar/change'
+	},
+
+	'getAvatar': {
+		'method': 'GET',
+		'url': apiUrl + '/profile/avatar/find/'
+	},
+
 	//###################################################################
 	// 							Crushs
 	//###################################################################

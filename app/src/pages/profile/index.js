@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Col, Card, Row, Collection, CollectionItem, Chip, Input, Button, Icon, Carousel } from 'react-materialize';
 import swal from 'sweetalert';
 import services from '../../config/services';
-import {urlApp} from '../../config/crushyard'
+import {urlApp, apiUrl} from '../../config/crushyard'
 // import FileBase64 from 'react-file-base64';
 
 import '../../index.css';
@@ -11,6 +11,8 @@ import './index.css';
 import Header from '../../components/header'
 import {logoName} from '../../config/crushyard'
 
+import Dropzone from 'react-dropzone';
+
 class Profile extends Component {
 	constructor(props) {
 		super(props);
@@ -18,12 +20,16 @@ class Profile extends Component {
 		this.state = {
 			getData: props.match.params.id,
 			profile: {},
+			selectAvatar: false,
+			avatar: ''
 		};
 
 		this.getLibrary = this.getLibrary.bind(this);
 		this.toggleButton = this.toggleButton.bind(this);
 		this.handleUpload = this.handleUpload.bind(this);
-
+		this.selectAvatar = this.selectAvatar.bind(this);
+		this.deleteAvatar = this.deleteAvatar.bind(this);
+		this.setAvatarToPP = this.setAvatarToPP.bind(this);
 	}
 	startConversation() {
 		const self = this;
@@ -96,11 +102,69 @@ class Profile extends Component {
 	}
 	showPictures() {
 		var pictures = [];
+
 		for (var i = 0; i < this.state.profile.pictures.length; i++) {
-			let name = this.state.profile.pictures[i].code + this.state.profile.pictures[i].data;
+			let name = this.state.profile.pictures[i].data;
 			pictures.push(name);
 		}
 		return pictures;
+	}
+	showPicturesMe() {
+		var pictures = [];
+		for (var i = 0; i < this.state.profile.pictures.length; i++) {
+			let name = this.state.profile.pictures[i] ? this.state.profile.pictures[i].data : 'undefined';
+			pictures.push(
+				<div key={i} className="img-avatar-show">
+					<form onSubmit={this.selectAvatar}>
+						<input type="hidden" name="picId" value={i} />
+						<input type="image" className="select-avatar" src={name} alt="avatar" height="190px"/>
+					</form>
+				</div>);
+		}
+		return pictures;
+	}
+	selectAvatar(e) {
+		e.preventDefault();
+		this.setState({selectAvatar: e.target.picId.value})
+	}
+	deleteAvatar() {
+		const self = this;
+
+		services('deleteAvatar', {id: self.state.selectAvatar}, function (err, response) {
+			if (err) {
+				self.setState({errors: response.data.errors})
+				if (response.data.errors.swal)
+					swal("Error", response.data.errors.swal, "error");
+				return ;
+			}
+			self.getProfile();
+		});
+	}
+	setAvatarToPP() {
+		const self = this;
+
+		swal({
+			title: "Changement de photo de profil",
+			text: "Vous êtes sur de vouloir changer votre photo de profil ?",
+			buttons: {
+				Retour: "Retour",
+				Changer: "Changer",
+			},
+		}).then(function (value) {
+			if (value === "Retour")
+				return ;
+
+			services('changeAvatar', {id: self.state.selectAvatar}, function (err, response) {
+				if (err) {
+					self.setState({errors: response.data.errors})
+					if (response.data.errors.swal)
+						swal("Error", response.data.errors.swal, "error");
+					return ;
+				}
+				swal("Succès!", "Vous venez de changer de photo de profile !" , "success");
+				self.getProfile();
+			});
+		})
 	}
 	toggleButton(button, e) {
 		e.preventDefault();
@@ -167,6 +231,12 @@ class Profile extends Component {
 				return ;
 			}
 			self.setState({profile: response.data.profile});
+
+			services('getAvatar', {getData: response.data.profile.id}, function (err, response) {
+				if (response.data.src)
+					return self.setState({avatar: response.data.src});
+				return self.setState({avatar: "http://www.bmxpugetville.fr/wp-content/uploads/2015/09/avatar.jpg"});
+			})
 		});
 	}
 	componentDidMount() {
@@ -175,10 +245,27 @@ class Profile extends Component {
 		global.socket.emit('send visit', {id: this.state.getData});
 	}
 	handleUpload(event) {
-		const target = event.target, file = target.files[0];
+		const self		= this;
 
-		console.log(file);
-		this.setState({file: event.target.files[0]});
+		var reader		= new window.FileReader();
+		var base64data;
+
+		if (!event[0])
+			return swal("Fichier invalide", "Envoyez uniquement des fichiers PNG/JPEG", "error");
+
+		reader.readAsDataURL(event[0]);
+		reader.onloadend = function() {
+			base64data = reader.result;
+			services('uploadImage', {file: reader.result}, function (err, response) {
+				if (err) {
+					self.setState({errors: response.data.errors})
+					if (response.data.errors.swal)
+						swal("Error", response.data.errors.swal, "error");
+					return ;
+				}
+				self.getProfile();
+			});
+		}
 	}
 	componentWillMount() {
 		document.title = `${logoName} - Profile`;
@@ -218,7 +305,7 @@ class Profile extends Component {
 									</div>
 								]}>
 								<div className="profile-header-avatar">
-									<img alt="avatar" className="profile-avatar" src="img/avatar.jpg" />
+									<img alt="avatar" className="profile-avatar" src={this.state.avatar}/>
 								</div>
 
 							</Card>
@@ -287,30 +374,12 @@ class Profile extends Component {
 									{this.state.myLibrary && <a className="pull-right" onClick={this.toggleButton.bind(this, 'myLibraryClose')}><Icon name="myLibrary" className="hi-icon-small hi-icon-pencil f-black">done</Icon></a>}
 									<center>Add element</center>
 									{this.state.myLibrary && <Row>
-										{/* <Input s={12} type='select' id="myLibraryCat" label="" defaultValue='2'>
-											<option value='Films'>Films</option>
-											<option value='Sport'>Sport</option>
-											<option value='Loisirs'>Loisirs</option>
-											<option value='Livres'>Livres</option>
-										</Input> */}
 										<Input s={12} placeholder="Ecrivez-votre texte" id="myLibrary" type="text" />
 										<a onClick={this.toggleButton.bind(this, 'myLibrary')}>
 											<Button>Add</Button>
 										</a>
 									</Row>}
 								</CollectionItem>
-
-								{/* {profile.Films !== null && <CollectionItem><center>Films</center>
-									{this.getLibrary('Films')}
-								</CollectionItem>}
-
-								{profile.Sport !== null && <CollectionItem><center>Sport</center>
-									{this.getLibrary('Sport')}
-								</CollectionItem>}
-
-								{profile.Loisirs !== null && <CollectionItem><center>Loisirs</center>
-									{this.getLibrary('Loisirs')}
-								</CollectionItem>} */}
 
 								{profile.tags !== null && <CollectionItem><center>Tags</center>
 									{this.getLibrary('tags')}
@@ -345,13 +414,29 @@ class Profile extends Component {
 								</div>}
 							</Card>
 
-							{profile.pictures && profile.pictures.length &&
-								<Card className="hi-icon-wrap hi-icon-effect-9 hi-icon-effect-9a">
-									<label htmlFor="file"><Icon id="addImage" name="whyMe" className="hi-icon hi-icon-pencil f-black">add_a_photo</Icon></label>
-
+							{profile.pictures && profile.pictures.length > 0 && profile.me === false && <Card className="hi-icon-wrap hi-icon-effect-9 hi-icon-effect-9a">
 									<Carousel id="carousel" images={this.showPictures()} />
-									  <input type="file" id="file" className="" accept="image/*" name="imageUpload" multiple onChange={this.handleUpload} />
-									  <Button onClick={this.addByClick}></Button>
+								</Card>
+							}
+							{profile.pictures && profile.me === true &&
+								<Card className="hi-icon-wrap hi-icon-effect-9 hi-icon-effect-9a">
+									{this.showPicturesMe()}
+									<br/>
+									{profile.pictures.length < 5 &&<Dropzone
+								      multiple={false}
+								      accept="image/*"
+								      onDrop={this.handleUpload.bind(this)}>
+								      <p>Drop an image or click to select a file to upload.</p>
+								    </Dropzone>}
+
+									{this.state.selectAvatar && "Vous avez selectionné l'image numero " + this.state.selectAvatar }
+									<br/>
+									{this.state.selectAvatar &&
+										<div>
+											<Button onClick={this.deleteAvatar} floating large className='red tooltipped' waves='light' icon='remove' />
+											<Button onClick={this.setAvatarToPP} floating large className='green' waves='light' icon='tag_faces'/>
+										</div>
+									}
 								</Card>
 							}
 						</Col>

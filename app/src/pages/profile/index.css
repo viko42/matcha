@@ -223,3 +223,11 @@
 .offline {
 	color: red;
 }
+.select-avatar:hover {
+	border:solid;
+}
+
+.img-avatar-show{
+	display: inline-block;
+
+}
