@@ -8,11 +8,13 @@ var Conversations	= mongoose.model('Conversations');
 var Notifications	= mongoose.model('Notifications');
 var Messages		= mongoose.model('Messages');
 var Users			= mongoose.model('Users');
+
 const thisController	= "MessagesController";
+const {isBlokedSocket}	= require('../policies/isBlocked');
 
 exports.setAsRead	= function (data, socket) {
 	Messages.update({status: 'sended', conversation: data.conversationId, sender: {"$ne": data.userId}}, {status: 'readed'}, {multi: true}, function(err, num) {
-		console.log('A conversation has been read');
+		// console.log('A conversation has been read');
 
 		if (!num || num.n <= 0)
 			return ;
@@ -22,7 +24,7 @@ exports.setAsRead	= function (data, socket) {
 
 			if (!userRead)
 				return console.log('User not found');
-			console.log(num.n + ' messages lus par ' + userRead.email);
+			// console.log(num.n + ' messages lus par ' + userRead.email);
 		})
     });
 };
@@ -130,7 +132,7 @@ exports.send = function(data, socket) {
 	var		receiverId;
 
 	const maxNotification = function (msg) { var rsp = ""; for (var i = 0; i < msg.length; i++) { rsp += msg[i]; if (i > 20) { rsp += '...'; break; } } return rsp; };
-	
+
 	async.waterfall([
 		// Search Conversation
 		function (callback) {
@@ -202,7 +204,7 @@ exports.send = function(data, socket) {
 			new_notification.save(function (err, notifSaved) {
 				if (err)
 					return callback(err);
-				console.log('Notification pushed');
+				// console.log('Notification pushed');
 				return callback();
 			});
 		},
@@ -212,8 +214,11 @@ exports.send = function(data, socket) {
 
 		exports.get_messages({userId: socket.handshake.query.userId, ...data}, socket, function (data) {
 			socket.emit('message sent', data);
-			socket.to(receiverSocketId).emit('receive message', {conversationId: conversationId});
-			socket.to(receiverSocketId).emit('test_message', {message: userEmit+" : "+ maxNotification(messageSent), status: 'success'});
+			// socket.to(receiverSocketId).emit('receive message', {conversationId: conversationId});
+
+			isBlokedSocket(socket.handshake.query.userId, receiverSocketId, function (to) {
+				socket.to(to).emit('test_message', {message: userEmit+" : "+ maxNotification(messageSent), status: 'success'});
+			});
 		})
 	})
 };
@@ -221,7 +226,7 @@ exports.send = function(data, socket) {
 exports.delete = function(req, res) {
 	// const user = new Users(req.connectedAs);
 
-	console.log(req.body);
+	// console.log(req.body);
 	async.waterfall([
 		function (callback) {
 			return callback();
@@ -229,7 +234,7 @@ exports.delete = function(req, res) {
 	], function (err) {
 		if (err)
 			return s.serverError(res, err, thisController);
-		console.log(req.connectedAs);
+		// console.log(req.connectedAs);
 		return res.status(200).json({deleted: {} });
 	})
 };

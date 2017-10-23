@@ -10,8 +10,21 @@ const thisController	= "SearchController";
 exports.find = function (req, res) {
 	const	userId		= req.connectedAs.id;
 	let		results		= {};
+	let		blockedUsers = [];
 
 	async.waterfall([
+		function (callback) {
+			Users.findOne({'_id': userId}).exec(function (err, userFound) {
+				if (err)
+					return callback(err);
+
+				if (!userFound)
+					return callback('User not found');
+
+				blockedUsers = userFound.blocked;
+				return callback();
+			});
+		},
 		function (callback) {
 			Users.find({}).exec(function (err, usersFound) {
 				if (err)
@@ -30,6 +43,14 @@ exports.find = function (req, res) {
 				results = usersFound;
 				return callback();
 			});
+		},
+		function (callback) {
+			_.remove(results, { id: req.connectedAs.id });
+
+			for (var i = 0; i < blockedUsers.length; i++) {
+				_.remove(results, { id: blockedUsers[i] });
+			}
+			return callback();
 		},
 	], function (err) {
 		if (err)

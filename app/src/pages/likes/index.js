@@ -11,7 +11,7 @@ import swal		from 'sweetalert';
 // import 'react-table/react-table.css'
 
 import Header from '../../components/header/index'
-import {logoName, apiUrl, urlApp} from '../../config/crushyard'
+import {logoName, apiUrl} from '../../config/crushyard'
 
 class Likes extends Component {
 	constructor(props) {
@@ -23,49 +23,7 @@ class Likes extends Component {
 			inbox: [],
 			users: [],
 		};
-
-		// this.getCrush	= this.getCrush.bind(this);
-		// this.getList	= this.getList.bind(this);
 	}
-	// getList(crushs) {
-	// 	var render = [];
-	//
-	// 	if (!crushs || crushs.length < 1)
-	// 		render.push(
-	// 			<Col s={12} m={12} l={12} key='no-result'>
-	// 				<Card className='blue-grey darken-1' textClassName='white-text' title='Aucun resultat'>
-	// 					Vous n'avez aucun crush pour l'instant !
-	// 				</Card>
-	// 			</Col>
-	// 		);
-	// 	for (var i = 0; i < crushs.length; i++) {
-	// 		render.push(
-	// 			<Col s={12} m={6} l={6} className="xl3" key={i}>
-	// 				<Card className="crush-tag-card">
-	// 					<div className="crush-tag-buttons-close">
-	// 						<form onSubmit={this.removeCrush.bind(this)}>
-	// 							<input type="hidden" name="profileId" value={crushs[i].profileId}/>
-	// 							<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Cancel this crush"><Button floating className='red actions-tag' waves='light' icon='close' /></a>
-	// 						</form>
-	// 					</div>
-	// 					<div className="crush-tag-name">{crushs[i].firstName} {crushs[i].lastName}<br/>22 ans</div>
-	// 					<img alt="profile" className="crush-tag-img" src="img/yuna.jpg"/>
-	// 					<div className="crush-tag-buttons">
-	// 						<form onSubmit={this.startConversation}>
-	// 							<input type="hidden" name="profileId" value={crushs[i].profileId}/>
-	// 							<a className="tooltipped" onClick={this.messageCrush} data-position="bottom" data-delay="50" data-tooltip="Speak with him"><Button floating className='blue actions-tag' waves='light' icon='message' /></a>
-	// 						</form>
-	// 					</div>
-	// 				</Card>
-	// 			</Col>
-	// 		);
-	// 	}
-	// 	this.setState({crushs: render});
-	// }
-	// getCrush() {
-	// 	const self = this;
-	//
-	// }
 	componentWillMount() {
 		document.title = `${logoName} - Mes likes`;
 	}
@@ -88,7 +46,7 @@ class Likes extends Component {
 						<div className="crush-tag-name">{users[i].firstName} {users[i].lastName}<br/>22 ans</div>
 						<img alt="profile" className="crush-tag-img" src="img/yuna.jpg"/>
 						<div className="crush-tag-buttons">
-							<a href={'/#/profile/'+users[i].id } className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Visit this profile"><Button floating className='grey actions-tag' waves='light' icon='input' /></a>
+							<a href={'/#/profile/'+users[i].profileId } className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Visit this profile"><Button floating className='grey actions-tag' waves='light' icon='input' /></a>
 						</div>
 					</Card>
 				</Col>
@@ -107,16 +65,7 @@ class Likes extends Component {
 				return ;
 			}
 			self.getUsers(response.data.likes);
-			// self.getList(response.data.crushs);
 		});
-		//
-		// global.socket.on('message sent', function (data) {
-		// 	let index = self.giveIndexConversation(data.conversationId);
-		//
-		// 	if (index !== -1)
-		// 		this.emit('give messages from conversation', {id: self.state.inbox[index].id, unread: false});
-		// })
-		// this.getCrush();
 	}
 	componentWillUnmount() {
 		// global.socket.off('message sent');

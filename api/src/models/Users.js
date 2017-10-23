@@ -27,6 +27,10 @@ var UsersSchema = new Schema({
 		type: String,
 		required: false
 	},
+	blocked: {
+		type: Array,
+		required: false
+	},
 	data: {
 		type: Object,
 		required: false,

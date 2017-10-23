@@ -12,14 +12,20 @@ import swal from 'sweetalert';
 import services from '../../config/services';
 
 import io from "socket.io-client";
+import {getLocalStorage} from '../../config/policies'
+
 const { urlApp, apiUrl } = require('../../config/crushyard');
+const NotificationSystem = require('react-notification-system'); //https://github.com/igorprado/react-notification-system
 
+var socket;
 
-var NotificationSystem = require('react-notification-system'); //https://github.com/igorprado/react-notification-system
-var socket = io.connect(apiUrl, {
-	query: {token: localStorage.getItem('auth')}
-});
-
+try {
+	socket = io.connect(apiUrl, {
+		query: {token: getLocalStorage('auth')}
+	});
+} catch(e) {
+	window.location.assign(urlApp + "/#");
+}
 global.socket = socket;
 
 class Header extends React.Component {
@@ -105,7 +111,16 @@ class Header extends React.Component {
 		nav.setAttribute("style", "display: none;");
 
 		// Get your notifications
-		this.serviceNotifications();
+		if (getLocalStorage('auth'))
+			this.serviceNotifications();
+
+		// Stop the loader
+		$('body').addClass('loaded');
+
+		this._notificationSystem = this.refs.notificationSystem;
+
+		if (!global.socket)
+			return ;
 
 		global.socket.on('test_message', function (data) {
 			self.serviceNotifications();
@@ -176,9 +191,7 @@ class Header extends React.Component {
 				},
 			});
 		})
-		$('body').addClass('loaded');
 
-    	this._notificationSystem = this.refs.notificationSystem;
 	}
 	notifications(e) {
 		e.preventDefault();
@@ -206,10 +219,12 @@ class Header extends React.Component {
 			<div>
 	        	<NotificationSystem ref="notificationSystem" />
 				<Navbar href='#/' brand='CrushYard' className="navbar show-in-small" right>
+					{getLocalStorage('auth') &&
 					<NavItem className="show-in-small" onClick={this.notifications}>
 						{this.state.notificationUnread === true && <Icon className="notif-unread" >notifications</Icon>}
 						{this.state.notificationUnread === false && <Icon>notifications</Icon>}
 					</NavItem>
+					}
 
 
 					{this.state.notification === true && <div className="notif-cont">
@@ -218,11 +233,12 @@ class Header extends React.Component {
 					<NavItem className="hide-in-small" href='#/inbox'><Icon>chat</Icon></NavItem>
 					<NavItem className="hide-in-small" href='#/search'><Icon>search</Icon></NavItem>
 
-					{ localStorage.getItem('auth') && <span className="dropDrownNavbar">
+					{ getLocalStorage('auth') && <span className="dropDrownNavbar">
 						<Dropdown data-constrainwidth="false" data-stoppropagation="true" trigger={
 							<li data-beloworigin="true" data-activates='dropdown_0'><a><Icon>more_vert</Icon></a></li>
 						}>
-							<NavItem href="#/profile/me">My profile</NavItem>
+							<NavItem href="#/search">Search</NavItem>
+							<NavItem href="#/profile/me">Mon profile</NavItem>
 							<NavItem divider />
 							<NavItem onClick={this.logout}>Logout</NavItem>
 						</Dropdown>

@@ -18,17 +18,18 @@ import Likes			from '../pages/likes';
 import NotFound			from '../pages/notfound';
 import Error			from '../pages/error';
 import Forbidden		from '../pages/forbidden';
+import NotSupported		from '../pages/unsupported';
+
+import {getLocalStorage} from './policies'
 
 const Authorization = function (component, roles) {
-	if (!localStorage.getItem('auth'))
+	if (!getLocalStorage('auth'))
 		return Forbidden;
 	return component;
 }
 
 const isConnected = function (connected, notConnected) {
-	console.log('isConnected method');
-
-	if (localStorage.getItem('auth') === null)
+	if (!getLocalStorage('auth'))
 		return notConnected;
 	return connected;
 }
@@ -48,6 +49,7 @@ const Routes = (props) => (
 		<Route path='/register'		component={Register}/>
 		<Route path='/login'		component={Login}/>
 		<Route path='/logout'		component={Logout}/>
+		<Route path='/unsupported'	component={NotSupported}/>
 		<Route path='/maintenance'	component={Error}/>
 		<Route component={NotFound}/>
     </Switch>

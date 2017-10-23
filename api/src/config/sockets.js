@@ -5,6 +5,7 @@ const UsersController		= require('../controllers/UsersController');
 const VisitsController		= require('../controllers/VisitsController');
 const CrushsController		= require('../controllers/CrushsController');
 const moment				= require('moment');
+const {isBlokedSocket}		= require('../policies/isBlocked');
 
 exports.sockets = function (socket) {
 	if (socket.handshake.query.userId === 'guest')
@@ -33,7 +34,9 @@ exports.sockets = function (socket) {
 		CrushsController.getSocketIdTarget({userId: socket.handshake.query.userId, ...data}, socket, function (err, socketId) {
 			if (err)
 				return console.log(err);
-			socket.to(socketId).emit('receive like', {});
+			isBlokedSocket(socket.handshake.query.userId, socketId, function (to) {
+				socket.to(to).emit('receive like', {});
+			})
 		});
   	});
 
@@ -41,7 +44,9 @@ exports.sockets = function (socket) {
 		CrushsController.getSocketIdTarget({userId: socket.handshake.query.userId, ...data}, socket, function (err, socketId) {
 			if (err)
 				return console.log(err);
-			socket.to(socketId).emit('receive unlike', {});
+			isBlokedSocket(socket.handshake.query.userId, socketId, function (to) {
+				socket.to(to).emit('receive unlike', {});
+			});
 		});
 	});
 
@@ -49,7 +54,10 @@ exports.sockets = function (socket) {
 		CrushsController.getSocketIdTarget({userId: socket.handshake.query.userId, ...data}, socket, function (err, socketId) {
 			if (err)
 			return console.log(err);
-			socket.to(socketId).emit('receive crush', {});
+
+			isBlokedSocket(socket.handshake.query.userId, socketId, function (to) {
+				socket.to(to).emit('receive crush', {});
+			});
 		});
 	});
 
@@ -57,7 +65,10 @@ exports.sockets = function (socket) {
 		VisitsController.newVisit({userId: socket.handshake.query.userId, ...data}, socket, function (err, socketId) {
 			if (err)
 				return console.log(err);
-			socket.to(socketId).emit('profile visited', {});
+
+			isBlokedSocket(socket.handshake.query.userId, socketId, function (to) {
+				socket.to(to).emit('profile visited', {});
+			});
 		});
   	});
 

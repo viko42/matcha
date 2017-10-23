@@ -51,6 +51,10 @@
 	bottom: 0px;
 	right: 0;
 }
+.header-report {
+	text-align: left;
+	bottom: 0px;
+}
 .card-header .card-content {
 	background-color: rgb(253, 253, 253);
 }
@@ -222,6 +226,10 @@
 }
 .offline {
 	color: red;
+}
+
+.select-avatar {
+	max-width: 300px;
 }
 .select-avatar:hover {
 	border:solid;

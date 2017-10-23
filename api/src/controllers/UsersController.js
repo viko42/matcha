@@ -1,19 +1,124 @@
-const mongoose	= require('mongoose');
-const s			= require('../config/services');
-const async		= require('async');
-const _			= require('lodash');
-const Users		= mongoose.model('Users');
-const bcrypt	= require('bcrypt');
-const jwt		= require('jsonwebtoken');
-const moment	= require('moment');
+const mongoose			= require('mongoose');
+const s					= require('../config/services');
+const async				= require('async');
+const _					= require('lodash');
+const Users				= mongoose.model('Users');
+const Conversations		= mongoose.model('Conversations');
+const bcrypt			= require('bcrypt');
+const jwt				= require('jsonwebtoken');
+const moment			= require('moment');
 const thisController	= "UsersController";
 
 exports.block = function (req, res) {
+	const blockUser = req.body;
 
+	var	blockedUsers;
+	var action = "add";
+
+	if (!blockUser || !blockUser.id)
+		return s.notFound(res, {errors: "Incomplete request"}, thisController);
+
+	if (blockUser.id === req.connectedAs.id)
+		return s.notFound(res, {errors: "Unable to block"}, thisController);
+
+	async.waterfall([
+		function (callback) {
+			Users.findOne({'_id': req.connectedAs.id}).exec(function (err, userFound) {
+				if (err)
+					return callback(err, true);
+
+				if (!userFound)
+					return callback('User not found', false);
+
+				blockedUsers = userFound.blocked;
+
+				if (!blockedUsers)
+					blockedUsers = [];
+
+				let remove = false;
+				for (var i = 0; i < blockedUsers.length; i++) {
+					if (blockedUsers[i] === blockUser.id)
+						remove = true;
+				}
+
+				if (remove) {
+					action = "remove";
+					blockedUsers = _.filter(blockedUsers, function(currentObject) {
+					    return currentObject !== blockUser.id;
+					});
+				} else
+					blockedUsers.push(blockUser.id);
+				return callback();
+			})
+		},
+		function (callback) {
+			if (action === "remove")
+				return callback();
+
+			Conversations.findOne({$or: [{sender: blockUser.id, recipent: req.connectedAs.id}, {sender: req.connectedAs.id, recipent: blockUser.id}]}).exec(function (err, conversationFound) {
+				if (err)
+					return callback(err);
+
+				if (!conversationFound)
+					return callback();
+
+				Conversations.remove({'_id': conversationFound.id}).exec(function (err, conversationDeleted) {
+					if (err)
+						return callback(err);
+					return callback();
+				});
+			});
+		},
+		function (callback) {
+			Users.findOne({'_id': blockUser.id}).exec(function (err, userToBlock) {
+				if (err)
+					return callback(err, true);
+
+				if (!userToBlock)
+					return callback({errors: {swal: 'User not found'}}, false);
+
+				Users.update({'_id': req.connectedAs.id}, {blocked: blockedUsers}).exec(function (err, userUpdated) {
+					if (err)
+						return callback(err, true);
+					return callback();
+				});
+			})
+		},
+	], function (err, isFatal) {
+		if (err && isFatal)
+			return s.serverError(res, err, thisController);
+
+		if (err && !isFatal)
+			return s.notFound(res, err, thisController);
+
+		return res.status(200).json({message: "User blocked!", action: action === "remove" ? "deleted" : "added"});
+	});
 };
 
 exports.report = function (req, res) {
+	const reportUser = req.body;
 
+	var reportedUsers;
+
+	async.waterfall([
+		function (callback) {
+			Users.findOne({'_id': req.connectedAs.id}).exec(function (err, userFound) {
+				if (err)
+					return callback(err);
+
+				if (!userFound)
+					return callback('User not found');
+			})
+		},
+		function (callback) {
+
+		},
+	], function (err) {
+		if (err)
+			return s.serverError(res, err, thisController);
+
+		return res.status(200).json({message: "User reported!"});
+	});
 };
 
 exports.list = function (req, res) {
@@ -109,8 +214,9 @@ exports.update = function(req, res) {
 	if (!req.body.userId)
 		return s.badRequest(res, "user ID is missing", thisController);
 
-	// if (you == userId)
-	//
+	// console.log(req.body);
+	if (req.connectedAs.id !== req.body.userId)
+		return s.badRequest(res, "No sorry", thisController);
 
 	Users.findOneAndUpdate({_id: req.body.userId}, req.body, {new: true}, function(err, user) {
 		if (err)

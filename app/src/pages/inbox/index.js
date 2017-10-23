@@ -96,10 +96,7 @@ class Inbox extends Component {
 
 			self.getAllUser();
 			if (self.state.selectedBoxMessage === self.giveIndexConversation(data.conversationId)) {
-
-				console.log("Le dialogue est lu");
 				self.focusBox(self.state.selectedBoxMessage);
-				console.log(data);
 			}
 			else {
 				console.log('Des messages sont en attente de lecture');
@@ -117,19 +114,6 @@ class Inbox extends Component {
 		global.socket.off('give messages from conversation');
 		global.socket.off('receive message');
 	}
-
-	deleteMessageInbox() {
-		swal({
-			title: "Delete this conversation ?",
-			text: "You will cancel your crush",
-			type: "warning",
-			buttons: {
-				cancel: true,
-				confirm: true,
-			},
-		});
-	}
-
 	selectConversation(which) {
 		const self = this;
 
@@ -140,7 +124,6 @@ class Inbox extends Component {
 			return self.state.selectedBoxMessage = -1;
 
 		self.state.selectedBoxMessage = which;
-		console.log('Emit - give messages');
 		global.socket.emit('give messages from conversation', {id: self.state.inbox[self.state.selectedBoxMessage].id, unread: (self.state.selectedBoxMessage === self.giveIndexConversation(self.state.inbox[which].id)) ? false : true});
 	}
  	getAllUser() {
@@ -178,7 +161,7 @@ class Inbox extends Component {
 								{this.state.inbox[i].unread > 0 && <span className="notification-bubble-chat">{this.state.inbox[i].unread}</span>}
 							</Chip>
 							<a href={"#/profile/"+this.state.inbox[i].id_profile}>Visit profile</a>
-							<a onClick={this.deleteMessageInbox} className="pull-right deleteMessageInbox"><Icon>delete_forever</Icon></a>
+							{/* <a onClick={this.deleteMessageInbox} className="pull-right deleteMessageInbox"><Icon>delete_forever</Icon></a> */}
 						</div>}>
 						<div id={'box-message' + i} className="myMessages">
 							{message}

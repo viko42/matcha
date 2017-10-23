@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Col, Card, Row, Button } from 'react-materialize';
+import { Table, Col, Card, Row } from 'react-materialize';
 import services from '../../config/services';
 
 import '../../index.css';
@@ -11,7 +11,7 @@ import swal		from 'sweetalert';
 // import 'react-table/react-table.css'
 
 import Header from '../../components/header/index'
-import {logoName, apiUrl, urlApp} from '../../config/crushyard'
+import {logoName, apiUrl} from '../../config/crushyard'
 
 class Visits extends Component {
 	constructor(props) {

@@ -10,6 +10,7 @@ var Messages		= mongoose.model('Messages');
 var Users			= mongoose.model('Users');
 var Visits			= mongoose.model('Visits');
 var thisController	= "VisitsController";
+const {isBlocked}	= require('../policies/isBlocked');
 
 exports.listVisits		= function (req, res) {
 	const userId		= req.connectedAs.id;
@@ -60,10 +61,15 @@ exports.newVisit = function (data, socket, callback) {
 		if (!userFound)
 			return callback(profileId + ' not found. [VISITS-CONTROLLER]');
 
-		new_visit.save(function (err, visitSaved) {
-			if (err)
-				return callback(err);
-			return callback(null, userFound.data.socketid);
-		});
+		isBlocked(visitor, profileId, function (isBlocked) {
+			if (isBlocked)
+				return callback('User is blocked - No notification [VISITS]');
+
+			new_visit.save(function (err, visitSaved) {
+				if (err)
+					return callback(err);
+				return callback(null, userFound.data.socketid);
+			});
+		})
 	});
 }

@@ -21,25 +21,20 @@ exports.findAvatar = function (req, res) {
 	if (!id)
 		return s.badRequest(res, "ID Missing", thisController);
 
-	// if (id === 'me')
-	console.log(id);
-		// id = req.connectedAs.id;
-
 	Users.findOne({'_id': id}).exec(function(err, userFound) {
 		if (err)
 			return s.serverError(res, "Profile introuvable: " + id, thisController);
 
-		if (!userFound)
-			return s.badRequest(res, "Utilisateur introuvable", thisController);
+		var isAvatar = true;
 
-		if (!userFound.data.pictures)
-			return s.badRequest(res, "Utilisateur sans avatar", thisController);
+		if (!userFound || !userFound.data.pictures || (!userFound.data.avatarID && !userFound.data.pictures[0]))
+			isAvatar = false;
 
-		if (!userFound.data.avatarID && !userFound.data.pictures[0])
-			return s.badRequest(res, "Utilisateur sans avatar", thisController);
-
-		if (!userFound.data.avatarID)
+		if (!userFound.data.avatarID || !userFound.data.pictures[userFound.data.avatarID])
 			userFound.data.avatarID = 0;
+
+		if (!isAvatar || !userFound.data.pictures[userFound.data.avatarID])
+			return res.status(200).json({default: true});
 
 		return res.status(200).json({src: userFound.data.pictures[userFound.data.avatarID].data});
 	});
@@ -85,14 +80,11 @@ exports.deleteAvatar = function (req, res) {
 
 		var updatePictures = [];
 
-		console.log('IDPICTURE: '+ idPicture);
 		for (var i = 0; i < data.pictures.length; i++) {
 			if (i !== Number(idPicture))
 				updatePictures.push(data.pictures[i]);
 		}
 		data.pictures = updatePictures;
-		console.log(updatePictures.length);
-		console.log(data.pictures.length);
 		Users.update({'_id': userFound.id}, {data: data}).exec(function (err, userUpdated) {
 			if (err)
 				return s.serverError(res, err, thisController);
@@ -102,17 +94,6 @@ exports.deleteAvatar = function (req, res) {
 };
 
 exports.uploadImage = function(req, res) {
-	// var options = {string: true};
-	// console.log(base64);
-	// base64.encode(req.body.file.preview, options, function (err, image) {
-	//     if (err) {
-	//         console.log(err);
-	//     }
-	//     console.log(image);
-	// });
-	// upload.array(req.body.file.preview, 12)
-	// console.log(req.body.file);
-
 	Users.findOne({'_id': req.connectedAs}).exec(function (err, userFound) {
 		if (err)
 			return s.serverError(res, err, thisController);
@@ -129,7 +110,6 @@ exports.uploadImage = function(req, res) {
 		Users.update({'_id': userFound.id}, {data: data}).exec(function (err, userUpdated) {
 			if (err)
 				return s.serverError(res, err, thisController);
-			console.log('User updated');
 			return res.status(200).json({});
 		})
 	})
@@ -191,6 +171,7 @@ exports.getProfile = function(req, res) {
 	var profile		= req.params;
 	var crushDone	= false;
 	var doubleCrush	= false;
+	var blocked		= false;
 
 	if (!profile.id)
 		return s.badRequest(res, "Missing profile ID", thisController)
@@ -220,6 +201,21 @@ exports.getProfile = function(req, res) {
 			});
 		},
 		function (callback) {
+			Users.findOne({'_id': req.connectedAs.id}).exec(function (err, userFound) {
+				if (err)
+					return callback(err);
+
+				if (!userFound)
+					return callback('User not found')
+
+				for (var i = 0; i < userFound.blocked.length; i++) {
+					if (userFound.blocked[i] === profile.id)
+						blocked = true;
+				}
+				return callback();
+			});
+		},
+		function (callback) {
 			Users.findOne({'_id': profile.id}, function(err, user) {
 				if (err)
 					return callback(err);
@@ -235,9 +231,11 @@ exports.getProfile = function(req, res) {
 					crushed: crushDone,
 					doubleCrush: doubleCrush,
 					connected: user.data.status === 'online' ? true : false,
+					status: user.data.status === 'online' ? "online" : "offline",
 					last_activity: moment(user.data.last_activity).format('DD/MM HH:mm'),
 					pictures: user.data.pictures,
-					id: user.id
+					id: user.id,
+					blocked: blocked,
 				};
 				return callback();
 			});

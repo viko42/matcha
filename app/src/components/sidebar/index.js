@@ -3,6 +3,8 @@ import './index.css';
 import { SideNav, SideNavItem } from 'react-materialize';
 import $ from 'jquery';
 
+import {getLocalStorage} from '../../config/policies'
+
 window.onhashchange = function () {
 	var width			= $(document).width();
 	var closeSideBar	= document.getElementById('sidenav-overlay');
@@ -15,11 +17,6 @@ class SideBar extends Component {
 		super(props);
 
 		this.state = {};
-		if (localStorage.getItem('user')) {
-			const object = localStorage.getItem('user');
-
-			this.state = JSON.parse( object );
-		}
 	}
 	updateDimensions() {
 		var closeSideBar = document.getElementById('sidenav-overlay');
@@ -28,14 +25,12 @@ class SideBar extends Component {
 	}
 	componentDidMount() {
 		window.addEventListener("resize", this.updateDimensions);
-
-
     }
     componentWillUnmount() {
 		window.removeEventListener("resize", this.updateDimensions);
 	}
 	ifConnected() {
-		if (!localStorage.getItem('auth'))
+		if (!getLocalStorage('auth'))
 			return (
 				<SideNav
 					trigger={<h1 className="testButton">☰</h1>}
@@ -57,8 +52,8 @@ class SideBar extends Component {
 						user={{
 							background: 'img/office.jpg',
 							image: 'img/yuna.jpg',
-							name: this.state.firstName + ' ' + this.state.lastName,
-							email: this.state.email
+							name: getLocalStorage('user').firstName + ' ' + getLocalStorage('user').lastName,
+							email: getLocalStorage('user').email
 						}}
 					/>
 					{/* <SideNavItem href='#/' icon='cloud'>Retour à la page d'accueil</SideNavItem> */}

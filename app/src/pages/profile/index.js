@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Col, Card, Row, Collection, CollectionItem, Chip, Input, Button, Icon, Carousel } from 'react-materialize';
 import swal from 'sweetalert';
 import services from '../../config/services';
-import {urlApp, apiUrl} from '../../config/crushyard'
+import {urlApp} from '../../config/crushyard'
 // import FileBase64 from 'react-file-base64';
 
 import '../../index.css';
@@ -31,6 +31,51 @@ class Profile extends Component {
 		this.deleteAvatar = this.deleteAvatar.bind(this);
 		this.setAvatarToPP = this.setAvatarToPP.bind(this);
 	}
+	blockUser() {
+		const self = this;
+
+		swal({
+			title: "Are you sure ?",
+			text: self.state.profile.blocked ? "You will unblock this user" : "You will block this user and will be unable to see this user anymore",
+			type: "warning",
+			buttons: {
+				Retour: "Retour",
+				Oui: "Oui",
+			},
+		}).then((value) => {
+			if (value === "Retour")
+				return ;
+
+			services('blockUser', {id: self.state.getData}, function (err, response) {
+				if (err) { self.setState({errors: response.data.errors}); if (response.data.errors.swal) { swal("Error", response.data.errors.swal, "error"); } return ; }
+				swal("Success", self.state.profile.blocked ? "This user is unblock" : "This user is blocked", "success");
+				self.getProfile();
+			});
+		});
+	}
+	// reportedId
+	reportUser() {
+		const self = this;
+
+		swal({
+			title: "Are you sure ?",
+			text: "You will report this user.",
+			type: "warning",
+			buttons: {
+				Retour: "Retour",
+				Oui: "Oui",
+			},
+		}).then((value) => {
+			if (value === "Retour")
+				return ;
+
+			services('reportUser', {reportedId: self.state.getData}, function (err, response) {
+				if (err) { self.setState({errors: response.data.errors}); if (response.data.errors.swal) { swal("Error", response.data.errors.swal, "error"); } return ; }
+				swal("Success", "This user is reported", "success");
+				self.getProfile();
+			});
+		});
+	}
 	startConversation() {
 		const self = this;
 
@@ -46,7 +91,7 @@ class Profile extends Component {
 	}
 	doCrush(value) {
 		const self = this;
-		console.log(value);
+
 		services('doCrush', {getData: this.state.getData}, function (err, response) {
 			if (err) {
 				self.setState({errors: response.data.errors})
@@ -231,13 +276,17 @@ class Profile extends Component {
 				return ;
 			}
 			self.setState({profile: response.data.profile});
-
 			services('getAvatar', {getData: response.data.profile.id}, function (err, response) {
 				if (response.data.src)
 					return self.setState({avatar: response.data.src});
 				return self.setState({avatar: "http://www.bmxpugetville.fr/wp-content/uploads/2015/09/avatar.jpg"});
 			})
 		});
+	}
+	componentWillReceiveProps(newProps) {
+		const self = this;
+
+		this.setState({getData: newProps.match.params.id}, function () { self.getProfile(); });
 	}
 	componentDidMount() {
 		this.getProfile();
@@ -248,14 +297,12 @@ class Profile extends Component {
 		const self		= this;
 
 		var reader		= new window.FileReader();
-		var base64data;
 
 		if (!event[0])
 			return swal("Fichier invalide", "Envoyez uniquement des fichiers PNG/JPEG", "error");
 
 		reader.readAsDataURL(event[0]);
 		reader.onloadend = function() {
-			base64data = reader.result;
 			services('uploadImage', {file: reader.result}, function (err, response) {
 				if (err) {
 					self.setState({errors: response.data.errors})
@@ -282,7 +329,8 @@ class Profile extends Component {
 								className="card-header"
 								actions={[
 									<div key='header' className="links-header">
-										<a className="link-name tooltipped" data-position="bottom" data-delay="50" data-tooltip={profile.connected === false ? "User offline" : "User online"}><Icon className={profile.connected ? "online" : "offline"}>wb_sunny</Icon>{profile.firstName} {profile.lastName}</a><br/>
+										<a className="link-name tooltipped" data-position="bottom" data-delay="50" data-tooltip={profile.connected === true ? "User online" : "User offline"}><Icon className={profile.connected === false ? "offline" : "online"}>wb_sunny</Icon>{profile.firstName} {profile.lastName}</a>
+										<br/>
 										{profile.connected === false && <a href>Last activity on {profile.last_activity}</a>}
 										<div hidden={profile.me === true || profile.crushed === true ? true : false} className="yes-crush">
 											<a onClick={this.doCrush.bind(this, true)} className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Want to crush ?"><Button floating large className='green' waves='light' icon='check' /></a>
@@ -298,6 +346,11 @@ class Profile extends Component {
 											<a onClick={this.startConversation.bind(this)} className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Start a conversation!"><Button floating large className='blue' waves='light' icon='speaker_notes' /></a>
 										</div>
 
+										{!profile.me && <div className="header-report">
+											<a onClick={this.blockUser.bind(this)}>{profile.blocked && 'Unblock'}{!profile.blocked && 'Block'} this user</a>
+											<br/>
+											<a onClick={this.reportUser.bind(this)}>Report as fake</a>
+										</div>}
 
 										<div className="header-score">
 											Popularity: 538 !

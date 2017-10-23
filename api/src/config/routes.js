@@ -10,6 +10,8 @@ module.exports = function (app) {
 	app.route('/users/create')	.post(Users.create);
 	app.route('/users/update')	.put(isConnected.authorization, Users.update);
 	app.route('/users/delete')	.delete(isConnected.authorization, Users.delete);
+	app.route('/users/block')	.post(isConnected.authorization, Users.block);
+	app.route('/users/report')	.post(isConnected.authorization, Users.report);
 
 	//####################################################################
 	//						Profile
@@ -81,6 +83,12 @@ module.exports = function (app) {
 
 	app.route('/visits')				.get(isConnected.authorization, Visits.listVisits);
 
+	//####################################################################
+	//						Report
+	var Report = require('../controllers/ReportController');
+	//--------------------------------------------------------------------
+
+	app.route('/report')				.post(isConnected.authorization, Report.newReport);
 
 	//
 	// //

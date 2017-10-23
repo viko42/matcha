@@ -6,6 +6,7 @@ var Users				= mongoose.model('Users');
 var Crushs				= mongoose.model('Crushs');
 var Conversations		= mongoose.model('Conversations');
 const thisController	= "CrushsController";
+const {isBlocked}		= require('../policies/isBlocked');
 
 exports.getSocketIdTarget = function (data, socket, callback) {
 	const	profileId = data.id;
@@ -32,13 +33,11 @@ exports.listLikes		= function (req, res) {
 				if (err)
 					return callback(err);
 
-					console.log(crushFound);
 				async.forEachOf(crushFound, function (crush, keyCrush, next_crush) {
 					Crushs.findOne({'from': userId, 'to': crush.from.id}).exec(function (err, doubleCrushFound) {
 						if (err)
 							return next_crush(err);
 
-							console.log(doubleCrushFound);
 						if (!doubleCrushFound)
 							crushs.push({firstName: crush.from.firstName, lastName: crush.from.lastName, profileId: crush.from.id})
 						next_crush();
@@ -205,6 +204,20 @@ exports.doCrush = function (req, res) {
 	var	  doubleCrush	= false;
 
 	async.waterfall([
+		//Verify if user have avatar
+		function (callback) {
+			Users.findOne({'_id': userId}).exec(function (err, userFound) {
+				if (err)
+					return callback(err);
+
+				if (!userFound)
+					return callback('User not found');
+
+				if (!userFound.data.pictures || userFound.data.pictures.length < 1)
+					return callback({swal: "Vous devez avoir une photo de profile"});
+				return callback();
+			});
+		},
 		function (callback) {
 			Users.findOne({'_id': crushTarget}).exec(function (err, userFound) {
 				if (err)
@@ -228,10 +241,16 @@ exports.doCrush = function (req, res) {
 					to: crushTarget,
 					type: 'normal'
 				});
-				crush.save(function (err, crushSaved) {
-					if (err)
-						return callback(err);
-					return callback();
+
+				isBlocked(userId, crushTarget, function (isBlocked) {
+					if (isBlocked)
+						return callback({swal: "Vous ne pouvez pas liker cette personne."});
+
+					crush.save(function (err, crushSaved) {
+						if (err)
+							return callback(err);
+						return callback();
+					});
 				});
 			});
 		},

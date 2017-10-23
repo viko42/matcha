@@ -7,6 +7,8 @@ import './index.css';
 import Header from '../../components/header/index'
 import {logoName} from '../../config/crushyard'
 
+import {getLocalStorage} from '../../config/policies'
+
 class App extends Component {
 	constructor(props) {
 		super(props);
@@ -17,7 +19,7 @@ class App extends Component {
 		document.title = `${logoName} - Home`;
 	}
 	ifConnected() {
-		if (!localStorage.getItem('auth'))
+		if (!getLocalStorage('auth'))
 			return (
 				<Header>
 					<div className="content">

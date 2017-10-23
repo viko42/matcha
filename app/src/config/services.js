@@ -1,4 +1,6 @@
 import axios from 'axios';
+import {getLocalStorage, remLocalStorage} from './policies'
+
 const {apiUrl} = require('./crushyard');
 
 const tabs = {
@@ -10,6 +12,11 @@ const tabs = {
 	'createUser': {
 		'method': 'POST',
 		'url': apiUrl + '/users/create'
+	},
+
+	'blockUser': {
+		'method': 'POST',
+		'url': apiUrl + '/users/block'
 	},
 
 	//###################################################################
@@ -139,35 +146,45 @@ const tabs = {
 		'url': apiUrl + '/notifications/read'
 	},
 
+
+
+	//###################################################################
+	// 							Report
+	//###################################################################
+
+	'reportUser': {
+		'method': 'POST',
+		'url': apiUrl + '/report'
+	},
+
 }
 
 const Services = (props, data, callback) => {
 	var get_data = data.getData ? data.getData : '';
 
-	console.log(tabs[props].url + get_data);
 	axios({
 		method: tabs[props].method,
 		url: tabs[props].url + get_data,
 		headers: {
-			'authorization': localStorage.getItem('auth')
+			'authorization': getLocalStorage('auth')
 		},
 		data: {
 			...data,
-			socketId: global.socket.id
+			socketId: global.socket ? global.socket.id : null
 		}
 	}).then(function (res) {
 		return callback(null, res);
 	}).catch(function (err) {
 		if (err.response && err.response.data === 'invalid token') {
-			localStorage.removeItem('auth');
-			localStorage.removeItem('user');
-			// window.location.reload();
+			try {
+				remLocalStorage('auth');
+				remLocalStorage('user');
+			} catch (e) {}
+
 			return callback(err.response.data.errors, err.response);
 		}
 		if (err.response)
 			return callback(err.response.data.errors, err.response);
-		// return callback({}, 'server error');
-
 	});
 }
 
