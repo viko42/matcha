@@ -11,6 +11,7 @@ import Header				from '../../components/header'
 import {logoName}			from '../../config/crushyard'
 
 import {setLocalStorage}	from '../../config/policies'
+import Geosuggest			from 'react-geosuggest';
 
 class Account extends Component {
 	constructor(props) {
@@ -48,6 +49,24 @@ class Account extends Component {
 			[name]: value
 		});
 	}
+	updateLocalization () {
+		const self = this;
+
+		services('updateLocalization', self.state, function (err, response) {
+
+			if (err) {
+				self.setState({errors: response.data.errors})
+				if (response.data.errors.swal)
+					swal("Error", response.data.errors.swal, "error");
+				return ;
+			}
+			swal("Your localization informations", "Successfully updated !", "success");
+			self.forceUpdate();
+		});
+	}
+	onSuggestSelect(suggest) {
+		this.setState({localization: {lat: suggest.location.lat, lng: suggest.location.lng}});
+	}
 	render() {
 		return (
 			<Header>
@@ -68,6 +87,17 @@ class Account extends Component {
 										<Button className="pull-right" onClick={this.updateAccount}>Update</Button>
 									</Col>
 								</Row>
+							</Card>
+							<Card title="Change your localization">
+								<Row>
+									<Geosuggest
+										onSuggestSelect={this.onSuggestSelect.bind(this)}
+										initialValue="Paris, France"
+									/>
+								<Col s={12}>
+									<Button className="pull-right" onClick={this.updateLocalization.bind(this)}>Change</Button>
+								</Col>
+							</Row>
 							</Card>
 						</Col>
 					</Row>

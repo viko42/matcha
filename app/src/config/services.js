@@ -37,6 +37,11 @@ const tabs = {
 		'url': apiUrl + '/account/update'
 	},
 
+	'updateLocalization': {
+		'method': 'PUT',
+		'url': apiUrl + '/account/update/localization'
+	},
+
 	//###################################################################
 	// 							Messages
 	//###################################################################
@@ -157,9 +162,17 @@ const tabs = {
 		'url': apiUrl + '/report'
 	},
 
+	//###################################################################
+	// 							Geolocation Google
+	//###################################################################
+
+	'findPosition': {
+		'method': 'GET',
+		'url': "https://maps.googleapis.com/maps/api/geocode/json?latlng="
+	},
 }
 
-const Services = (props, data, callback) => {
+const services = (props, data, callback) => {
 	var get_data = data.getData ? data.getData : '';
 
 	axios({
@@ -188,4 +201,24 @@ const Services = (props, data, callback) => {
 	});
 }
 
-export default Services;
+export function GoogleApi(props, data, callback) {
+	var apiGoogle	= "AIzaSyAWyS9AomCahBfTue98dIGMcCozwbgKBbc";
+	var get_data	= data.getData ? data.getData : '';
+
+	axios({
+   	 method: tabs[props].method,
+   	 url: tabs[props].url + get_data + "&key=" + apiGoogle,
+   	 headers: {
+		 'Content-Type' : 'application/x-www-form-urlencoded; charset=UTF-8'
+	 },
+   	 data: {}
+    }).then(function (res) {
+		return callback(null, res);
+    }).catch(function (err) {
+		console.log(err);
+		if (err.response)
+			return callback(null, null);
+	});
+}
+
+export default services;

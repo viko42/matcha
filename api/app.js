@@ -36,8 +36,7 @@ mongoose.connect('mongodb://'+process.env.IP+':'+process.env.MONGOPORT+'/matchad
 	// console.log('Callback Mongoose');
 	// console.log(err);
 });
-// console.log('Mongoose ::::');
-// console.log(mongoose);
+
 //#########################
 //	 Authorization headers
 //#########################
@@ -53,11 +52,13 @@ app.use(function(req, res, next) {
 	next();
 });
 
-// var bodyParser = require('body-parser');
 app.use(bodyParser.json({limit: '5mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
-// app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(bodyParser.json());
+app.use (function (error, req, res, next){
+    console.log("Une requete n'a pas abouti depuis: " + req.connection.remoteAddress);
+});
 
 //######################
 //	 Init socket.io

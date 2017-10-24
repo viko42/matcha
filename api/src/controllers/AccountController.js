@@ -4,15 +4,13 @@ var async		= require('async');
 var _			= require('lodash');
 var bcrypt		= require('bcrypt');
 var Users		= mongoose.model('Users');
+
 const thisController	= "AccountController";
+const NodeGeocoder		= require('node-geocoder');
 
-// var bcrypt		= require('bcrypt');
-// exports.myProfile = function(req, res) {
-// 		// return s.badRequest(res, err);
-// 		// return res.status(200).json({message: "Show user info."});
-// 	// })
-// };
+const options = { provider: 'google', httpAdapter: 'https', apiKey: 'AIzaSyAWyS9AomCahBfTue98dIGMcCozwbgKBbc', formatter: null };
 
+const geocoder = NodeGeocoder(options);
 
 exports.update = function(req, res) {
 	const user = new Users(req.connectedAs);
@@ -91,5 +89,38 @@ exports.update = function(req, res) {
 		if (err)
 			return s.badRequest(res, err, thisController);
 		return res.status(200).json({data: {firstName: user.firstName, lastName: user.lastName, email: user.email, phone: user.phone, birth: user.birth}});
+	})
+};
+
+exports.updateLocalization = function (req, res) {
+	const data = req.body.localization;
+
+	if (!data || !data.lng || !data.lat)
+		return s.badRequest(res, "Il manque des elements dans la requete", thisController);
+
+	async.waterfall([
+		// Verify the localization
+		function (callback) {
+			geocoder.reverse({lat:Number(data.lat), lon:Number(data.lng)}, function(err, res) {
+				if (!res)
+					return callback('Address not found');
+				return callback()
+			});
+		},
+		//Update the localization
+		function (callback) {
+			Users.findOneAndUpdate({'_id': req.connectedAs.id}, {'data.localization': data}, {new: true}).exec(function (err, userFound) {
+				if (err)
+					return callback(err);
+
+				if (!userFound)
+					return callback('User not updated');
+				return callback()
+			});
+		},
+	], function (err) {
+		if (err)
+			return s.badRequest(res, err, thisController);
+		return res.status(200).json({});
 	})
 };

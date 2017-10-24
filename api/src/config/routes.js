@@ -43,7 +43,9 @@ module.exports = function (app) {
 	var Account = require('../controllers/AccountController');
 	//--------------------------------------------------------------------
 
-	app.route('/account/update')	.put(isConnected.authorization, Account.update);
+	app.route('/account/update')				.put(isConnected.authorization, Account.update);
+	app.route('/account/update/localization')	.put(isConnected.authorization, Account.updateLocalization);
+
 
 	//####################################################################
 	//						Messages

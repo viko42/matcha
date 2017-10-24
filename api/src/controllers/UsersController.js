@@ -8,6 +8,7 @@ const bcrypt			= require('bcrypt');
 const jwt				= require('jsonwebtoken');
 const moment			= require('moment');
 const thisController	= "UsersController";
+const http				= require('http');
 
 exports.block = function (req, res) {
 	const blockUser = req.body;
@@ -180,6 +181,37 @@ exports.create = function(req, res) {
 			});
 		},
 		function (callback) {
+			if (new_user.localization && new_user.localization.lng && new_user.localization.lat)
+				return callback();
+
+			let positions = {};
+			http.get('http://ip-api.com/json', (resp) => {
+				let data = '';
+
+					console.log(resp);
+
+				resp.on('data', (chunk) => {
+					data += chunk;
+				});
+
+				resp.on('error', () => {
+					new_user.localization	= {
+						lat: 0,
+						lng: 0,
+					}
+				});
+
+				resp.on('end', () => {
+					positions				= JSON.parse(data);
+					new_user.localization	= {
+						lat: positions.lat,
+						lng: positions.lon,
+					}
+					return callback();
+				});
+			});
+		},
+		function (callback) {
 			bcrypt.hash(new_user.password, 10, function(err, hash) {
 				if (err)
 					return callback(err);
@@ -194,6 +226,10 @@ exports.create = function(req, res) {
 				profile: {
 					sexe: 'Non renseigné',
 					orientation: 'Non renseigné'
+				},
+				localization: {
+					lat: new_user.localization.lat,
+					lng: new_user.localization.lng
 				}
 			}
 			new_user = new Users(req.body);
