@@ -32,6 +32,11 @@ const tabs = {
 	// 							Account
 	//###################################################################
 
+	'getAccount': {
+		'method': 'GET',
+		'url': apiUrl + '/account'
+	},
+
 	'updateAccount': {
 		'method': 'PUT',
 		'url': apiUrl + '/account/update'

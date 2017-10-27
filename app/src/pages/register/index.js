@@ -108,8 +108,8 @@ class Register extends Component {
 									<Row>
 										<Input type="email" name='email' label="Your email" error={this.state.errors && this.state.errors.email ? this.state.errors.email : null} onChange={this.handleInputChange} s={12}/>
 
-										<Input type="password" name='password' label="Your password" error={this.state.errors.password ? this.state.errors.password : null} onChange={this.handleInputChange} s={6} />
-										<Input type="password" name='confirmpass' label="Retype your password" error={this.state.errors.confirmpass ? this.state.errors.confirmpass : null} onChange={this.handleInputChange} s={6}/>
+										<Input type="password" name="password" label="Your password" error={this.state.errors.password ? this.state.errors.password : null} onChange={this.handleInputChange} s={6} />
+										<Input type="password" name="confirmpass" label="Retype your password" error={this.state.errors.confirmpass ? this.state.errors.confirmpass : null} onChange={this.handleInputChange} s={6}/>
 									</Row>
 								</Card>
 							</Col>

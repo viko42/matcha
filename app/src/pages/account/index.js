@@ -11,6 +11,7 @@ import Header				from '../../components/header'
 import {logoName}			from '../../config/crushyard'
 
 import {setLocalStorage}	from '../../config/policies'
+import Geolocation			from "react-geolocation";
 import Geosuggest			from 'react-geosuggest';
 
 class Account extends Component {
@@ -23,12 +24,26 @@ class Account extends Component {
 	}
 	componentDidMount() {
 		document.title = `${logoName} - Account`;
+		const self = this;
+
+
+		services('getAccount', {}, function (err, response) {
+			if (err) {
+				self.setState({errors: response.data.errors})
+				if (response.data.errors.swal)
+					swal("Error", response.data.errors.swal, "error");
+				return ;
+			}
+			self.setState({account: response.data.account});
+		})
+	}
+	saveLocalization(position) {
+		this.setState({position: position});
 	}
 	updateAccount() {
 		const self = this;
 
-		services('updateAccount', self.state, function (err, response) {
-
+		services('updateAccount', self.state, function(err, response) {
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
@@ -53,7 +68,6 @@ class Account extends Component {
 		const self = this;
 
 		services('updateLocalization', self.state, function (err, response) {
-
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
@@ -67,7 +81,16 @@ class Account extends Component {
 	onSuggestSelect(suggest) {
 		this.setState({localization: {lat: suggest.location.lat, lng: suggest.location.lng}});
 	}
+	findMe() {
+		const self = this;
+
+		this.setState({localization: {myLocation: true, lng: this.state.position.coords.longitude, lat: this.state.position.coords.latitude}}, function () {
+			self.updateLocalization();
+		});
+		console.log('FindMe');
+	}
 	render() {
+		const { account } = this.state;
 		return (
 			<Header>
 				<div className="content">
@@ -89,10 +112,13 @@ class Account extends Component {
 								</Row>
 							</Card>
 							<Card title="Change your localization">
+								<Geolocation onSuccess={this.saveLocalization.bind(this)} />
+
 								<Row>
+									<a onClick={this.findMe.bind(this)}>Find my position</a>
 									<Geosuggest
 										onSuggestSelect={this.onSuggestSelect.bind(this)}
-										initialValue="Paris, France"
+										initialValue={account ? account.adress : ''}
 									/>
 								<Col s={12}>
 									<Button className="pull-right" onClick={this.updateLocalization.bind(this)}>Change</Button>
