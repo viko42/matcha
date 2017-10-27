@@ -7,12 +7,58 @@ var Crushs				= mongoose.model('Crushs');
 var Conversations		= mongoose.model('Conversations');
 const thisController	= "SearchController";
 
+const filterList = [
+	"",
+	"Homme",
+	"Femme",
+	"Hétéro",
+	"Lesbienne",
+	"Bisexuelle",
+	"18 à 25",
+	"25 à 35",
+	"35 et plus",
+	"Moins de 1km",
+	"Moins de 5km",
+	"Moins de 10km",
+	"Moins de 25km",
+	"Moins de 100km"
+];
+
 exports.find = function (req, res) {
-	const	userId		= req.connectedAs.id;
-	let		results		= {};
-	let		blockedUsers = [];
+	const	userId			= req.connectedAs.id;
+	let		blockedUsers	= [];
+	let		results			= {};
+	let		filtersUsed		= {};
+	let		filters			= req.body.filters;
 
 	async.waterfall([
+		function (callback) {
+			for (key in filters) {
+				console.log(key);
+				if (!filterList.indexOf(filters[key])) {
+					return callback('Invalid filter');
+				}
+			}
+			return callback();
+		},
+		function (callback) {
+			// if (filters.sexe)
+			// 	filtersUsed["data.profile.sexe"] = filters.sexe;
+			//
+			// if (filters.orien)
+			// 	filtersUsed["data.profile.orientation"] = filters.orien;
+
+			filtersUsed = {
+				data: {
+					profile: {
+						sexe: filters.sexe,
+						orientation: filters.orien,
+					}
+				}
+			};
+			console.log(filtersUsed);
+			return callback();
+		},
 		function (callback) {
 			Users.findOne({'_id': userId}).exec(function (err, userFound) {
 				if (err)
@@ -26,7 +72,7 @@ exports.find = function (req, res) {
 			});
 		},
 		function (callback) {
-			Users.find({}).exec(function (err, usersFound) {
+			Users.find(filtersUsed).exec(function (err, usersFound) {
 				if (err)
 					return callback(err);
 

@@ -34,6 +34,7 @@ class Search extends Component {
 		this.updateFilter = this.updateFilter.bind(this);
 		this.getUsers = this.getUsers.bind(this);
 		this.addFilter = this.addFilter.bind(this);
+		this.search = this.search.bind(this);
 	}
 	updateFilter(id, e) {
 		var filterText = e.target.text;
@@ -100,7 +101,7 @@ class Search extends Component {
 		}
 		this.setState({users: render});
 	}
-	componentDidMount() {
+	search() {
 		const self = this;
 
 		services('find', {filters: this.state.listFilter}, function (err, response) {
@@ -112,8 +113,10 @@ class Search extends Component {
 			}
 			console.log('get ??');
 			self.getUsers(response.data.users);
-			// window.location.assign(urlApp + "/#/inbox");
 		});
+	}
+	componentDidMount() {
+		this.search();
 	}
 	componentWillUnmount() {
 		// global.socket.off('message sent');
@@ -131,6 +134,7 @@ class Search extends Component {
 		if (this.state.listFilter.age)
 			render.push(<a key={4} name="age"><Chip>{this.state.listFilter.age}</Chip></a>);
 
+		this.search();
 		this.setState({filterRender: render})
 	}
 	delFilter(e) {
