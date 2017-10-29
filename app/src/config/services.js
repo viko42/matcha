@@ -19,6 +19,11 @@ const tabs = {
 		'url': apiUrl + '/users/block'
 	},
 
+	'getTags': {
+		'method': 'GET',
+		'url': apiUrl + '/users/tags'
+	},
+
 	//###################################################################
 	// 							Login
 	//###################################################################
@@ -140,6 +145,11 @@ const tabs = {
 	'find': {
 		'method': 'POST',
 		'url': apiUrl + '/find'
+	},
+
+	'findAffinate': {
+		'method': 'POST',
+		'url': apiUrl + '/find/affinate'
 	},
 
 	//###################################################################

@@ -329,7 +329,7 @@ class Profile extends Component {
 								className="card-header"
 								actions={[
 									<div key='header' className="links-header">
-										<a className="link-name tooltipped" data-position="bottom" data-delay="50" data-tooltip={profile.connected === true ? "User online" : "User offline"}><Icon className={profile.connected === false ? "offline" : "online"}>wb_sunny</Icon>{profile.firstName} {profile.lastName}</a>
+										<a className="link-name tooltipped" data-position="bottom" data-delay="50" data-tooltip="Status"><Icon className={profile.connected === false ? "offline" : "online"}>wb_sunny</Icon>{profile.firstName} {profile.lastName}</a><br/>{profile.connected === true ? "User online" : "User offline"}
 										<br/>
 										{profile.connected === false && <a href>Last activity on {profile.last_activity}</a>}
 										<div hidden={profile.me === true || profile.crushed === true ? true : false} className="yes-crush">
@@ -413,8 +413,9 @@ class Profile extends Component {
 								{this.state.myInfos && profile.me  &&
 									<Row className="testViko">
 										<Input s={12} type='select' id="myInfos2" label="Orientation" defaultValue='2'>
-											<option value='Hétero'>Hétéro</option>
+											<option value='Hétéro'>Hétéro</option>
 											<option value='Lesbienne'>Lesbienne</option>
+											<option value='Gay'>Gay</option>
 											<option value='Bisexuelle'>Bisexuelle</option>
 										</Input>
 									</Row>
@@ -479,7 +480,7 @@ class Profile extends Component {
 								      multiple={false}
 								      accept="image/*"
 								      onDrop={this.handleUpload.bind(this)}>
-								      <p>Drop an image or click to select a file to upload.</p>
+								      <p>Glisser une image ou cliquez pour uploader une image.</p>
 								    </Dropzone>}
 
 									{this.state.selectAvatar && "Vous avez selectionné l'image numero " + this.state.selectAvatar }

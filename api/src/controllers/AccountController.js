@@ -1,6 +1,7 @@
 var mongoose	= require('mongoose');
 var s			= require('../config/services');
 var async		= require('async');
+var moment		= require('moment');
 var _			= require('lodash');
 var bcrypt		= require('bcrypt');
 var http		= require('http');
@@ -25,10 +26,11 @@ exports.informations = function (req, res) {
 				if (!userFound)
 					return callback("User not found");
 
-				if (!userFound.data.localization)
+				account.birth = moment(userFound.birth).format('DD MMMM, YYYY');
+				if (!userFound.location)
 					return callback();
 
-				geocoder.reverse({lat:Number(userFound.data.localization.lat), lon:Number(userFound.data.localization.lng)}, function(err, res) {
+				geocoder.reverse({lat:Number(userFound.location[1]), lon:Number(userFound.location[0])}, function(err, res) {
 					if (res && res[0])
 						account.adress = res[0].formattedAddress;
 					return callback();
@@ -169,7 +171,11 @@ exports.updateLocalization = function (req, res) {
 
 		//Update the localization
 		function (callback) {
-			Users.findOneAndUpdate({'_id': req.connectedAs.id}, {'data.localization': data}, {new: true}).exec(function (err, userFound) {
+			var arrayLocation = [];
+			arrayLocation.push(data.lng);
+			arrayLocation.push(data.lat);
+
+			Users.findOneAndUpdate({'_id': req.connectedAs.id}, {'data.localization': data, location: arrayLocation}, {new: true}).exec(function (err, userFound) {
 				if (err)
 					return callback(err);
 

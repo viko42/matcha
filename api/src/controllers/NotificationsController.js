@@ -15,7 +15,7 @@ exports.setAsRead	= function (req, res) {
 
 	Notifications.update({status: 'unread', to: userId}, {status: 'read'}, {multi: true}, function(err, num) {
 		if (!num || num.n <= 0)
-			return s.serverError(res, err, thisController);
+			return res.status(200).json({message: 'nothing to read'});
 
 		Users.findOne({'_id': userId}).exec(function(err, userRead ) {
 			if (err)
@@ -42,8 +42,30 @@ exports.myNotifications = function (req, res) {
 				for (var i = 0; i < unreadNotif.length; i++) {
 					if (unreadNotif[i].type[0] === "message") {
 						unreadNotif[i].message = "Vous avez reçu un message de " + unreadNotif[i].from.firstName;
+						unreadNotif[i].link = "#/inbox";
 					}
-					notifications.push({message: unreadNotif[i].message, type: unreadNotif[i].type[0], status: unreadNotif[i].status[0]});
+					if (unreadNotif[i].type[0] === "visit") {
+						unreadNotif[i].message = "Vous avez reçu une visite de " + unreadNotif[i].from.firstName;
+						unreadNotif[i].link = "#/visits";
+					}
+					if (unreadNotif[i].type[0] === "like") {
+						unreadNotif[i].message = "Vous avez reçu un like de " + unreadNotif[i].from.firstName;
+						unreadNotif[i].link = "#/likes";
+					}
+					if (unreadNotif[i].type[0] === "unlike") {
+						unreadNotif[i].message = "Vous avez reçu un dislike de " + unreadNotif[i].from.firstName;
+						unreadNotif[i].link = "#/likes";
+					}
+					if (unreadNotif[i].type[0] === "crush") {
+						unreadNotif[i].message = "Vous avez reçu un crush de " + unreadNotif[i].from.firstName;
+						unreadNotif[i].link = "#/crushs";
+					}
+					notifications.push({
+						message: unreadNotif[i].message,
+						type: unreadNotif[i].type[0],
+						status: unreadNotif[i].status[0],
+						link: unreadNotif[i].link
+					});
 
 					if (unread === false && unreadNotif[i].status[0] === "unread")
 						unread = true;

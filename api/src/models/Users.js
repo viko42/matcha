@@ -36,6 +36,7 @@ var UsersSchema = new Schema({
 		required: false,
 		default: {}
 	},
+	location: { type: [Number], index: '2dsphere' },
 	status: {
 		type: [{
 			type: String,

@@ -43,7 +43,7 @@ class Likes extends Component {
 			render.push(
 				<Col key={i} s={12} m={6} l={6} className="xl3">
 					<Card className="crush-tag-card">
-						<div className="crush-tag-name">{users[i].firstName} {users[i].lastName}<br/>22 ans</div>
+						<div className="crush-tag-name">{users[i].firstName} {users[i].lastName}<br/>{users[i].age} ans</div>
 						<img alt="profile" className="crush-tag-img" src="img/yuna.jpg"/>
 						<div className="crush-tag-buttons">
 							<a href={'/#/profile/'+users[i].profileId } className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Visit this profile"><Button floating className='grey actions-tag' waves='light' icon='input' /></a>

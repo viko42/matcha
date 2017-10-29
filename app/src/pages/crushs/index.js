@@ -81,7 +81,7 @@ class Crushs extends Component {
 								<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Cancel this crush"><Button floating className='red actions-tag' waves='light' icon='close' /></a>
 							</form>
 						</div>
-						<div className="crush-tag-name">{crushs[i].firstName} {crushs[i].lastName}<br/>22 ans</div>
+						<div className="crush-tag-name">{crushs[i].firstName} {crushs[i].lastName}<br/>{crushs[i].age} ans</div>
 						<img alt="profile" className="crush-tag-img" src="img/yuna.jpg"/>
 						<div className="crush-tag-buttons">
 							<form onSubmit={this.startConversation}>

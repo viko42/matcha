@@ -1,5 +1,9 @@
 exports.getLocalStorage = function (value) {
-	return JSON.parse(localStorage.getItem(value));
+	try {
+		return JSON.parse(localStorage.getItem(value));
+	} catch ($e) {
+		return localStorage.getItem(value);
+	}
 }
 exports.remLocalStorage = function (value) {
 	return localStorage.getItem(value);

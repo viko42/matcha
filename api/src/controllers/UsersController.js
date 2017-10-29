@@ -10,6 +10,19 @@ const moment			= require('moment');
 const thisController	= "UsersController";
 const http				= require('http');
 
+exports.tags = function (req, res) {
+	const userId = req.connectedAs.id;
+
+	Users.findOne({'_id': userId}).exec(function (err, userFound) {
+		if (err)
+			return s.serverError(res, err, thisController);
+
+		if (!userFound)
+			return s.serverError(res, {errors: "User not found"}, thisController);
+
+		return res.status(200).json({tags: userFound.data.profile.tags});
+	})
+};
 exports.block = function (req, res) {
 	const blockUser = req.body;
 
@@ -162,8 +175,11 @@ exports.create = function(req, res) {
 	if (!new_user.phone)
 		return s.badRequest(res, {errors: {phone: 'Champs manquant'}});
 
-	if (!new_user.birth)
+	if (!new_user.birth || !moment(new_user.birth, ["DD MMMM, YYYY"]).isValid())
 		return s.badRequest(res, {errors: {birth: 'Champs manquant'}});
+
+	if (moment().diff(moment(new_user.birth, ["DD MMMM, YYYY"]).format(), 'years') < 18)
+		return s.badRequest(res, {errors: {swal: 'Vous devez avoir plus de 18 ans.'}});
 
 	if (!new_user.sexe)
 		return s.badRequest(res, {errors: {swal: 'Champs sexe manquant'}});
@@ -221,17 +237,25 @@ exports.create = function(req, res) {
 			});
 		},
 		function (callback) {
+			var arrayLocation = [];
+
+			arrayLocation.push(new_user.localization.lng);
+			arrayLocation.push(new_user.localization.lat);
 
 			new_user.data = {
 				profile: {
 					sexe: 'Non renseigné',
 					orientation: 'Non renseigné'
 				},
-				localization: {
-					lat: new_user.localization.lat,
-					lng: new_user.localization.lng
-				}
-			}
+				// localization: {
+				// 	lat: new_user.localization.lat,
+				// 	lng: new_user.localization.lng
+				// },
+				pictures: [],
+			};
+			new_user.location = arrayLocation;
+			new_user.birth = moment(new_user.birth, ["DD MMMM, YYYY"]).format();
+
 			new_user = new Users(req.body);
 			new_user.save(function(err, user) {
 				if (err)

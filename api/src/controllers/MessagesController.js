@@ -14,8 +14,6 @@ const {isBlokedSocket}	= require('../policies/isBlocked');
 
 exports.setAsRead	= function (data, socket) {
 	Messages.update({status: 'sended', conversation: data.conversationId, sender: {"$ne": data.userId}}, {status: 'readed'}, {multi: true}, function(err, num) {
-		// console.log('A conversation has been read');
-
 		if (!num || num.n <= 0)
 			return ;
 		Users.findOne({'_id': data.userId}).exec(function(err, userRead ) {
@@ -24,7 +22,6 @@ exports.setAsRead	= function (data, socket) {
 
 			if (!userRead)
 				return console.log('User not found');
-			// console.log(num.n + ' messages lus par ' + userRead.email);
 		})
     });
 };
@@ -77,6 +74,8 @@ exports.inbox = function(req, res) {
 		function (callback) {
 			async.forEachOf(listConversations, function (conversation, keyConv, next_conversation) {
 
+				if (!conversation.sender || !conversation.recipent)
+					return next_conversation();
 				Users.findOne({'_id': String(userId) == conversation.sender.id ? conversation.recipent.id : conversation.sender.id}).exec(function (err, userFound) {
 					if (err)
 						return next_conversation(err);
@@ -214,10 +213,9 @@ exports.send = function(data, socket) {
 
 		exports.get_messages({userId: socket.handshake.query.userId, ...data}, socket, function (data) {
 			socket.emit('message sent', data);
-			// socket.to(receiverSocketId).emit('receive message', {conversationId: conversationId});
-
 			isBlokedSocket(socket.handshake.query.userId, receiverSocketId, function (to) {
 				socket.to(to).emit('test_message', {message: userEmit+" : "+ maxNotification(messageSent), status: 'success'});
+				socket.to(to).emit('receive message', {conversationId: conversationId});
 			});
 		})
 	})

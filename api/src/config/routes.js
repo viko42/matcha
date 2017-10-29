@@ -7,6 +7,8 @@ module.exports = function (app) {
 	//--------------------------------------------------------------------
 
 	app.route('/users')			.get(isConnected.authorization, Users.list);
+	app.route('/users/tags')	.get(isConnected.authorization, Users.tags);
+
 	app.route('/users/create')	.post(Users.create);
 	app.route('/users/update')	.put(isConnected.authorization, Users.update);
 	app.route('/users/delete')	.delete(isConnected.authorization, Users.delete);
@@ -63,6 +65,7 @@ module.exports = function (app) {
 	//--------------------------------------------------------------------
 
 	app.route('/find')					.post(isConnected.authorization, Search.find);
+	app.route('/find/affinate')			.post(isConnected.authorization, Search.findAffinate);
 
 	//####################################################################
 	//						Search

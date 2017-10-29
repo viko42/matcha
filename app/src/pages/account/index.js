@@ -18,7 +18,7 @@ class Account extends Component {
 	constructor(props) {
 		super(props);
 
-		this.state = { errors: {}, ...JSON.parse(localStorage.getItem('user'))};
+		this.state = { account: {}, errors: {}, ...JSON.parse(localStorage.getItem('user'))};
 		this.updateAccount		= this.updateAccount.bind(this);
 		this.handleInputChange	= this.handleInputChange.bind(this);
 	}
@@ -26,7 +26,7 @@ class Account extends Component {
 		document.title = `${logoName} - Account`;
 		const self = this;
 
-
+		console.log('Get account ?');
 		services('getAccount', {}, function (err, response) {
 			if (err) {
 				self.setState({errors: response.data.errors})
@@ -34,6 +34,7 @@ class Account extends Component {
 					swal("Error", response.data.errors.swal, "error");
 				return ;
 			}
+			console.log(response.data.account);
 			self.setState({account: response.data.account});
 		})
 	}
@@ -84,7 +85,7 @@ class Account extends Component {
 	findMe() {
 		const self = this;
 
-		this.setState({localization: {myLocation: true, lng: this.state.position.coords.longitude, lat: this.state.position.coords.latitude}}, function () {
+		this.setState({localization: {myLocation: true, lng: this.state.position ? this.state.position.coords.longitude : null, lat: this.state.position ? this.state.position.coords.latitude : null}}, function () {
 			self.updateLocalization();
 		});
 		console.log('FindMe');
@@ -104,7 +105,9 @@ class Account extends Component {
 									<Input type="password" ref={el => this.inputPassword = el} name='password' id='password' label="Your password" onChange={this.handleInputChange} s={12} />
 								</Row>
 								<Row>
-									<Input type="text" name='birthday' label="Your birthday date" defaultValue={this.state.birth} s={12} disabled/>
+									<Col s={12}>
+										Date de naissance: {this.state.account.birth}{!this.state.account.birth ? "Chargement..." : ''}
+									</Col>
 									<Input id="phone" type="text" name='phone' label="Your phone number" defaultValue={this.state.phone} onChange={this.handleInputChange} s={12} />
 									<Col s={12}>
 										<Button className="pull-right" onClick={this.updateAccount}>Update</Button>

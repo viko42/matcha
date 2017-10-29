@@ -2,8 +2,10 @@ var mongoose			= require('mongoose');
 var s					= require('../config/services');
 var async				= require('async');
 var _					= require('lodash');
+var moment				= require('moment');
 var Users				= mongoose.model('Users');
 var Crushs				= mongoose.model('Crushs');
+var Notifications		= mongoose.model('Notifications');
 var Conversations		= mongoose.model('Conversations');
 const thisController	= "CrushsController";
 const {isBlocked}		= require('../policies/isBlocked');
@@ -39,7 +41,7 @@ exports.listLikes		= function (req, res) {
 							return next_crush(err);
 
 						if (!doubleCrushFound)
-							crushs.push({firstName: crush.from.firstName, lastName: crush.from.lastName, profileId: crush.from.id})
+							crushs.push({firstName: crush.from.firstName, lastName: crush.from.lastName, profileId: crush.from.id, age: moment().diff(crush.from.birth, 'years')})
 						next_crush();
 					});
 				}, function (err) {
@@ -72,8 +74,9 @@ exports.listCrush		= function (req, res) {
 						if (err)
 							return next_crush(err);
 
+							console.log(crush.from.birth);
 						if (doubleCrushFound)
-							crushs.push({firstName: crush.from.firstName, lastName: crush.from.lastName, profileId: crush.from.id})
+							crushs.push({firstName: crush.from.firstName, lastName: crush.from.lastName, profileId: crush.from.id, age: moment().diff(crush.from.birth, 'years')})
 						next_crush();
 					});
 				}, function (err) {
@@ -175,6 +178,23 @@ exports.removeCrush = function (req, res) {
 				});
 			});
 		},
+		// Create Notification
+		function (callback) {
+			var new_notification = new Notifications({
+				from:		userId,
+				to:			crushTarget,
+				type:		"unlike",
+				status:		"unread",
+				created_at: new Date()
+			});
+
+			new_notification.save(function (err, notifSaved) {
+				if (err)
+					return callback(err);
+				// console.log('Notification pushed');
+				return callback();
+			});
+		},
 		function (callback) {
 			Conversations.findOne({$or: [{sender: userId, recipent: crushTarget}, {sender: crushTarget, recipent: userId}]}).exec(function (err, conversationFound) {
 				if (err)
@@ -262,6 +282,23 @@ exports.doCrush = function (req, res) {
 				if (crushTotal.length === 2)
 					doubleCrush = true;
 
+				return callback();
+			});
+		},
+		// Create Notification
+		function (callback) {
+			var new_notification = new Notifications({
+				from:		userId,
+				to:			crushTarget,
+				type:		doubleCrush ? "crush" : "like",
+				status:		"unread",
+				created_at: new Date()
+			});
+
+			new_notification.save(function (err, notifSaved) {
+				if (err)
+					return callback(err);
+				// console.log('Notification pushed');
 				return callback();
 			});
 		},

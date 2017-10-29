@@ -25,7 +25,7 @@ exports.listVisits		= function (req, res) {
 
 				async.forEachOf(visitorsFound, function (visit, keyVisitor, next_visitor) {
 					if (visit.visitor.id !== userId)
-						visitors.push({firstName: visit.visitor.firstName, lastName: visit.visitor.lastName, profileId: visit.visitor.id, date: moment(visit.date).format('DD/MM HH:mm')})
+						visitors.push({firstName: visit.visitor.firstName, lastName: visit.visitor.lastName, profileId: visit.visitor.id, date: moment(visit.date).format('DD/MM HH:mm'), age: moment().diff(visit.visitor.birth, 'years')})
 					next_visitor();
 				}, function (err) {
 					if (err)
@@ -54,6 +54,14 @@ exports.newVisit = function (data, socket, callback) {
 		date: new Date()
 	});
 
+	var new_notification = new Notifications({
+		from:		visitor,
+		to:			profileId,
+		type:		"visit",
+		status:		"unread",
+		created_at: new Date()
+	});
+
 	Users.findOne({'_id': profileId}).exec(function (err, userFound) {
 		if (err)
 			return callback(err);
@@ -61,15 +69,18 @@ exports.newVisit = function (data, socket, callback) {
 		if (!userFound)
 			return callback(profileId + ' not found. [VISITS-CONTROLLER]');
 
-		isBlocked(visitor, profileId, function (isBlocked) {
-			if (isBlocked)
-				return callback('User is blocked - No notification [VISITS]');
+		new_notification.save(function (err, notifSaved) {
+			console.log('NEW NOTIFICATION VIEW');
+			isBlocked(visitor, profileId, function (isBlocked) {
+				if (isBlocked)
+					return callback('User is blocked - No notification [VISITS]');
 
-			new_visit.save(function (err, visitSaved) {
-				if (err)
-					return callback(err);
-				return callback(null, userFound.data.socketid);
-			});
-		})
+				new_visit.save(function (err, visitSaved) {
+					if (err)
+						return callback(err);
+					return callback(null, userFound.data.socketid);
+				});
+			})
+		});
 	});
 }

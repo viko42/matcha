@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Col, Card, Row, Collapsible, CollapsibleItem, Chip, Icon, Input, Button } from 'react-materialize';
+import { Col, Card, Row, Collapsible, CollapsibleItem, Chip, Input, Button } from 'react-materialize';
 import services from '../../config/services';
 
 import '../../index.css';
@@ -22,6 +22,7 @@ class Inbox extends Component {
 		};
 
 		this.getMyInbox = this.getMyInbox.bind(this);
+		this.getAllUser = this.getAllUser.bind(this);
 		this.focusBox = this.focusBox.bind(this);
 		this.submitMessage = this.submitMessage.bind(this);
 		this.selectConversation = this.selectConversation.bind(this);
@@ -57,7 +58,7 @@ class Inbox extends Component {
 				return ;
 			}
 
-			self.setState({inbox: response.data.inbox})
+			self.setState({inbox: response.data.inbox ? response.data.inbox : []})
 			self.getAllUser();
 		});
 	}
@@ -103,6 +104,7 @@ class Inbox extends Component {
 			}
 		})
 		global.socket.on('receive message', function (data) {
+			console.log('REceive message');
 			let index = self.giveIndexConversation(data.conversationId);
 
 			if (index !== -1)

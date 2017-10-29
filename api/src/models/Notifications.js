@@ -13,7 +13,7 @@ var NotificationsSchema = new Schema({
 	type: {
 		type: [{
 			type: String,
-			enum: ["alert", "message", "like", "unlike", "visit"]
+			enum: ["alert", "message", "like", "unlike", "crush", "visit"]
 		}],
 		default: ["alert"]
 	},

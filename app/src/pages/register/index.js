@@ -64,7 +64,7 @@ class Register extends Component {
 		this.setState({ isMarkerShown: false })
 		this.delayedShowMarker()
 	}
-	handleInputChange(event) {
+	handleInputChange(event, data) {
 		const target = event.target, name = target.name, value = target.value;
 
 		this.setState({

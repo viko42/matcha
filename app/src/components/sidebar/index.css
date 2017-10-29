@@ -3,12 +3,13 @@
 	position: absolute;
 	bottom: 0;
 }
-/*.testButton {
-	font-size: 20px;
-	margin-left: 30px;
-}*/
+.testButton {
+	/*font-size: 20px;
+	margin-left: 30px;*/
+	/*position: */
+}
 .testButton:hover {
-	background-color: #232323;
+	/*background-color: #232323;*/
 	cursor: pointer;
 }
 
@@ -23,7 +24,7 @@
 	}
 }
 .testButton {
-	position: absolute;
+	position: fixed;
 	z-index: 50;
 	font-size: 21px;
 	margin-left: 30px;
