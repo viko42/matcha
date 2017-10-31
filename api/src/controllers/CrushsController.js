@@ -143,10 +143,10 @@ exports.startConversation = function (req, res) {
 	], function (err) {
 		if (err)
 			return s.notFound(res, {errors: err}, thisController);
+		// Score +20
 		return res.status(200).json({message: "Conversation started!"});
 	});
 };
-
 
 exports.removeCrush = function (req, res) {
 	const userId		= req.connectedAs.id;
@@ -206,6 +206,7 @@ exports.removeCrush = function (req, res) {
 				Conversations.remove({'_id': conversationFound.id}).exec(function (err, conversationDeleted) {
 					if (err)
 						return callback(err);
+					// Score -10
 					return callback();
 				});
 			});
@@ -216,7 +217,6 @@ exports.removeCrush = function (req, res) {
 		return res.status(200).json({message: "Crush removed!"});
 	});
 };
-
 
 exports.doCrush = function (req, res) {
 	const userId		= req.connectedAs.id;
@@ -298,7 +298,7 @@ exports.doCrush = function (req, res) {
 			new_notification.save(function (err, notifSaved) {
 				if (err)
 					return callback(err);
-				// console.log('Notification pushed');
+				// Score +10
 				return callback();
 			});
 		},

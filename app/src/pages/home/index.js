@@ -57,7 +57,7 @@ class Home extends Component {
 		if (filterText === "Homme" || filterText === "Femme")
 			listFilter.sexe = filterText
 
-		if (filterText === "Hétéro" || filterText === "Lesbienne" || filterText === "Bisexuelle")
+		if (filterText === "Hétéro" || filterText === "Gays" || filterText === "Bisexuelle")
 			listFilter.orien = filterText
 
 		if (filterText === "18 à 25" || filterText === "25 à 35" || filterText === "35 et plus")
@@ -111,7 +111,7 @@ class Home extends Component {
 				<Col key={i} s={12} m={6} l={6} className="xl3">
 					<Card className="crush-tag-card">
 						<div className="crush-tag-name">{users[i].firstName} {users[i].lastName}<br/>{users[i].age} ans</div>
-						<img alt="profile" className="crush-tag-img" src="img/yuna.jpg"/>
+						<img alt="profile" className="crush-tag-img" src={users[i].src}/>
 						<div className="crush-tag-buttons">
 							<a href={'/#/profile/'+users[i].id } className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Visit this profile"><Button floating className='grey actions-tag' waves='light' icon='input' /></a>
 						</div>
@@ -124,7 +124,7 @@ class Home extends Component {
 	search() {
 		const self = this;
 
-		services('find', {filters: this.state.listFilter, tags: this.state.listTags}, function (err, response) {
+		services('findAffinate', {filters: this.state.listFilter, tags: this.state.listTags}, function (err, response) {
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
@@ -138,6 +138,8 @@ class Home extends Component {
 		const	self	= this;
 		let		render	= [];
 
+		if (!getLocalStorage('auth'))
+			return ;
 		this.search();
 		services('getTags', {}, function (err, response) {
 			if (err) {
@@ -147,6 +149,8 @@ class Home extends Component {
 				return ;
 			}
 
+			if (!response.data || !response.data.tags)
+				return ;
 			for (var i = 0; i < response.data.tags.length; i++) {
 				render.push(
 					<Input key={i} name={response.data.tags[i]} type='checkbox' value='false' onChange={self.addTags.bind(response.data.tags[i])} label={response.data.tags[i]} />
@@ -193,7 +197,7 @@ class Home extends Component {
 					<div className="content">
 						<Row>
 							<Col m={12} s={12}>
-								<Card title='Bienvenu sur Crush Yard'>Site de rencontre pour Hetero / Lesbienne / Bisexuelle</Card>
+								<Card title='Bienvenu sur Crush Yard'>Site de rencontre pour Hetero / Gays / Bisexuelle</Card>
 							</Col>
 						</Row>
 					</div>
@@ -225,7 +229,7 @@ class Home extends Component {
 						{this.state.orien === true && <Tabs onChange={this.addFilter} className='tab-demo z-depth-1'>
 							<Tab title="Hétéro">
 							</Tab>
-							<Tab title="Lesbienne">
+							<Tab title="Gays">
 							</Tab>
 							<Tab title="Bisexuelle">
 							</Tab>

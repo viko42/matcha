@@ -1,9 +1,11 @@
-import React, { Component } from 'react';
-import './index.css';
-import { SideNav, SideNavItem } from 'react-materialize';
-import $ from 'jquery';
+import React, { Component }		from 'react';
+import { SideNav, SideNavItem }	from 'react-materialize';
 
-import {getLocalStorage} from '../../config/policies'
+import $					from 'jquery';
+import services				from '../../config/services';
+
+import {getLocalStorage}	from '../../config/policies'
+import './index.css';
 
 window.onhashchange = function () {
 	var width			= $(document).width();
@@ -16,7 +18,9 @@ class SideBar extends Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {};
+		this.state = {
+			avatar: "http://www.bmxpugetville.fr/wp-content/uploads/2015/09/avatar.jpg",
+		};
 	}
 	updateDimensions() {
 		var closeSideBar = document.getElementById('sidenav-overlay');
@@ -24,7 +28,17 @@ class SideBar extends Component {
 			$("#sidenav-overlay").trigger("click");
 	}
 	componentDidMount() {
+		const self = this;
 		window.addEventListener("resize", this.updateDimensions);
+
+		if (!getLocalStorage('user'))
+			return ;
+
+		services('getAvatar', {getData: getLocalStorage('user').username}, function (err, response) {
+			if (response.data.src)
+				return self.setState({avatar: response.data.src});
+			console.log(response.data);
+		})
     }
     componentWillUnmount() {
 		window.removeEventListener("resize", this.updateDimensions);
@@ -51,7 +65,7 @@ class SideBar extends Component {
 					<SideNavItem userView
 						user={{
 							background: 'img/office.jpg',
-							image: 'img/yuna.jpg',
+							image: this.state.avatar,
 							name: getLocalStorage('user').firstName + ' ' + getLocalStorage('user').lastName,
 							email: getLocalStorage('user').email
 						}}

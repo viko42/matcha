@@ -42,6 +42,7 @@ exports.newReport = function (req, res) {
 			new_report.save(function (err, reportSaved) {
 				if (err)
 					return s.serverError(res, err, thisController);
+				// Score -20
 				return res.status(200).json({reported: true});
 			});
 		});

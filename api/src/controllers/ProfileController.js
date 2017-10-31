@@ -8,22 +8,34 @@ const Crushs	= mongoose.model('Crushs');
 const thisController	= "ProfileController";
 var multer = require('multer');
 var upload = multer({ dest: 'uploads/' });
-// var bcrypt		= require('bcrypt');
-// exports.myProfile = function(req, res) {
-// 		// return s.badRequest(res, err, thisController);
-// 		// return res.status(200).json({message: "Show user info."});
-// 	// })
-// };
 
+exports.addScore = function (id, scoreToAdd) {
+	Users.findOne({'_id': id}).exec(function (err, userFound) {
+		if (err)
+			return false;
+
+		if (!userFound)
+			return false;
+
+		userFound.data.score += scoreToAdd;
+		userFound = new Users(userFound);
+		userFound.save(function (err, userSaved) {
+			if (err)
+				return false;
+			return true;
+		});
+	});
+};
 exports.findAvatar = function (req, res) {
 	const id = req.params.id;
 
 	if (!id)
 		return s.badRequest(res, "ID Missing", thisController);
 
-	Users.findOne({'_id': id}).exec(function(err, userFound) {
-		if (err)
+	Users.findOne({$or: [{'username': id}] }).exec(function(err, userFound) {
+		if (err) {
 			return s.serverError(res, "Profile introuvable: " + id, thisController);
+		}
 
 		var isAvatar = true;
 
@@ -34,7 +46,7 @@ exports.findAvatar = function (req, res) {
 			userFound.data.avatarID = 0;
 
 		if (!isAvatar || !userFound.data.pictures[userFound.data.avatarID])
-			return res.status(200).json({default: true});
+			return res.status(200).json({src: "http://www.bmxpugetville.fr/wp-content/uploads/2015/09/avatar.jpg"});
 
 		return res.status(200).json({src: userFound.data.pictures[userFound.data.avatarID].data});
 	});
@@ -62,7 +74,6 @@ exports.changeAvatar = function (req, res) {
 		});
 	});
 };
-
 exports.deleteAvatar = function (req, res) {
 	const idPicture = req.body.id;
 
@@ -92,7 +103,6 @@ exports.deleteAvatar = function (req, res) {
 		});
 	});
 };
-
 exports.uploadImage = function(req, res) {
 	Users.findOne({'_id': req.connectedAs}).exec(function (err, userFound) {
 		if (err)
@@ -114,7 +124,6 @@ exports.uploadImage = function(req, res) {
 		})
 	})
 };
-
 exports.updateProfile = function (req, res) {
 	const userId	= req.connectedAs.id;
 	const data		= req.body;
@@ -236,6 +245,7 @@ exports.getProfile = function(req, res) {
 					pictures: user.data.pictures,
 					id: user.id,
 					blocked: blocked,
+					username: user.username,
 				};
 				return callback();
 			});

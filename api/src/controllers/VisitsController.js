@@ -78,6 +78,7 @@ exports.newVisit = function (data, socket, callback) {
 				new_visit.save(function (err, visitSaved) {
 					if (err)
 						return callback(err);
+					// Score +5
 					return callback(null, userFound.data.socketid);
 				});
 			})

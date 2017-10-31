@@ -10,6 +10,125 @@ const moment			= require('moment');
 const thisController	= "UsersController";
 const http				= require('http');
 
+exports.import = function (req, res) {
+	var new_user = req.body;
+
+	console.log(new_user);
+	if (!new_user)
+		return s.badRequest(res, "Missing input")
+
+	if (!new_user.email)
+		return s.badRequest(res, {errors: {email: 'Champs manquant'}});
+
+	if (!new_user.password)
+		return s.badRequest(res, {errors: {password: 'Password manquant'}});
+
+	if (!new_user.confirmpass)
+		return s.badRequest(res, {errors: {confirmpass: 'Champs manquant'}});
+
+	if (new_user.password !== new_user.confirmpass)
+		return s.badRequest(res, {errors: {confirmpass: 'Les mots de passe ne sont pas identiques'}});
+
+	if (!new_user.lastName)
+		return s.badRequest(res, {errors: {lastName: 'Champs manquant'}});
+
+	if (!new_user.firstName)
+		return s.badRequest(res, {errors: {firstName: 'Champs manquant'}});
+
+	if (!new_user.phone)
+		return s.badRequest(res, {errors: {phone: 'Champs manquant'}});
+
+	if (!new_user.birth || !moment(new_user.birth, ["DD MMMM, YYYY"]).isValid())
+		return s.badRequest(res, {errors: {birth: 'Champs manquant'}});
+
+	if (moment().diff(moment(new_user.birth, ["DD MMMM, YYYY"]).format(), 'years') < 18) {
+		console.log(moment().diff(moment(new_user.birth, ["DD MMMM, YYYY"]).format(), 'years'));
+		return s.badRequest(res, {errors: {swal: 'Vous devez avoir plus de 18 ans.'}});
+	}
+
+	// if (!new_user.sexe)
+	// 	return s.badRequest(res, {errors: {swal: 'Champs sexe manquant'}});
+
+	async.waterfall([
+		function (callback) {
+			Users.findOne({email: new_user.email}, function(err, user) {
+				if (err)
+					return callback(err);
+
+				if (user)
+					return callback({errors: {email: "This email is already in use"}});
+
+				callback();
+			});
+		},
+		function (callback) {
+			if (new_user.localization && new_user.localization.lng && new_user.localization.lat)
+				return callback();
+
+			let positions = {};
+			http.get('http://ip-api.com/json', (resp) => {
+				let data = '';
+
+				resp.on('data', (chunk) => {
+					data += chunk;
+				});
+
+				resp.on('error', () => {
+					new_user.localization	= {
+						lat: 0,
+						lng: 0,
+					}
+				});
+
+				resp.on('end', () => {
+					positions				= JSON.parse(data);
+					new_user.localization	= {
+						lat: positions.lat,
+						lng: positions.lon,
+					}
+					return callback();
+				});
+			});
+		},
+		function (callback) {
+			bcrypt.hash(new_user.password, 10, function(err, hash) {
+				if (err)
+					return callback(err);
+
+				new_user.password = hash;
+				return callback();
+			});
+		},
+		function (callback) {
+			var arrayLocation = [];
+
+			arrayLocation.push(new_user.localization.lng);
+			arrayLocation.push(new_user.localization.lat);
+
+			new_user.data = {
+				profile: {
+					sexe: new_user.sexe ? new_user.sexe : 'Non renseigné',
+					orientation: new_user.orientation ? new_user.orientation : 'Non renseigné'
+				},
+				pictures: [],
+			};
+			new_user.location = arrayLocation;
+			new_user.birth = moment(new_user.birth, ["DD MMMM, YYYY"]).format();
+
+			new_user = new Users(req.body);
+			new_user.save(function(err, user) {
+				if (err)
+					return callback(err);
+				callback(false);
+			});
+		},
+	], function (err) {
+		if (err)
+			return s.badRequest(res, err, thisController);
+		return res.status(200).json({message: "User created."});
+	})
+};
+
 exports.tags = function (req, res) {
 	const userId = req.connectedAs.id;
 
@@ -157,8 +276,14 @@ exports.create = function(req, res) {
 	if (!new_user.email)
 		return s.badRequest(res, {errors: {email: 'Champs manquant'}});
 
+	if (!new_user.username)
+		return s.badRequest(res, {errors: {username: "Nom d'utilisateur manquant"}});
+
 	if (!new_user.password)
 		return s.badRequest(res, {errors: {password: 'Password manquant'}});
+
+	if (new_user.password.length < 5)
+		return s.badRequest(res, {errors: {password: 'Votre mot de passe doit etre plus grand que 5 caracteres.'}});
 
 	if (!new_user.confirmpass)
 		return s.badRequest(res, {errors: {confirmpass: 'Champs manquant'}});
@@ -247,11 +372,8 @@ exports.create = function(req, res) {
 					sexe: 'Non renseigné',
 					orientation: 'Non renseigné'
 				},
-				// localization: {
-				// 	lat: new_user.localization.lat,
-				// 	lng: new_user.localization.lng
-				// },
 				pictures: [],
+				score: 0
 			};
 			new_user.location = arrayLocation;
 			new_user.birth = moment(new_user.birth, ["DD MMMM, YYYY"]).format();
@@ -356,7 +478,7 @@ exports.login = function(req, res) {
 					// console.log('Unable to update socket');
 
 				// console.log('Socket of a guest as been saved to the logged user');
-				return res.status(200).json({data: {firstName: user.firstName, lastName: user.lastName, email: user.email, phone: user.phone, birth: user.birth}, token: token});
+				return res.status(200).json({data: {firstName: user.firstName, lastName: user.lastName, email: user.email, phone: user.phone, birth: user.birth, username: user.username}, token: token});
 			// })
 		});
 	});

@@ -276,7 +276,7 @@ class Profile extends Component {
 				return ;
 			}
 			self.setState({profile: response.data.profile});
-			services('getAvatar', {getData: response.data.profile.id}, function (err, response) {
+			services('getAvatar', {getData: response.data.profile.username}, function (err, response) {
 				if (response.data.src)
 					return self.setState({avatar: response.data.src});
 				return self.setState({avatar: "http://www.bmxpugetville.fr/wp-content/uploads/2015/09/avatar.jpg"});
@@ -414,7 +414,7 @@ class Profile extends Component {
 									<Row className="testViko">
 										<Input s={12} type='select' id="myInfos2" label="Orientation" defaultValue='2'>
 											<option value='Hétéro'>Hétéro</option>
-											<option value='Lesbienne'>Lesbienne</option>
+											<option value='Gays'>Gays</option>
 											<option value='Gay'>Gay</option>
 											<option value='Bisexuelle'>Bisexuelle</option>
 										</Input>

@@ -57,7 +57,7 @@ class Search extends Component {
 		if (filterText === "Homme" || filterText === "Femme")
 			listFilter.sexe = filterText
 
-		if (filterText === "Hétéro" || filterText === "Lesbienne" || filterText === "Bisexuelle")
+		if (filterText === "Hétéro" || filterText === "Gays" || filterText === "Bisexuelle")
 			listFilter.orien = filterText
 
 		if (filterText === "18 à 25" || filterText === "25 à 35" || filterText === "35 et plus")
@@ -112,7 +112,7 @@ class Search extends Component {
 				<Col key={i} s={12} m={6} l={6} className="xl3">
 					<Card className="crush-tag-card">
 						<div className="crush-tag-name">{users[i].firstName} {users[i].lastName}<br/>{users[i].age} ans</div>
-						<img alt="profile" className="crush-tag-img" src="img/yuna.jpg"/>
+						<img alt="profile" className="crush-tag-img" src={users[i].src}/>
 						<div className="crush-tag-buttons">
 							<a href={'/#/profile/'+users[i].id } className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Visit this profile"><Button floating className='grey actions-tag' waves='light' icon='input' /></a>
 						</div>
@@ -214,7 +214,7 @@ class Search extends Component {
 						{this.state.orien === true && <Tabs onChange={this.addFilter} className='tab-demo z-depth-1'>
 							<Tab title="Hétéro">
 							</Tab>
-							<Tab title="Lesbienne">
+							<Tab title="Gays">
 							</Tab>
 							<Tab title="Bisexuelle">
 							</Tab>

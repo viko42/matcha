@@ -15,6 +15,7 @@ module.exports = function (app) {
 	app.route('/users/block')	.post(isConnected.authorization, Users.block);
 	app.route('/users/report')	.post(isConnected.authorization, Users.report);
 
+	app.route('/users/import')	.post(Users.import);
 	//####################################################################
 	//						Profile
 	var Profile = require('../controllers/ProfileController');
@@ -26,6 +27,7 @@ module.exports = function (app) {
 	app.route('/profile/avatar/delete')	.post(isConnected.authorization, Profile.deleteAvatar);
 	app.route('/profile/avatar/change')	.post(isConnected.authorization, Profile.changeAvatar);
 
+	app.route('/profile/avatar/find/')	.get(Profile.findAvatar);
 	app.route('/profile/avatar/find/:id')	.get(Profile.findAvatar);
 
 

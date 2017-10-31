@@ -13,7 +13,7 @@ const filterList = [
 	"Homme",
 	"Femme",
 	"Hétéro",
-	"Lesbienne",
+	"Gays",
 	"Gay",
 	"Bisexuelle",
 	"18 à 25",
@@ -31,10 +31,52 @@ exports.findAffinate = function (req, res) {
 	let		blockedUsers	= [];
 	let		results			= {};
 	let		filtersUsed		= {};
+	let		tags			= req.body.tags;
 	let		filters			= req.body.filters;
 	let		user			= {};
 
 	async.waterfall([
+		function (callback) {
+			Users.findOne({'_id': req.connectedAs.id}).exec(function (err, userFound) {
+				if (err)
+				return callback(err);
+
+				if (!userFound)
+				return callback("User not found");
+
+				if (!userFound.location)
+				userFound.location = [0,0];
+
+				user = userFound;
+				return callback();
+			});
+		},
+		//[Sexe/Orientation]
+		function (callback) {
+			if (user.data.profile.orientation === "Hétéro" && user.data.profile.sexe === "Homme") {
+				filtersUsed["data.profile.sexe"] = "Femme";
+				filtersUsed["data.profile.orientation"] = "Hétéro";
+			}
+			if (user.data.profile.orientation === "Hétéro" && user.data.profile.sexe === "Femme") {
+				filtersUsed["data.profile.sexe"] = "Homme";
+				filtersUsed["data.profile.orientation"] = "Hétéro";
+			}
+
+			if (user.data.profile.orientation === "Gays" && user.data.profile.sexe === "Femme") {
+				filtersUsed["data.profile.sexe"] = "Femme";
+				filtersUsed["data.profile.orientation"] = "Gays";
+			}
+			if (user.data.profile.orientation === "Gays" && user.data.profile.sexe === "Homme") {
+				filtersUsed["data.profile.sexe"] = "Homme";
+				filtersUsed["data.profile.orientation"] = "Gays";
+			}
+
+			if (user.data.profile.orientation === "Bisexuelle")
+				console.log('Show uniquement de tout le monde');
+
+			return callback();
+		},
+		// Check filters
 		function (callback) {
 			for (key in filters) {
 				if (!filterList.indexOf(filters[key])) {
@@ -42,21 +84,6 @@ exports.findAffinate = function (req, res) {
 				}
 			}
 			return callback();
-		},
-		function (callback) {
-			Users.findOne({'_id': req.connectedAs.id}).exec(function (err, userFound) {
-				if (err)
-					return callback(err);
-
-				if (!userFound)
-					return callback("User not found");
-
-				if (!userFound.location)
-					userFound.location = [0,0];
-
-				user = userFound;
-				return callback();
-			});
 		},
 		function (callback) {
 			if (filters.sexe)
@@ -81,12 +108,15 @@ exports.findAffinate = function (req, res) {
 				radius = 1;
 
 			if (filters.loca && filterList.indexOf(filters.loca) === 11)
-				radius = 10;
+				radius = 5;
 
 			if (filters.loca && filterList.indexOf(filters.loca) === 12)
-				radius = 25;
+				radius = 10;
 
 			if (filters.loca && filterList.indexOf(filters.loca) === 13)
+				radius = 25;
+
+			if (filters.loca && filterList.indexOf(filters.loca) === 14)
 				radius = 100;
 
 			if (filters.loca && radius)
@@ -98,6 +128,9 @@ exports.findAffinate = function (req, res) {
 							]
 						}
 				};
+
+			if (tags && tags.length > 0)
+				filtersUsed['data.profile.tags'] = { "$in" : tags };
 
 			return callback();
 		},
@@ -121,12 +154,22 @@ exports.findAffinate = function (req, res) {
 				if (!usersFound)
 					return callback('Not user found');
 
+
 				for (var i = 0; i < usersFound.length; i++) {
+					var isAvatar = true;
+
+					if (!usersFound[i] || !usersFound[i].data.pictures || (!usersFound[i].data.avatarID && !usersFound[i].data.pictures[0]))
+						isAvatar = false;
+
+					if (!usersFound[i].data.avatarID || !usersFound[i].data.pictures[usersFound[i].data.avatarID])
+						usersFound[i].data.avatarID = 0;
+
 					usersFound[i] = {
 						id: usersFound[i].id,
 						firstName: usersFound[i].firstName,
 						lastName: usersFound[i].lastName,
-						age: moment().diff(usersFound[i].birth, 'years')
+						age: moment().diff(usersFound[i].birth, 'years'),
+						src: (!isAvatar || !usersFound[i].data.pictures[usersFound[i].data.avatarID]) ? "http://www.bmxpugetville.fr/wp-content/uploads/2015/09/avatar.jpg" : usersFound[i].data.pictures[usersFound[i].data.avatarID].data,
 					}
 				}
 				results = usersFound;
@@ -144,7 +187,7 @@ exports.findAffinate = function (req, res) {
 	], function (err) {
 		if (err)
 			return s.notFound(res, {errors: err}, thisController);
-		return res.status(200).json({message: "Crushed!", users: results});
+		return res.status(200).json({users: results});
 	});
 };
 
@@ -223,7 +266,6 @@ exports.find = function (req, res) {
 						}
 				};
 
-			console.log(tags);
 			if (tags && tags.length > 0) {
 				filtersUsed['data.profile.tags'] = { "$in" : tags };
 				console.log('Il faut affiner avec les tags');
@@ -252,11 +294,20 @@ exports.find = function (req, res) {
 					return callback('Not user found');
 
 				for (var i = 0; i < usersFound.length; i++) {
+					var isAvatar = true;
+
+					if (!usersFound[i] || !usersFound[i].data.pictures || (!usersFound[i].data.avatarID && !usersFound[i].data.pictures[0]))
+						isAvatar = false;
+
+					if (!usersFound[i].data.avatarID || !usersFound[i].data.pictures[usersFound[i].data.avatarID])
+						usersFound[i].data.avatarID = 0;
+
 					usersFound[i] = {
 						id: usersFound[i].id,
 						firstName: usersFound[i].firstName,
 						lastName: usersFound[i].lastName,
-						age: moment().diff(usersFound[i].birth, 'years')
+						age: moment().diff(usersFound[i].birth, 'years'),
+						src: (!isAvatar || !usersFound[i].data.pictures[usersFound[i].data.avatarID]) ? "http://www.bmxpugetville.fr/wp-content/uploads/2015/09/avatar.jpg" : usersFound[i].data.pictures[usersFound[i].data.avatarID].data,
 					}
 				}
 				results = usersFound;

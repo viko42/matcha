@@ -216,6 +216,7 @@ exports.send = function(data, socket) {
 			isBlokedSocket(socket.handshake.query.userId, receiverSocketId, function (to) {
 				socket.to(to).emit('test_message', {message: userEmit+" : "+ maxNotification(messageSent), status: 'success'});
 				socket.to(to).emit('receive message', {conversationId: conversationId});
+				// Score +1
 			});
 		})
 	})
