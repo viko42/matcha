@@ -7,6 +7,7 @@ var Users				= mongoose.model('Users');
 var Crushs				= mongoose.model('Crushs');
 var Conversations		= mongoose.model('Conversations');
 const thisController	= "SearchController";
+const geolib			= require('geolib');
 
 const filterList = [
 	"",
@@ -28,7 +29,6 @@ const filterList = [
 
 exports.findAffinate = function (req, res) {
 	const	userId			= req.connectedAs.id;
-	let		blockedUsers	= [];
 	let		results			= {};
 	let		filtersUsed		= {};
 	let		tags			= req.body.tags;
@@ -39,13 +39,13 @@ exports.findAffinate = function (req, res) {
 		function (callback) {
 			Users.findOne({'_id': req.connectedAs.id}).exec(function (err, userFound) {
 				if (err)
-				return callback(err);
+					return callback(err);
 
 				if (!userFound)
-				return callback("User not found");
+					return callback("User not found");
 
 				if (!userFound.location)
-				userFound.location = [0,0];
+					userFound.location = [0,0];
 
 				user = userFound;
 				return callback();
@@ -74,8 +74,21 @@ exports.findAffinate = function (req, res) {
 			if (user.data.profile.orientation === "Bisexuelle")
 				console.log('Show uniquement de tout le monde');
 
+			//User tags
+			// Popularity users
+
+			// Localization users
+			// filtersUsed['location'] = {
+			// 		$geoWithin: {
+			// 			$centerSphere: [
+			// 				[user.location[0], user.location[1]],
+			// 				100 / 6378.1
+			// 			]
+			// 		}
+			// };
 			return callback();
 		},
+
 		// Check filters
 		function (callback) {
 			for (key in filters) {
@@ -85,6 +98,7 @@ exports.findAffinate = function (req, res) {
 			}
 			return callback();
 		},
+
 		function (callback) {
 			if (filters.sexe)
 				filtersUsed["data.profile.sexe"] = filters.sexe;
@@ -134,26 +148,14 @@ exports.findAffinate = function (req, res) {
 
 			return callback();
 		},
-		function (callback) {
-			Users.findOne({'_id': userId}).exec(function (err, userFound) {
-				if (err)
-					return callback(err);
 
-				if (!userFound)
-					return callback('User not found');
-
-				blockedUsers = userFound.blocked;
-				return callback();
-			});
-		},
 		function (callback) {
-			Users.find(filtersUsed).exec(function (err, usersFound) {
+			Users.find(filtersUsed).sort({'data.score': -1}).exec(function (err, usersFound) {
 				if (err)
 					return callback(err);
 
 				if (!usersFound)
 					return callback('Not user found');
-
 
 				for (var i = 0; i < usersFound.length; i++) {
 					var isAvatar = true;
@@ -170,6 +172,9 @@ exports.findAffinate = function (req, res) {
 						lastName: usersFound[i].lastName,
 						age: moment().diff(usersFound[i].birth, 'years'),
 						src: (!isAvatar || !usersFound[i].data.pictures[usersFound[i].data.avatarID]) ? "http://www.bmxpugetville.fr/wp-content/uploads/2015/09/avatar.jpg" : usersFound[i].data.pictures[usersFound[i].data.avatarID].data,
+						score: usersFound[i].data.score ? usersFound[i].data.score : 0,
+						tags: usersFound[i].data.profile.tags ? usersFound[i].data.profile.tags : [],
+						distance: geolib.getDistance( {latitude: user.location[1], longitude: user.location[0]}, {latitude: usersFound[i].location[1], longitude: usersFound[i].location[0]} )
 					}
 				}
 				results = usersFound;
@@ -179,9 +184,14 @@ exports.findAffinate = function (req, res) {
 		function (callback) {
 			_.remove(results, { id: req.connectedAs.id });
 
-			for (var i = 0; i < blockedUsers.length; i++) {
-				_.remove(results, { id: blockedUsers[i] });
+			for (var i = 0; i < user.blocked.length; i++) {
+				_.remove(results, { id: user.blocked[i] });
 			}
+			return callback();
+		},
+		// Sort Localization
+		function (callback) {
+			results = _.sortBy(results, ["score", "distance"]).reverse();
 			return callback();
 		},
 	], function (err) {
@@ -232,28 +242,28 @@ exports.find = function (req, res) {
 			if (filters.orien)
 				filtersUsed["data.profile.orientation"] = filters.orien;
 
-			if (filters.age && filterList.indexOf(filters.age) === 6)
+			if (filters.age && filterList.indexOf(filters.age) === 7)
 				filtersUsed["birth"] = {$lt: moment().subtract('18', 'years').format(), $gt: moment().subtract('25', 'years').format() };
 
-			if (filters.age && filterList.indexOf(filters.age) === 7)
+			if (filters.age && filterList.indexOf(filters.age) === 8)
 				filtersUsed["birth"] = {$lt: moment().subtract('25', 'years').format(), $gt: moment().subtract('35', 'years').format() };
 
-			if (filters.age && filterList.indexOf(filters.age) === 8)
+			if (filters.age && filterList.indexOf(filters.age) === 9)
 				filtersUsed["birth"] = {$lt: moment().subtract('35', 'years').format(), $gt: moment().subtract('100', 'years').format() };
 
 			var myPosition	= [user.location[0], user.location[1]];
 			var radius		= false;
 
-			if (filters.loca && filterList.indexOf(filters.loca) === 9)
+			if (filters.loca && filterList.indexOf(filters.loca) === 10)
 				radius = 1;
 
-			if (filters.loca && filterList.indexOf(filters.loca) === 10)
+			if (filters.loca && filterList.indexOf(filters.loca) === 11)
 				radius = 10;
 
-			if (filters.loca && filterList.indexOf(filters.loca) === 11)
+			if (filters.loca && filterList.indexOf(filters.loca) === 12)
 				radius = 25;
 
-			if (filters.loca && filterList.indexOf(filters.loca) === 12)
+			if (filters.loca && filterList.indexOf(filters.loca) === 13)
 				radius = 100;
 
 			if (filters.loca && radius)
@@ -268,7 +278,6 @@ exports.find = function (req, res) {
 
 			if (tags && tags.length > 0) {
 				filtersUsed['data.profile.tags'] = { "$in" : tags };
-				console.log('Il faut affiner avec les tags');
 			}
 
 			return callback();
@@ -308,6 +317,9 @@ exports.find = function (req, res) {
 						lastName: usersFound[i].lastName,
 						age: moment().diff(usersFound[i].birth, 'years'),
 						src: (!isAvatar || !usersFound[i].data.pictures[usersFound[i].data.avatarID]) ? "http://www.bmxpugetville.fr/wp-content/uploads/2015/09/avatar.jpg" : usersFound[i].data.pictures[usersFound[i].data.avatarID].data,
+						score: usersFound[i].data.score ? usersFound[i].data.score : 0,
+						tags: usersFound[i].data.profile.tags ? usersFound[i].data.profile.tags : [],
+						distance: geolib.getDistance( {latitude: user.location[1], longitude: user.location[0]}, {latitude: usersFound[i].location[1], longitude: usersFound[i].location[0]} )
 					}
 				}
 				results = usersFound;

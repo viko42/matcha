@@ -10,6 +10,8 @@ var Conversations		= mongoose.model('Conversations');
 const thisController	= "CrushsController";
 const {isBlocked}		= require('../policies/isBlocked');
 
+const {addScore}		= require('../helpers/score');
+
 exports.getSocketIdTarget = function (data, socket, callback) {
 	const	profileId = data.id;
 
@@ -143,7 +145,8 @@ exports.startConversation = function (req, res) {
 	], function (err) {
 		if (err)
 			return s.notFound(res, {errors: err}, thisController);
-		// Score +20
+
+		addScore(crushTarget, 20);
 		return res.status(200).json({message: "Conversation started!"});
 	});
 };
@@ -206,7 +209,7 @@ exports.removeCrush = function (req, res) {
 				Conversations.remove({'_id': conversationFound.id}).exec(function (err, conversationDeleted) {
 					if (err)
 						return callback(err);
-					// Score -10
+					addScore(crushTarget, -10);
 					return callback();
 				});
 			});
@@ -298,7 +301,7 @@ exports.doCrush = function (req, res) {
 			new_notification.save(function (err, notifSaved) {
 				if (err)
 					return callback(err);
-				// Score +10
+				addScore(crushTarget, 10);
 				return callback();
 			});
 		},

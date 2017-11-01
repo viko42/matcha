@@ -14,6 +14,7 @@ import Crushs			from '../pages/crushs';
 import Search			from '../pages/search';
 import Visits			from '../pages/visits';
 import Likes			from '../pages/likes';
+import Reset			from '../pages/reset';
 
 import NotFound			from '../pages/notfound';
 import Error			from '../pages/error';
@@ -45,9 +46,9 @@ const Routes = (props) => (
 		<Route path='/visits'		component={Authorization(Visits, ['User', 'Admin'])}/>
 		<Route path='/likes'		component={Authorization(Likes, ['User', 'Admin'])}/>
 
-		{/* <Route path='/administration' component={Authorization(Admin, ['Admin'])}/> */}
 		<Route path='/register'		component={Register}/>
 		<Route path='/login'		component={Login}/>
+		<Route path='/reset'		component={Reset}/>
 		<Route path='/logout'		component={Logout}/>
 		<Route path='/unsupported'	component={NotSupported}/>
 		<Route path='/maintenance'	component={Error}/>

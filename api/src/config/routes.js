@@ -13,9 +13,11 @@ module.exports = function (app) {
 	app.route('/users/update')	.put(isConnected.authorization, Users.update);
 	app.route('/users/delete')	.delete(isConnected.authorization, Users.delete);
 	app.route('/users/block')	.post(isConnected.authorization, Users.block);
-	app.route('/users/report')	.post(isConnected.authorization, Users.report);
 
-	app.route('/users/import')	.post(Users.import);
+	app.route('/users/import')			.post(Users.import);
+	app.route('/users/reset')			.post(Users.reset);
+	app.route('/users/reset/password')	.post(Users.newPassword);
+
 	//####################################################################
 	//						Profile
 	var Profile = require('../controllers/ProfileController');

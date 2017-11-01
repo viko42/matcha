@@ -35,7 +35,6 @@ class Register extends Component {
 			email: null,
 			password: null,
 			confirmpass: null,
-			sexe: null,
 			firstName: null,
 			lastName: null,
 			phone: null,
@@ -116,8 +115,9 @@ class Register extends Component {
 							<Col m={12} s={12}>
 								<Card title="Informations personelles">
 									<Row>
-										<Input name='sexe' type='radio' value='homme' label='Homme' m={6} s={6} onChange={this.handleInputChange} validate/>
-										<Input name='sexe' type='radio' value='femme' label='Femme' m={6} s={6} onChange={this.handleInputChange}/>
+										{/* <Input name='sexe' type='radio' value='homme' label='Homme' m={6} s={6} onChange={this.handleInputChange} validate/>
+										<Input name='sexe' type='radio' value='femme' label='Femme' m={6} s={6} onChange={this.handleInputChange}/> */}
+										<Input name='username' s={12} label="Nom d'utilisateur" validate error={this.state.errors.username ? this.state.errors.username : null} onChange={this.handleInputChange}><Icon>account_circle</Icon></Input>
 										<Input name='lastName' s={6} label="Last Name" validate error={this.state.errors.lastName ? this.state.errors.lastName : null} onChange={this.handleInputChange}><Icon>account_circle</Icon></Input>
 										<Input name='firstName' s={6} label="First Name" validate error={this.state.errors.firstName ? this.state.errors.firstName : null} onChange={this.handleInputChange}></Input>
 										<Input name='phone' s={6} label="Telephone" validate type='tel' error={this.state.errors.phone ? this.state.errors.phone : null} onChange={this.handleInputChange}><Icon>phone</Icon></Input>

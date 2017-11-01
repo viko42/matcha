@@ -24,6 +24,17 @@ const tabs = {
 		'url': apiUrl + '/users/tags'
 	},
 
+	'reset': {
+		'method': 'POST',
+		'url': apiUrl + '/users/reset'
+	},
+
+	'resetpassword': {
+		'method': 'POST',
+		'url': apiUrl + '/users/reset/password'
+	},
+
+
 	//###################################################################
 	// 							Login
 	//###################################################################

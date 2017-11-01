@@ -5,6 +5,8 @@ var async		= require('async');
 
 // Verify if 'TO' block 'FROM'
 exports.isBlokedSocket = function(fromId, toSocket, call) {
+	var idRecipent = false;
+
 	async.waterfall([
 		function (callback) {
 			Users.findOne({'data.socketid': toSocket}).exec(function (err, userFound) {
@@ -22,13 +24,14 @@ exports.isBlokedSocket = function(fromId, toSocket, call) {
 						return callback('Blocked');
 					}
 				}
+				idRecipent = userFound.id;
 				return callback();
 			});
 		},
 	], function (err) {
 		if (err)
 			return call(null);
-		return call(toSocket);
+		return call(toSocket, idRecipent);
 	});
 };
 

@@ -1,15 +1,17 @@
-var mongoose	= require('mongoose');
-var s			= require('../config/services');
-var async		= require('async');
-var _			= require('lodash');
-var moment		= require('moment');
-var bcrypt		= require('bcrypt');
-var Conversations	= mongoose.model('Conversations');
-var Notifications	= mongoose.model('Notifications');
-var Messages		= mongoose.model('Messages');
-var Users			= mongoose.model('Users');
-var Reported		= mongoose.model('Reported');
-var thisController	= "ReportedController";
+const mongoose	= require('mongoose');
+const s			= require('../config/services');
+const async		= require('async');
+const _			= require('lodash');
+const moment		= require('moment');
+const bcrypt		= require('bcrypt');
+const Conversations	= mongoose.model('Conversations');
+const Notifications	= mongoose.model('Notifications');
+const Messages		= mongoose.model('Messages');
+const Users			= mongoose.model('Users');
+const Reported		= mongoose.model('Reported');
+const thisController	= "ReportedController";
+
+const {addScore}		= require('../helpers/score');
 
 exports.newReport = function (req, res) {
 	const	userId		= req.connectedAs.id;
@@ -36,13 +38,13 @@ exports.newReport = function (req, res) {
 			if (err)
 				return s.serverError(res, err, thisController);
 
-			if (reportFound)
+			if (reportFound.length > 0)
 				return s.notFound(res, {errors: {swal: 'Profile deja report'}}, thisController);
 
 			new_report.save(function (err, reportSaved) {
 				if (err)
 					return s.serverError(res, err, thisController);
-				// Score -20
+				addScore(profileId, -10);
 				return res.status(200).json({reported: true});
 			});
 		});

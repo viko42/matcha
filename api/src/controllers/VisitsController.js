@@ -1,16 +1,18 @@
-var mongoose	= require('mongoose');
-var s			= require('../config/services');
-var async		= require('async');
-var _			= require('lodash');
-var moment		= require('moment');
-var bcrypt		= require('bcrypt');
-var Conversations	= mongoose.model('Conversations');
-var Notifications	= mongoose.model('Notifications');
-var Messages		= mongoose.model('Messages');
-var Users			= mongoose.model('Users');
-var Visits			= mongoose.model('Visits');
-var thisController	= "VisitsController";
+const mongoose	= require('mongoose');
+const s			= require('../config/services');
+const async		= require('async');
+const _			= require('lodash');
+const moment		= require('moment');
+const bcrypt		= require('bcrypt');
+const Conversations	= mongoose.model('Conversations');
+const Notifications	= mongoose.model('Notifications');
+const Messages		= mongoose.model('Messages');
+const Users			= mongoose.model('Users');
+const Visits			= mongoose.model('Visits');
+const thisController	= "VisitsController";
+
 const {isBlocked}	= require('../policies/isBlocked');
+const {addScore}		= require('../helpers/score');
 
 exports.listVisits		= function (req, res) {
 	const userId		= req.connectedAs.id;
@@ -79,6 +81,7 @@ exports.newVisit = function (data, socket, callback) {
 					if (err)
 						return callback(err);
 					// Score +5
+					addScore(profileId, 5);
 					return callback(null, userFound.data.socketid);
 				});
 			})

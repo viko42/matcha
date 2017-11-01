@@ -9,23 +9,6 @@ const thisController	= "ProfileController";
 var multer = require('multer');
 var upload = multer({ dest: 'uploads/' });
 
-exports.addScore = function (id, scoreToAdd) {
-	Users.findOne({'_id': id}).exec(function (err, userFound) {
-		if (err)
-			return false;
-
-		if (!userFound)
-			return false;
-
-		userFound.data.score += scoreToAdd;
-		userFound = new Users(userFound);
-		userFound.save(function (err, userSaved) {
-			if (err)
-				return false;
-			return true;
-		});
-	});
-};
 exports.findAvatar = function (req, res) {
 	const id = req.params.id;
 
@@ -246,6 +229,7 @@ exports.getProfile = function(req, res) {
 					id: user.id,
 					blocked: blocked,
 					username: user.username,
+					score: user.data.score ? user.data.score : 0,
 				};
 				return callback();
 			});

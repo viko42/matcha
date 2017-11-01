@@ -9,11 +9,111 @@ const jwt				= require('jsonwebtoken');
 const moment			= require('moment');
 const thisController	= "UsersController";
 const http				= require('http');
+const nodemailer		= require('nodemailer');
+const generator			= require('generate-password');
 
+const {addScore}		= require('../helpers/score');
+
+exports.reset = function (req, res) {
+	const email = req.body.email;
+	let	  data = {};
+
+	async.waterfall([
+		function (callback) {
+			data.code = Math.floor((Math.random() * 90000) + 10000);
+			data.message = "Votre code de reinitialisation: "+ data.code;
+			return callback();
+		},
+		function (callback) {
+			data.transporter = nodemailer.createTransport({
+		        service: 'gmail',
+		        auth: {
+		            user: 'vlancienpwd@gmail.com',
+		            pass: 'QWERTY123'
+		        }
+			});
+			data.mailOptions = {
+			        from: "vlancienpwd@gmail.com",
+			        to: email,
+			        subject: "Reinitialisation de votre mot de passe",
+			        text: data.message,
+			        html: '<b>' + data.message + '</b>'
+			};
+			return callback();
+		},
+		function (callback) {
+			Users.findOneAndUpdate({'email': email}, {'data.reset' : data.code}).exec(function (err, userFound) {
+				if (err)
+					return callback(err);
+
+				if (!userFound)
+					return callback("User not found");
+
+				data.transporter.sendMail(data.mailOptions, function(error, info){
+					if (error)
+						return console.log(email + " unable to send mail. {EMAIL_SENT}");
+				});
+				data.transporter.close();
+				return callback();
+			})
+		},
+	], function (err) {
+		if (err)
+			return s.serverError(res, err, thisController);
+		return res.status(200).json({message: "Code generated!"});
+	});
+};
+
+exports.newPassword = function (req, res) {
+	const code	= req.body.code;
+	const email	= req.body.email;
+	const newPass	= req.body.newPass;
+	const newPassC	= req.body.newPassC;
+
+	async.waterfall([
+		function (callback) {
+			if (!email)
+				return callback({errors: {email: 'Email missing'}});
+
+			if (!code)
+				return callback({errors: {code: 'Code missing'}});
+
+			if (!newPass || !newPassC || newPass.length < 5)
+				return callback({errors: {newPass: 'Vos mots de passe doivent etre identique et de plus de 5 catacteres.'}});
+
+			Users.findOne({'email': email}).exec(function (err, userFound) {
+				if (err)
+					return callback(err);
+
+
+				if (!userFound || Number(userFound.data.reset) !== Number(code))
+					return callback({errors: {swal: "Utilisateur introuvable ou code incorrect"}});
+
+				bcrypt.hash(newPass, 10, function(err, hash) {
+					if (err)
+						return callback(err);
+
+					userFound.password = hash;
+					userFound.data.reset = null;
+					userFound = new Users(userFound);
+					userFound.save(function (err, userSaved) {
+						if (err)
+							return callback(err)
+						return callback();
+					});
+				});
+			});
+		},
+	], function (err) {
+		if (err)
+			return s.forbidden(res, err, thisController);
+		return res.status(200).json({message: "Password reset!"});
+	});
+
+};
 exports.import = function (req, res) {
 	var new_user = req.body;
 
-	console.log(new_user);
 	if (!new_user)
 		return s.badRequest(res, "Missing input")
 
@@ -41,10 +141,8 @@ exports.import = function (req, res) {
 	if (!new_user.birth || !moment(new_user.birth, ["DD MMMM, YYYY"]).isValid())
 		return s.badRequest(res, {errors: {birth: 'Champs manquant'}});
 
-	if (moment().diff(moment(new_user.birth, ["DD MMMM, YYYY"]).format(), 'years') < 18) {
-		console.log(moment().diff(moment(new_user.birth, ["DD MMMM, YYYY"]).format(), 'years'));
+	if (moment().diff(moment(new_user.birth, ["DD MMMM, YYYY"]).format(), 'years') < 18)
 		return s.badRequest(res, {errors: {swal: 'Vous devez avoir plus de 18 ans.'}});
-	}
 
 	// if (!new_user.sexe)
 	// 	return s.badRequest(res, {errors: {swal: 'Champs sexe manquant'}});
@@ -111,6 +209,7 @@ exports.import = function (req, res) {
 					orientation: new_user.orientation ? new_user.orientation : 'Non renseigné'
 				},
 				pictures: [],
+				score: 0
 			};
 			new_user.location = arrayLocation;
 			new_user.birth = moment(new_user.birth, ["DD MMMM, YYYY"]).format();
@@ -142,6 +241,7 @@ exports.tags = function (req, res) {
 		return res.status(200).json({tags: userFound.data.profile.tags});
 	})
 };
+
 exports.block = function (req, res) {
 	const blockUser = req.body;
 
@@ -176,6 +276,7 @@ exports.block = function (req, res) {
 
 				if (remove) {
 					action = "remove";
+					addScore(blockUser.id, 10);
 					blockedUsers = _.filter(blockedUsers, function(currentObject) {
 					    return currentObject !== blockUser.id;
 					});
@@ -188,6 +289,7 @@ exports.block = function (req, res) {
 			if (action === "remove")
 				return callback();
 
+			addScore(blockUser.id, -10);
 			Conversations.findOne({$or: [{sender: blockUser.id, recipent: req.connectedAs.id}, {sender: req.connectedAs.id, recipent: blockUser.id}]}).exec(function (err, conversationFound) {
 				if (err)
 					return callback(err);
@@ -228,32 +330,6 @@ exports.block = function (req, res) {
 	});
 };
 
-exports.report = function (req, res) {
-	const reportUser = req.body;
-
-	var reportedUsers;
-
-	async.waterfall([
-		function (callback) {
-			Users.findOne({'_id': req.connectedAs.id}).exec(function (err, userFound) {
-				if (err)
-					return callback(err);
-
-				if (!userFound)
-					return callback('User not found');
-			})
-		},
-		function (callback) {
-
-		},
-	], function (err) {
-		if (err)
-			return s.serverError(res, err, thisController);
-
-		return res.status(200).json({message: "User reported!"});
-	});
-};
-
 exports.list = function (req, res) {
 	Users.find({}, function (err, results) {
 		if (err)
@@ -276,9 +352,6 @@ exports.create = function(req, res) {
 	if (!new_user.email)
 		return s.badRequest(res, {errors: {email: 'Champs manquant'}});
 
-	if (!new_user.username)
-		return s.badRequest(res, {errors: {username: "Nom d'utilisateur manquant"}});
-
 	if (!new_user.password)
 		return s.badRequest(res, {errors: {password: 'Password manquant'}});
 
@@ -290,6 +363,9 @@ exports.create = function(req, res) {
 
 	if (new_user.password !== new_user.confirmpass)
 		return s.badRequest(res, {errors: {confirmpass: 'Les mots de passe ne sont pas identiques'}});
+
+	if (!new_user.username)
+		return s.badRequest(res, {errors: {username: 'Champs manquant'}});
 
 	if (!new_user.lastName)
 		return s.badRequest(res, {errors: {lastName: 'Champs manquant'}});
@@ -305,9 +381,6 @@ exports.create = function(req, res) {
 
 	if (moment().diff(moment(new_user.birth, ["DD MMMM, YYYY"]).format(), 'years') < 18)
 		return s.badRequest(res, {errors: {swal: 'Vous devez avoir plus de 18 ans.'}});
-
-	if (!new_user.sexe)
-		return s.badRequest(res, {errors: {swal: 'Champs sexe manquant'}});
 
 	async.waterfall([
 		function (callback) {
@@ -328,8 +401,6 @@ exports.create = function(req, res) {
 			let positions = {};
 			http.get('http://ip-api.com/json', (resp) => {
 				let data = '';
-
-					console.log(resp);
 
 				resp.on('data', (chunk) => {
 					data += chunk;
@@ -396,7 +467,6 @@ exports.update = function(req, res) {
 	if (!req.body.userId)
 		return s.badRequest(res, "user ID is missing", thisController);
 
-	// console.log(req.body);
 	if (req.connectedAs.id !== req.body.userId)
 		return s.badRequest(res, "No sorry", thisController);
 
@@ -438,7 +508,7 @@ exports.logout = function (socket) {
 		updateUser.save(function (err, userSaved) {
 			if (err)
 				return ;
-			console.log('User removed socket in DB!');
+			// console.log('User removed socket in DB!');
 		});
 	})
 };

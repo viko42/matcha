@@ -37,7 +37,7 @@ class SideBar extends Component {
 		services('getAvatar', {getData: getLocalStorage('user').username}, function (err, response) {
 			if (response.data.src)
 				return self.setState({avatar: response.data.src});
-			console.log(response.data);
+			// console.log(response.data);
 		})
     }
     componentWillUnmount() {

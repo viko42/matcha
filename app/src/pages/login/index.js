@@ -23,7 +23,7 @@ class Login extends Component {
 		this.state = {
 			errors: {},
 			response: false,
-	        endpoint: "http://127.0.0.1:8080"
+	        endpoint: apiUrl
 		};
 
 		this.login = this.login.bind(this);
@@ -76,7 +76,7 @@ class Login extends Component {
 										<Row>
 											<Input type="email" name='email' label="Your email" error={this.state.errors && this.state.errors.email ? this.state.errors.email : null} onChange={this.handleInputChange} s={12}/>
 											<Input type="password" name='password' label="Your password" error={this.state.errors.password ? this.state.errors.password : null} onChange={this.handleInputChange} s={12} />
-											<Col s={12}><Link to="/" className="pull-right">Mot de passe oublié</Link></Col>
+											<Col s={12}><Link to="/reset" className="pull-right">Mot de passe oublié</Link></Col>
 											<Col s={12}><Button className="pull-left" waves='light'>LOGIN</Button></Col>
 										</Row>
 									</Card>

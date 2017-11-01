@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { Col, Card, Row, Button, Tabs, Tab, Chip, Input } from 'react-materialize';
+import { Col, Card, Row, Button, Tabs, Tab, Chip, Input, Dropdown, Icon, Badge, NavItem } from 'react-materialize';
 import services from '../../config/services';
 
 import '../../index.css';
 import './index.css';
-// import $ from 'jquery';
+import _ from 'lodash';
 
 import swal		from 'sweetalert';
 
@@ -29,7 +29,9 @@ class Search extends Component {
 			listTags: [],
 			listFilter: {},
 			filterRender: [],
-			users: []
+			users: [],
+			listUsers: [],
+			sort: {},
 		};
 
 		this.delFilter = this.delFilter.bind(this);
@@ -49,6 +51,27 @@ class Search extends Component {
 			tags: filterText === 'Tags' && this.state.tags === false ? true : false,
 			loca: filterText === 'Localisation' && this.state.loca === false ? true : false,
 		});
+	}
+	filterBy(which, e) {
+		e.preventDefault();
+		const	self = this;
+		let		sort = this.state.sort;
+		let		array = _.sortBy(this.state.listUsers, which);
+
+		if (which === 'age') {
+			sort.age = !this.state.sort.age ? true : false;
+			array = sort.age === false ? array.reverse() : array;
+		}
+		if (which === 'score') {
+			sort.score = !this.state.sort.score ? true : false;
+			array = sort.score === false ? array.reverse() : array;
+		}
+		if (which === 'distance') {
+			sort.distance = !this.state.sort.distance ? true : false;
+			array = sort.distance === false ? array.reverse() : array;
+		}
+		this.setState({listUsers: array}, function () {self.getUsers(array)});
+		this.setState({sort: sort});
 	}
 	addFilter(id, e) {
 		var filterText = e.target.text;
@@ -132,6 +155,7 @@ class Search extends Component {
 					swal("Error", response.data.errors.swal, "error");
 				return ;
 			}
+			self.setState({listUsers: response.data.users});
 			self.getUsers(response.data.users);
 		});
 	}
@@ -249,6 +273,33 @@ class Search extends Component {
 						}
 						<Col s={12}>
 							{this.state.filterRender}
+						</Col>
+						<Col s={12}>
+							<div className="pull-right">
+								<Dropdown
+									trigger={
+										<Button>Filtres<Icon right>arrow_drop_down</Icon></Button>
+									}>
+									<NavItem onClick={this.filterBy.bind(this, 'score')}>
+										Popularite
+										<Badge>-{this.state.sort.score ? '↓' : '↑'}-</Badge>
+									</NavItem>
+
+									<NavItem onClick={this.filterBy.bind(this, 'age')}>
+										Age
+										<Badge>-{this.state.sort.age ? '↓' : '↑'}-</Badge>
+									</NavItem>
+
+									<NavItem onClick={this.filterBy.bind(this, 'distance')}>
+										Localisation
+										<Badge>-{this.state.sort.distance ? '↓' : '↑'}-</Badge>
+									</NavItem>
+									<NavItem onClick={this.filterBy.bind(this, 'tags')}>
+										Tags
+										<Badge>-{this.state.sort.tags ? '↓' : '↑'}-</Badge>
+									</NavItem>
+								</Dropdown>
+							</div>
 						</Col>
 						{this.state.users}
 					</Row>

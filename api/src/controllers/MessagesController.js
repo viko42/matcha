@@ -12,6 +12,8 @@ var Users			= mongoose.model('Users');
 const thisController	= "MessagesController";
 const {isBlokedSocket}	= require('../policies/isBlocked');
 
+const {addScore}		= require('../helpers/score');
+
 exports.setAsRead	= function (data, socket) {
 	Messages.update({status: 'sended', conversation: data.conversationId, sender: {"$ne": data.userId}}, {status: 'readed'}, {multi: true}, function(err, num) {
 		if (!num || num.n <= 0)
@@ -213,10 +215,10 @@ exports.send = function(data, socket) {
 
 		exports.get_messages({userId: socket.handshake.query.userId, ...data}, socket, function (data) {
 			socket.emit('message sent', data);
-			isBlokedSocket(socket.handshake.query.userId, receiverSocketId, function (to) {
+			isBlokedSocket(socket.handshake.query.userId, receiverSocketId, function (to, idRecipent) {
 				socket.to(to).emit('test_message', {message: userEmit+" : "+ maxNotification(messageSent), status: 'success'});
 				socket.to(to).emit('receive message', {conversationId: conversationId});
-				// Score +1
+				addScore(idRecipent, 1);
 			});
 		})
 	})

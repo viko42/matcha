@@ -353,7 +353,7 @@ class Profile extends Component {
 										</div>}
 
 										<div className="header-score">
-											Popularity: 538 !
+											Popularity: {profile.score} !
 										</div>
 									</div>
 								]}>

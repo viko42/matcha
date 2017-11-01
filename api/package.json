@@ -18,6 +18,8 @@
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "express": "^4.15.5",
+    "generate-password": "^1.3.0",
+    "geolib": "^2.0.24",
     "jsonwebtoken": "^8.0.1",
     "lodash": "^4.17.4",
     "meanie-mongoose-to-json": "^1.3.0",
@@ -26,6 +28,7 @@
     "multer": "^1.3.0",
     "node-base64-image": "^1.0.4",
     "node-geocoder": "^3.21.0",
+    "nodemailer": "^4.3.1",
     "socket.io": "^2.0.3"
   },
   "devDependencies": {

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Col, Card, Row, Button, Tabs, Tab, Chip, Input } from 'react-materialize';
+import { Col, Card, Row, Button, Tabs, Tab, Chip, Input, Dropdown, NavItem, Icon, Badge } from 'react-materialize';
 import services from '../../config/services';
 
 import '../../index.css';
@@ -13,6 +13,8 @@ import {getLocalStorage} from '../../config/policies'
 
 import Header from '../../components/header/index'
 import {logoName, apiUrl} from '../../config/crushyard'
+
+import _ from 'lodash'
 
 class Home extends Component {
 	constructor(props) {
@@ -28,8 +30,10 @@ class Home extends Component {
 			tags: false,
 			listTags: [],
 			listFilter: {},
+			listUsers: [],
 			filterRender: [],
-			users: []
+			users: [],
+			sort: {}
 		};
 
 		this.delFilter = this.delFilter.bind(this);
@@ -38,6 +42,35 @@ class Home extends Component {
 		this.addFilter = this.addFilter.bind(this);
 		this.addTags = this.addTags.bind(this);
 		this.search = this.search.bind(this);
+	}
+	filterBy(which, e) {
+		e.preventDefault();
+		const	self = this;
+		let		sort = this.state.sort;
+		let		array = _.sortBy(this.state.listUsers, which);
+
+		if (which === 'age') {
+			sort.age = !this.state.sort.age ? true : false;
+			array = sort.age === false ? array.reverse() : array;
+		}
+		if (which === 'score') {
+			sort.score = !this.state.sort.score ? true : false;
+			array = sort.score === false ? array.reverse() : array;
+		}
+		if (which === 'distance') {
+			sort.distance = !this.state.sort.distance ? true : false;
+			array = sort.distance === false ? array.reverse() : array;
+		}
+		if (which === 'tags') {
+			sort.tags = !this.state.sort.tags ? true : false;
+			for (var i = 0; i < array.length; i++) {
+				console.log(array[i].tags);
+				// array = _.intersectionBy(array, ['bonsoir'], 'tags');
+			}
+			// array = sort.distance === false ? array.reverse() : array;
+		}
+		this.setState({listUsers: array}, function () {self.getUsers(array)});
+		this.setState({sort: sort});
 	}
 	updateFilter(id, e) {
 		var filterText = e.target.text;
@@ -110,7 +143,7 @@ class Home extends Component {
 			render.push(
 				<Col key={i} s={12} m={6} l={6} className="xl3">
 					<Card className="crush-tag-card">
-						<div className="crush-tag-name">{users[i].firstName} {users[i].lastName}<br/>{users[i].age} ans</div>
+						<div className="crush-tag-name">{users[i].firstName} {users[i].lastName}<br/>{users[i].age} ans ({users[i].score} pts)<br/>{users[i].distance} m</div>
 						<img alt="profile" className="crush-tag-img" src={users[i].src}/>
 						<div className="crush-tag-buttons">
 							<a href={'/#/profile/'+users[i].id } className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Visit this profile"><Button floating className='grey actions-tag' waves='light' icon='input' /></a>
@@ -131,6 +164,7 @@ class Home extends Component {
 					swal("Error", response.data.errors.swal, "error");
 				return ;
 			}
+			self.setState({listUsers: response.data.users})
 			self.getUsers(response.data.users);
 		});
 	}
@@ -163,7 +197,6 @@ class Home extends Component {
 	componentWillUnmount() {
 		// global.socket.off('message sent');
 	}
-
 	getFilter() {
 		var render = [];
 
@@ -265,6 +298,34 @@ class Home extends Component {
 						<Col s={12}>
 							{this.state.filterRender}
 						</Col>
+						<Col s={12}>
+							<div className="pull-right">
+								<Dropdown
+									trigger={
+										<Button>Filtres<Icon right>arrow_drop_down</Icon></Button>
+									}>
+									<NavItem onClick={this.filterBy.bind(this, 'score')}>
+										Popularite
+										<Badge>-{this.state.sort.score ? '↓' : '↑'}-</Badge>
+									</NavItem>
+
+									<NavItem onClick={this.filterBy.bind(this, 'age')}>
+										Age
+										<Badge>-{this.state.sort.age ? '↓' : '↑'}-</Badge>
+									</NavItem>
+
+									<NavItem onClick={this.filterBy.bind(this, 'distance')}>
+										Localisation
+										<Badge>-{this.state.sort.distance ? '↓' : '↑'}-</Badge>
+									</NavItem>
+									<NavItem onClick={this.filterBy.bind(this, 'tags')}>
+										Tags
+										<Badge>-{this.state.sort.tags ? '↓' : '↑'}-</Badge>
+									</NavItem>
+								</Dropdown>
+							</div>
+						</Col>
+
 						{this.state.users}
 					</Row>
 				</div>
