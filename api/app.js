@@ -53,13 +53,12 @@ app.use(function(req, res, next) {
 });
 
 app.use(bodyParser.json({limit: '5mb'}));
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+app.use(bodyParser.urlencoded({limit: '5mb', extended: true}));
 
 app.use(bodyParser.json());
 app.use (function (error, req, res, next){
 	if (res.req._parsedUrl.path)
 		return res.status(403).json({'errors': {swal: "Votre image doit etre inferieur à 5mb"}});
-	console.log(req._parsedUrl.path);
     console.log("Une requete n'a pas abouti depuis: " + req.connection.remoteAddress);
 });
 

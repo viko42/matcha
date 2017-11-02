@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "IP=localhost MONGOPORT=27017 nodemon app.js",
-    "build": "IP=172.17.0.1 MONGOPORT=27018 node app.js",
+    "start": "IP=localhost MONGOPORT=27017 nodemon app.js --exec babel-node --presets es2015,stage-2",
+    "build": "IP=172.17.0.1 MONGOPORT=27018 babel-node app.js --presets es2015,stage-2",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -35,6 +35,7 @@
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.6.0",
     "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
     "nodemon": "^1.12.1"
   }
 }
