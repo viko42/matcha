@@ -100,4 +100,11 @@ module.exports = function (app) {
 
 	app.route('/report')				.post(isConnected.authorization, Report.newReport);
 
+	//####################################################################
+	//						Maps
+	var Maps = require('../controllers/MapsController');
+	//--------------------------------------------------------------------
+
+	app.route('/maps')				.get(isConnected.authorization, Maps.getPositions);
+
 };

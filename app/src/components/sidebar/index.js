@@ -82,6 +82,7 @@ class SideBar extends Component {
 					<SideNavItem waves href='#inbox' icon="message">Messagerie</SideNavItem>
 					<SideNavItem waves href='#visits' icon="add_to_queue">Mes visites</SideNavItem>
 					<SideNavItem waves href='#likes' icon="hearing">Mes likes</SideNavItem>
+					<SideNavItem waves href='#maps' icon="maps">Maps</SideNavItem>
 					<SideNavItem divider />
 					<SideNavItem subheader>Aide</SideNavItem>
 					<SideNavItem waves icon="help" href='#support'>Contactez-nous</SideNavItem>

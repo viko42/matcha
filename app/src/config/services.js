@@ -196,6 +196,11 @@ const tabs = {
 		'method': 'GET',
 		'url': "https://maps.googleapis.com/maps/api/geocode/json?latlng="
 	},
+
+	'getPositions': {
+		'method': 'GET',
+		'url': apiUrl + '/maps'
+	},
 }
 
 const services = (props, data, callback) => {
