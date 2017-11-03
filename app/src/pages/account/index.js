@@ -143,6 +143,7 @@ class Account extends Component {
 								<Row>
 									<a onClick={this.findMe.bind(this)}>Find my position</a>
 									<Geosuggest
+										// googleMaps=
 										onSuggestSelect={this.onSuggestSelect.bind(this)}
 										initialValue={account ? account.adress : ''}
 									/>

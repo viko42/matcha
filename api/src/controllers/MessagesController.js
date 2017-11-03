@@ -161,8 +161,8 @@ exports.send = function(data, socket) {
 				if (err)
 					return callback(err);
 
-				if (!userFound)
-					console.log('Receiver not found');
+				// if (!userFound)
+				// 	console.log('Receiver not found');
 
 				receiverSocketId = userFound.data.socketid;
 				return callback();

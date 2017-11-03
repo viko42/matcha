@@ -60,7 +60,6 @@ exports.update = function(req, res) {
 				if (req.body.email === userFound.email)
 					req.body.email = false;
 
-					console.log(req.body);
 				if (!req.body.firstName || !req.body.lastName)
 					return callback({errors: {swal: 'Champs manquant'}});
 

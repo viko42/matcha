@@ -9,7 +9,7 @@ const {isBlokedSocket}		= require('../policies/isBlocked');
 
 exports.sockets = function (socket) {
 	if (socket.handshake.query.userId === 'guest')
-		return console.log('New Guest connected');
+		// return console.log('New Guest connected');
 
 	Users.findOne({"_id": socket.handshake.query.userId}).exec(function (err, userFound) {
 		if (err || !userFound)

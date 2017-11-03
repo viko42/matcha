@@ -3,7 +3,7 @@ import {Map, InfoWindow, Marker, GoogleApiWrapper} from 'google-maps-react';
 import swal from 'sweetalert';
 import services from '../../config/services';
 
-export class MapContainer extends Component {
+class MapContainer extends Component {
 	_isMount = true;
 	constructor(props) {
 		super(props);
@@ -66,7 +66,7 @@ render() {
     );
   }
 }
-
-export default GoogleApiWrapper({
-  apiKey: 'AIzaSyAWyS9AomCahBfTue98dIGMcCozwbgKBbc'
-})(MapContainer)
+//
+// export default GoogleApiWrapper({
+//   apiKey: 'AIzaSyAWyS9AomCahBfTue98dIGMcCozwbgKBbc'
+// })(MapContainer)

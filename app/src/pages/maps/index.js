@@ -1,25 +1,77 @@
 import React, { Component } from 'react';
-import '../../index.css';
-import Maps from './maps'
 
 import Header from '../../components/header'
 import {logoName} from '../../config/crushyard'
 
-class MapsUsers extends Component {
+import {Map, InfoWindow, Marker} from 'google-maps-react';
+
+import swal from 'sweetalert';
+import services from '../../config/services';
+
+class MapContainer extends Component {
 	_isMount = true;
-	componentWillUnmount() {
-		this._isMount = false;
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			positions: [],
+			positionsRender: [],
+		}
+
+		this.listMarks = this.listMarks.bind(this);
 	}
 	componentDidMount() {
 		document.title = `${logoName} - Maps`;
+
+		const self = this;
+
+		services('getPositions', {getData: ''}, function (err, response) {
+			if (self._isMount === false)
+				return ;
+			if (err) {
+				self.setState({errors: response.data.errors})
+				if (response.data.errors.swal)
+					swal("Error", response.data.errors.swal, "error");
+				return ;
+			}
+			if (self._isMount)
+				self.listMarks(response.data.positions);
+		});
 	}
-	render() {
-		return (
-			<Header>
-				<Maps></Maps>
-			</Header>
-		);
+	componentWillUnmount() {
+		this._isMount = false;
 	}
+	listMarks(positions) {
+		var positionsRender = [];
+
+		for (var i = 0; i < positions.length; i++) {
+			positionsRender.push(
+				<Marker key={i} title={'This is an user.'} name={'User'} position={{lat: positions[i].lat, lng: positions[i].lng}} />
+			);
+		}
+
+		this.setState({positionsRender: positionsRender});
+	}
+render() {
+    return (
+		<Header>
+			<Map
+				google={window.google}
+				zoom={4}
+				initialCenter={{
+				lat: 48.8588377,
+				lng: 2.27702
+			}}>
+				{this.state.positionsRender}
+				<InfoWindow onClose={this.onInfoWindowClose}>
+					<div>
+						<h1>{this.state.selectedPlace && this.state.selectedPlace.name }</h1>
+					</div>
+				</InfoWindow>
+			</Map>
+		</Header>
+    );
+  }
 }
 
-export default MapsUsers;
+export default MapContainer;
