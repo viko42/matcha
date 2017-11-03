@@ -15,6 +15,8 @@ import Search			from '../pages/search';
 import Visits			from '../pages/visits';
 import Likes			from '../pages/likes';
 import Reset			from '../pages/reset';
+import Limited			from '../pages/limited';
+import Support			from '../pages/support';
 
 import NotFound			from '../pages/notfound';
 import Error			from '../pages/error';
@@ -52,6 +54,8 @@ const Routes = (props) => (
 		<Route path='/logout'		component={Logout}/>
 		<Route path='/unsupported'	component={NotSupported}/>
 		<Route path='/maintenance'	component={Error}/>
+		<Route path='/limited'		component={Limited}/>
+		<Route path='/support'		component={Support}/>
 		<Route component={NotFound}/>
     </Switch>
 );

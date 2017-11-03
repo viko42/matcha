@@ -71,8 +71,8 @@ exports.findAffinate = function (req, res) {
 				filtersUsed["data.profile.orientation"] = "Gays";
 			}
 
-			if (user.data.profile.orientation === "Bisexuelle")
-				console.log('Show uniquement de tout le monde');
+			// if (user.data.profile.orientation === "Bisexuelle")
+			// 	console.log('Show uniquement de tout le monde');
 
 			//User tags
 			// Popularity users
@@ -91,6 +91,7 @@ exports.findAffinate = function (req, res) {
 
 		// Check filters
 		function (callback) {
+			var key;
 			for (key in filters) {
 				if (!filterList.indexOf(filters[key])) {
 					return callback('Invalid filter');
@@ -157,6 +158,7 @@ exports.findAffinate = function (req, res) {
 				if (!usersFound)
 					return callback('Not user found');
 
+				var tagsInt = 0;
 				for (var i = 0; i < usersFound.length; i++) {
 					var isAvatar = true;
 
@@ -166,6 +168,15 @@ exports.findAffinate = function (req, res) {
 					if (!usersFound[i].data.avatarID || !usersFound[i].data.pictures[usersFound[i].data.avatarID])
 						usersFound[i].data.avatarID = 0;
 
+					tagsInt = 0;
+					if (!usersFound[i].data.profile.tags)
+						usersFound[i].data.profile.tags = [];
+
+					for (var b = 0; b < usersFound[i].data.profile.tags.length; b++) {
+						if (_.findIndex(user.data.profile.tags, function(o) { return o == usersFound[i].data.profile.tags[b]; }) !== -1) {
+							tagsInt++;
+						}
+					}
 					usersFound[i] = {
 						id: usersFound[i].id,
 						firstName: usersFound[i].firstName,
@@ -173,7 +184,7 @@ exports.findAffinate = function (req, res) {
 						age: moment().diff(usersFound[i].birth, 'years'),
 						src: (!isAvatar || !usersFound[i].data.pictures[usersFound[i].data.avatarID]) ? "http://www.bmxpugetville.fr/wp-content/uploads/2015/09/avatar.jpg" : usersFound[i].data.pictures[usersFound[i].data.avatarID].data,
 						score: usersFound[i].data.score ? usersFound[i].data.score : 0,
-						tags: usersFound[i].data.profile.tags ? usersFound[i].data.profile.tags : [],
+						tags: tagsInt,
 						distance: geolib.getDistance( {latitude: user.location[1], longitude: user.location[0]}, {latitude: usersFound[i].location[1], longitude: usersFound[i].location[0]} )
 					}
 				}
@@ -213,6 +224,8 @@ exports.find = function (req, res) {
 
 	async.waterfall([
 		function (callback) {
+			var key;
+
 			for (key in filters) {
 				if (!filterList.indexOf(filters[key])) {
 					return callback('Invalid filter');
@@ -302,6 +315,7 @@ exports.find = function (req, res) {
 				if (!usersFound)
 					return callback('Not user found');
 
+				var tagsInt = 0;
 				for (var i = 0; i < usersFound.length; i++) {
 					var isAvatar = true;
 
@@ -311,6 +325,16 @@ exports.find = function (req, res) {
 					if (!usersFound[i].data.avatarID || !usersFound[i].data.pictures[usersFound[i].data.avatarID])
 						usersFound[i].data.avatarID = 0;
 
+
+					tagsInt = 0;
+					if (!usersFound[i].data.profile.tags)
+						usersFound[i].data.profile.tags = [];
+
+					for (var b = 0; b < usersFound[i].data.profile.tags.length; b++) {
+						if (_.findIndex(user.data.profile.tags, function(o) { return o == usersFound[i].data.profile.tags[b]; }) !== -1) {
+							tagsInt++;
+						}
+					}
 					usersFound[i] = {
 						id: usersFound[i].id,
 						firstName: usersFound[i].firstName,
@@ -318,7 +342,7 @@ exports.find = function (req, res) {
 						age: moment().diff(usersFound[i].birth, 'years'),
 						src: (!isAvatar || !usersFound[i].data.pictures[usersFound[i].data.avatarID]) ? "http://www.bmxpugetville.fr/wp-content/uploads/2015/09/avatar.jpg" : usersFound[i].data.pictures[usersFound[i].data.avatarID].data,
 						score: usersFound[i].data.score ? usersFound[i].data.score : 0,
-						tags: usersFound[i].data.profile.tags ? usersFound[i].data.profile.tags : [],
+						tags: tagsInt,
 						distance: geolib.getDistance( {latitude: user.location[1], longitude: user.location[0]}, {latitude: usersFound[i].location[1], longitude: usersFound[i].location[0]} )
 					}
 				}

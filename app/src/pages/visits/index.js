@@ -14,6 +14,7 @@ import Header from '../../components/header/index'
 import {logoName, apiUrl} from '../../config/crushyard'
 
 class Visits extends Component {
+	_isMount = true;
 	constructor(props) {
 		super(props);
 
@@ -53,17 +54,19 @@ class Visits extends Component {
 		const self = this;
 
 		services('getVisits', {}, function (err, response) {
+			if (self._isMount === false)
+				return ;
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
 					swal("Error", response.data.errors.swal, "error");
 				return ;
 			}
-			console.log(response.data.visitors);
 			self.getUsers(response.data.visitors);
 		});
 	}
 	componentWillUnmount() {
+		this._isMount = false;
 	}
 	render() {
 		return (

@@ -14,6 +14,7 @@ import Header from '../../components/header/index'
 import {logoName, apiUrl} from '../../config/crushyard'
 
 class Likes extends Component {
+	_isMount = true;
 	constructor(props) {
 		super(props);
 
@@ -44,8 +45,7 @@ class Likes extends Component {
 				<Col key={i} s={12} m={6} l={6} className="xl3">
 					<Card className="crush-tag-card">
 						<div className="crush-tag-name">{users[i].firstName} {users[i].lastName}<br/>{users[i].age} ans</div>
-						<img alt="profile" className="crush-tag-img" src="img/yuna.jpg"/>
-						<div className="crush-tag-buttons">
+						<div className="crushlist-tag-buttons">
 							<a href={'/#/profile/'+users[i].profileId } className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Visit this profile"><Button floating className='grey actions-tag' waves='light' icon='input' /></a>
 						</div>
 					</Card>
@@ -58,17 +58,19 @@ class Likes extends Component {
 		const self = this;
 
 		services('getLikes', {}, function (err, response) {
+			if (self._isMount === false)
+				return ;
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
-				swal("Error", response.data.errors.swal, "error");
+					swal("Error", response.data.errors.swal, "error");
 				return ;
 			}
 			self.getUsers(response.data.likes);
 		});
 	}
 	componentWillUnmount() {
-		// global.socket.off('message sent');
+		this._isMount = false;
 	}
 	render() {
 		return (

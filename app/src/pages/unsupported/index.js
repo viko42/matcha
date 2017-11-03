@@ -8,11 +8,14 @@ import {logoName} from '../../config/crushyard'
 import $ from 'jquery';
 
 class NotSupported extends Component {
+	_isMount = true;
+	componentWillUnmount() {
+		this._isMount = false;
+	}
 	componentDidMount() {
 		document.title =  `${logoName} - Not Supported`;
 
 		$('body').addClass('loaded');
-
 	}
 	render() {
 		return (

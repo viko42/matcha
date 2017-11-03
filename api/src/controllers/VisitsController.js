@@ -26,7 +26,7 @@ exports.listVisits		= function (req, res) {
 					return callback(err);
 
 				async.forEachOf(visitorsFound, function (visit, keyVisitor, next_visitor) {
-					if (visit.visitor.id !== userId)
+					if (visit && visit.visitor && visit.visitor.id !== userId)
 						visitors.push({firstName: visit.visitor.firstName, lastName: visit.visitor.lastName, profileId: visit.visitor.id, date: moment(visit.date).format('DD/MM HH:mm'), age: moment().diff(visit.visitor.birth, 'years')})
 					next_visitor();
 				}, function (err) {
@@ -72,7 +72,6 @@ exports.newVisit = function (data, socket, callback) {
 			return callback(profileId + ' not found. [VISITS-CONTROLLER]');
 
 		new_notification.save(function (err, notifSaved) {
-			console.log('NEW NOTIFICATION VIEW');
 			isBlocked(visitor, profileId, function (isBlocked) {
 				if (isBlocked)
 					return callback('User is blocked - No notification [VISITS]');

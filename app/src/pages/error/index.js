@@ -8,6 +8,10 @@ import Header from '../../components/header'
 import {logoName} from '../../config/crushyard'
 
 class Error extends Component {
+	_isMount = true;
+	componentWillUnmount() {
+		this._isMount = false;
+	}
 	componentDidMount() {
 		document.title = `${logoName} - 503 Maintenance`;
 	}

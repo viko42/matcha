@@ -1,3 +1,8 @@
 .reset-filter {
 	cursor: pointer;
 }
+.crush-tag-name {
+	margin-right: 70px;
+	right: 0;
+	position: absolute;
+}

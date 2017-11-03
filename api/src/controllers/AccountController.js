@@ -30,6 +30,7 @@ exports.informations = function (req, res) {
 				if (!userFound.location)
 					return callback();
 
+				account.email = userFound.email;
 				geocoder.reverse({lat:Number(userFound.location[1]), lon:Number(userFound.location[0])}, function(err, res) {
 					if (res && res[0])
 						account.adress = res[0].formattedAddress;
@@ -59,6 +60,10 @@ exports.update = function(req, res) {
 				if (req.body.email === userFound.email)
 					req.body.email = false;
 
+					console.log(req.body);
+				if (!req.body.firstName || !req.body.lastName)
+					return callback({errors: {swal: 'Champs manquant'}});
+
 				if (req.body.email && !String(req.body.email).match(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/))
 					return callback({errors: {swal: 'Email invalide'}});
 
@@ -68,6 +73,9 @@ exports.update = function(req, res) {
 		function (callback) {
 			if (!req.body.password)
 				return callback();
+
+			if (req.body.password && (!req.body.password.match('[0-9]') || req.body.password.length < 5))
+				return callback({errors: {password: 'Votre mot de passe doit avoir au moins un chiffre.'}});
 
 			bcrypt.hash(req.body.password, 10, function(err, hash) {
 				if (err)
@@ -128,11 +136,11 @@ exports.updateLocalization = function (req, res) {
 	let data = req.body.localization;
 
 	if (!data || ((!data.lng || !data.lat) && !data.myLocation))
-		return s.badRequest(res, "Il manque des elements dans la requete", thisController);
+		data = {ip: true};
 
 	async.waterfall([
 		function (callback) {
-			if (!data.myLocation || (data.lng && data.lat))
+			if (!data.ip && (!data.myLocation || (data.lng && data.lat)))
 				return callback();
 
 			let positions = {};

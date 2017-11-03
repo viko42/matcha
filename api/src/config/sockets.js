@@ -10,7 +10,6 @@ const {isBlokedSocket}		= require('../policies/isBlocked');
 exports.sockets = function (socket) {
 	if (socket.handshake.query.userId === 'guest')
 		return console.log('New Guest connected');
-	console.log("New client connected")
 
 	Users.findOne({"_id": socket.handshake.query.userId}).exec(function (err, userFound) {
 		if (err || !userFound)
@@ -33,7 +32,7 @@ exports.sockets = function (socket) {
 	socket.on('send like', function(data){
 		CrushsController.getSocketIdTarget({userId: socket.handshake.query.userId, ...data}, socket, function (err, socketId) {
 			if (err)
-				return console.log(err);
+				return ;
 			isBlokedSocket(socket.handshake.query.userId, socketId, function (to) {
 				socket.to(to).emit('receive like', {});
 			})
@@ -43,7 +42,7 @@ exports.sockets = function (socket) {
 	socket.on('send unlike', function(data){
 		CrushsController.getSocketIdTarget({userId: socket.handshake.query.userId, ...data}, socket, function (err, socketId) {
 			if (err)
-				return console.log(err);
+				return ;
 			isBlokedSocket(socket.handshake.query.userId, socketId, function (to) {
 				socket.to(to).emit('receive unlike', {});
 			});
@@ -53,7 +52,7 @@ exports.sockets = function (socket) {
 	socket.on('send crush', function(data){
 		CrushsController.getSocketIdTarget({userId: socket.handshake.query.userId, ...data}, socket, function (err, socketId) {
 			if (err)
-			return console.log(err);
+				return ;
 
 			isBlokedSocket(socket.handshake.query.userId, socketId, function (to) {
 				socket.to(to).emit('receive crush', {});
@@ -64,7 +63,7 @@ exports.sockets = function (socket) {
 	socket.on('send visit', function(data){
 		VisitsController.newVisit({userId: socket.handshake.query.userId, ...data}, socket, function (err, socketId) {
 			if (err)
-				return console.log(err);
+				return ;
 
 			isBlokedSocket(socket.handshake.query.userId, socketId, function (to) {
 				socket.to(to).emit('profile visited', {});

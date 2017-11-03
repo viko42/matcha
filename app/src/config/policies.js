@@ -2,12 +2,24 @@ exports.getLocalStorage = function (value) {
 	try {
 		return JSON.parse(localStorage.getItem(value));
 	} catch ($e) {
-		return localStorage.getItem(value);
+		try {
+			return localStorage.getItem(value);
+		} catch ($e) {
+			return global[value];
+		}
 	}
 }
 exports.remLocalStorage = function (value) {
-	return localStorage.getItem(value);
+	try {
+		return localStorage.removeItem(value);
+	} catch ($e) {
+		return delete global[value];
+	}
 }
 exports.setLocalStorage = function (value, data) {
-	return localStorage.setItem([value], JSON.stringify(data));
+	try {
+		return localStorage.setItem([value], JSON.stringify(data));
+	} catch ($e) {
+		return (global[value] = data);
+	}
 }

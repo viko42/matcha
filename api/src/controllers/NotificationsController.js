@@ -19,10 +19,7 @@ exports.setAsRead	= function (req, res) {
 
 		Users.findOne({'_id': userId}).exec(function(err, userRead ) {
 			if (err)
-				return s.serverError(res, err, thisController);
-
-			if (!userRead)
-				return console.log('User not found');
+				return s.badRequest(res, err, thisController);
 			return res.status(200).json({message: 'done'});
 		});
     });
@@ -75,7 +72,7 @@ exports.myNotifications = function (req, res) {
 		},
 	], function (err) {
 		if (err)
-			return s.serverError(res, err, thisController);
+			return s.badRequest(res, err, thisController);
 
 		return res.status(200).json({notifications: notifications, unread: unread});
 	})

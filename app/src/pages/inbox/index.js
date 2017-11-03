@@ -12,6 +12,7 @@ import Header from '../../components/header/index'
 import {logoName, apiUrl} from '../../config/crushyard'
 
 class Inbox extends Component {
+	_isMount = true;
 	constructor(props) {
 		super(props);
 
@@ -51,6 +52,8 @@ class Inbox extends Component {
 		const self = this;
 
 		services('getMyInbox', self.state, function (err, response) {
+			if (self._isMount === false)
+				return ;
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
@@ -100,11 +103,10 @@ class Inbox extends Component {
 				self.focusBox(self.state.selectedBoxMessage);
 			}
 			else {
-				console.log('Des messages sont en attente de lecture');
+				// console.log('Des messages sont en attente de lecture');
 			}
 		})
 		global.socket.on('receive message', function (data) {
-			console.log('REceive message');
 			let index = self.giveIndexConversation(data.conversationId);
 
 			if (index !== -1)
@@ -112,6 +114,7 @@ class Inbox extends Component {
 		})
 	}
 	componentWillUnmount() {
+		this._isMount = false;
 		global.socket.off('message sent');
 		global.socket.off('give messages from conversation');
 		global.socket.off('receive message');

@@ -26,3 +26,8 @@
 	float: right;
 	margin-top: 15px;
 }
+.crush-tag-name {
+	margin-right: 70px;
+	right: 0;
+	position: absolute;
+}

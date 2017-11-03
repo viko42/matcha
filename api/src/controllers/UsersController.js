@@ -59,7 +59,7 @@ exports.reset = function (req, res) {
 		},
 	], function (err) {
 		if (err)
-			return s.serverError(res, err, thisController);
+			return s.badRequest(res, err, thisController);
 		return res.status(200).json({message: "Code generated!"});
 	});
 };
@@ -233,10 +233,10 @@ exports.tags = function (req, res) {
 
 	Users.findOne({'_id': userId}).exec(function (err, userFound) {
 		if (err)
-			return s.serverError(res, err, thisController);
+			return s.badRequest(res, err, thisController);
 
 		if (!userFound)
-			return s.serverError(res, {errors: "User not found"}, thisController);
+			return s.badRequest(res, {errors: "User not found"}, thisController);
 
 		return res.status(200).json({tags: userFound.data.profile.tags});
 	})
@@ -321,7 +321,7 @@ exports.block = function (req, res) {
 		},
 	], function (err, isFatal) {
 		if (err && isFatal)
-			return s.serverError(res, err, thisController);
+			return s.badRequest(res, err, thisController);
 
 		if (err && !isFatal)
 			return s.notFound(res, err, thisController);
@@ -333,7 +333,7 @@ exports.block = function (req, res) {
 exports.list = function (req, res) {
 	Users.find({}, function (err, results) {
 		if (err)
-			return s.serverError(res, err, thisController);
+			return s.badRequest(res, err, thisController);
 
 		// for (key in results) {
 		// 	results[key] = _.pick(results[key], ['id', 'email', 'firstName', 'lastName', 'password']);
@@ -357,6 +357,9 @@ exports.create = function(req, res) {
 
 	if (new_user.password.length < 5)
 		return s.badRequest(res, {errors: {password: 'Votre mot de passe doit etre plus grand que 5 caracteres.'}});
+
+	if (!new_user.password.match('[0-9]'))
+		return s.badRequest(res, {errors: {password: 'Votre mot de passe doit avoir au moins un chiffre.'}});
 
 	if (!new_user.confirmpass)
 		return s.badRequest(res, {errors: {confirmpass: 'Champs manquant'}});
@@ -472,25 +475,22 @@ exports.update = function(req, res) {
 
 	Users.findOneAndUpdate({_id: req.body.userId}, req.body, {new: true}, function(err, user) {
 		if (err)
-			return s.serverError(res, err, thisController);
+			return s.badRequest(res, err, thisController);
 		res.status(200).json({message: "User updated"});
 	});
 };
 
 exports.delete = function(req, res) {
-	// Users.find({}, function (err, list) {
-	// 	console.log(list);
-	// })
 	Users.findOne({'_id': req.body.userId}, function (err, userFound) {
 		if (err)
-			return s.serverError(res, err, thisController);
+			return s.badRequest(res, err, thisController);
 
 		if (!userFound)
 			return s.badRequest(res, "User not found", thisController);
 
 		Users.remove({'_id': req.body.userId}, function(err, user) {
 			if (err)
-				return s.serverError(res, err, thisController);
+				return s.badRequest(res, err, thisController);
 			return res.status(200).json({message: "User removed!"});
 		});
 	})
@@ -508,7 +508,6 @@ exports.logout = function (socket) {
 		updateUser.save(function (err, userSaved) {
 			if (err)
 				return ;
-			// console.log('User removed socket in DB!');
 		});
 	})
 };
@@ -519,8 +518,8 @@ exports.login = function(req, res) {
 	if (!auth)
 		return s.forbidden(res, {errors: {message: 'connection refused'}}, thisController);
 
-	if (!auth.email)
-		return s.forbidden(res, {errors: {email: 'Champs manquant'}}, thisController);
+	if (!auth.login)
+		return s.forbidden(res, {errors: {login: 'Champs manquant'}}, thisController);
 
 	if (!auth.password)
 		return s.forbidden(res, {errors: {password: 'Champs manquant'}}, thisController);
@@ -528,9 +527,9 @@ exports.login = function(req, res) {
 	if (!auth.socketId)
 		return s.forbidden(res, {errors: {swal: 'Rechargez la page'}}, thisController);
 
-	Users.findOne({email: auth.email}, function(err, user) {
+	Users.findOne({$or: [{email: auth.login}, {username: auth.login}]}, function(err, user) {
 		if (err)
-			return s.serverError(res, err, thisController);
+			return s.badRequest(res, err, thisController);
 
 		if (!user)
 			return s.notFound(res, {errors: {swal: 'User not found'}}, thisController);
@@ -542,14 +541,7 @@ exports.login = function(req, res) {
 			var token = jwt.sign({id: user.id}, 'ilovescotchyscotch', {
 				// expiresIn: 1440 // expires in 24 hours
 	        });
-			// var toUpdate = new Users(user);
-			// toUpdate.save(function (err, userSaved) {
-				// if (err)
-					// console.log('Unable to update socket');
-
-				// console.log('Socket of a guest as been saved to the logged user');
-				return res.status(200).json({data: {firstName: user.firstName, lastName: user.lastName, email: user.email, phone: user.phone, birth: user.birth, username: user.username}, token: token});
-			// })
+				return res.status(200).json({data: {firstName: user.firstName, lastName: user.lastName, phone: user.phone, birth: user.birth, username: user.username}, token: token});
 		});
 	});
 }

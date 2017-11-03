@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Col, Card, Row, Input, Button } from 'react-materialize';
-import { Link, Redirect} from 'react-router-dom';
 import swal from 'sweetalert';
 import services from '../../config/services';
 
@@ -9,14 +8,15 @@ import './index.css';
 
 import Header from '../../components/header/index'
 import {logoName} from '../../config/crushyard'
-import io from "socket.io-client";
-
-import {getLocalStorage, setLocalStorage} from '../../config/policies'
 
 const { apiUrl } = require('../../config/crushyard');
 
 
 class Reset extends Component {
+	_isMount = true;
+	componentWillUnmount() {
+		this._isMount = false;
+	}
 	constructor(props) {
 		super(props);
 
@@ -47,6 +47,8 @@ class Reset extends Component {
 		const self = this;
 
 		services('reset', self.state, function (err, response) {
+			if (self._isMount === false)
+				return ;
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
@@ -61,6 +63,8 @@ class Reset extends Component {
 		const self = this;
 
 		services('resetpassword', self.state, function (err, response) {
+			if (self._isMount === false)
+				return ;
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)

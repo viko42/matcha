@@ -23,12 +23,27 @@ try {
 	socket = io.connect(apiUrl, {
 		query: {token: getLocalStorage('auth')}
 	});
+
+	socket.on('connect_error', function(err) {
+		$('body').removeClass('loaded');
+	});
+
+    socket.on('reconnect', (number) => {
+		$('body').addClass('loaded');
+		$('#loader-message')[0].innerHTML = "Reconnexion...";
+    });
+
+    socket.on('reconnecting', (number) => {
+		$('#loader-message')[0].innerHTML = "Tentative de reconnexion ( " + number + " )";
+    });
+
 } catch(e) {
 	window.location.assign(urlApp + "/#");
 }
 global.socket = socket;
 
 class Header extends React.Component {
+	_isMount = true;
 	constructor(props) {
 		super(props);
 
@@ -58,13 +73,15 @@ class Header extends React.Component {
 			if (i + 1 < notifications.length)
 				renderNotifications.push(<hr key={i+'hr'} className="fullhr-notif"/>);
 		}
-		this.setState({notifications: renderNotifications});
+		if (this._isMount)
+			this.setState({notifications: renderNotifications});
 	}
 	setAsRead() {
 		const self = this;
 
-		console.log('Reading the notification');
 		services('notificationsSetAsRead', {getData: ""}, function (err, response) {
+			if (self._isMount === false)
+				return ;
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
@@ -82,6 +99,8 @@ class Header extends React.Component {
 		const self = this;
 
 		services('notifications', {getData: ""}, function (err, response) {
+			if (self._isMount === false)
+				return ;
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
@@ -90,7 +109,8 @@ class Header extends React.Component {
 			}
 			if (response.data.notifications) {
 				self.getNotifications(response.data.notifications);
-				self.setState({notificationUnread: response.data.unread})
+				if (self._isMount)
+					self.setState({notificationUnread: response.data.unread})
 			}
 		})
 	}
@@ -109,6 +129,12 @@ class Header extends React.Component {
 		// Disable the older home button
 		nav = document.querySelectorAll('[data-activates="nav-mobile"]')[0];
 		nav.setAttribute("style", "display: none;");
+
+		// Change UserView Links
+		if (document.querySelectorAll('[href="#!user"]')[0]) {
+			document.querySelectorAll('[href="#!user"]')[0].href = "#/profile/me";
+			document.querySelectorAll('[href="#!name"]')[0].href = "#/profile/me";
+		}
 
 		// Get your notifications
 		if (getLocalStorage('auth'))
@@ -207,6 +233,8 @@ class Header extends React.Component {
 		global.socket.off('receive like');
 		global.socket.off('receive unlike');
 		global.socket.off('receive crush');
+		// global.socket.off('connect_error');
+		this._isMount = false;
 	}
 	logout(e) {
 		e.preventDefault();
@@ -230,8 +258,8 @@ class Header extends React.Component {
 					{this.state.notification === true && <div className="notif-cont">
 						{this.state.notifications}
 					</div>}
-					<NavItem className="hide-in-small" href='#/inbox'><Icon>chat</Icon></NavItem>
-					<NavItem className="hide-in-small" href='#/search'><Icon>search</Icon></NavItem>
+					{getLocalStorage('auth') && <NavItem className="hide-in-small" href='#/inbox'><Icon>chat</Icon></NavItem> }
+					{getLocalStorage('auth') && <NavItem className="hide-in-small" href='#/search'><Icon>search</Icon></NavItem>}
 
 					{ getLocalStorage('auth') && <span className="dropDrownNavbar">
 						<Dropdown data-constrainwidth="false" data-stoppropagation="true" trigger={

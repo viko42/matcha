@@ -11,5 +11,4 @@ ReactDOM.render((
 	</HashRouter>
 ), document.getElementById('root'))
 
-console.log('App Started');
 registerServiceWorker();

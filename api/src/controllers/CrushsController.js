@@ -10,6 +10,8 @@ var Conversations		= mongoose.model('Conversations');
 const thisController	= "CrushsController";
 const {isBlocked}		= require('../policies/isBlocked');
 
+const {isObjectValid}	= require('../helpers/isObjectValid');
+const {getAvatar}		= require('../helpers/avatar');
 const {addScore}		= require('../helpers/score');
 
 exports.getSocketIdTarget = function (data, socket, callback) {
@@ -38,6 +40,8 @@ exports.listLikes		= function (req, res) {
 					return callback(err);
 
 				async.forEachOf(crushFound, function (crush, keyCrush, next_crush) {
+					if (!crush.from)
+						return next_crush();
 					Crushs.findOne({'from': userId, 'to': crush.from.id}).exec(function (err, doubleCrushFound) {
 						if (err)
 							return next_crush(err);
@@ -56,7 +60,7 @@ exports.listLikes		= function (req, res) {
 	], function (err) {
 		if (err)
 			return s.notFound(res, {errors: err}, thisController);
-		return res.status(200).json({message: "List Likes!", likes: crushs});
+		return res.status(200).json({likes: crushs});
 	});
 };
 
@@ -72,11 +76,13 @@ exports.listCrush		= function (req, res) {
 					return callback(err);
 
 				async.forEachOf(crushFound, function (crush, keyCrush, next_crush) {
+					if (!crush.from)
+						return next_crush();
+
 					Crushs.findOne({'from': userId, 'to': crush.from.id}).exec(function (err, doubleCrushFound) {
 						if (err)
 							return next_crush(err);
 
-							console.log(crush.from.birth);
 						if (doubleCrushFound)
 							crushs.push({firstName: crush.from.firstName, lastName: crush.from.lastName, profileId: crush.from.id, age: moment().diff(crush.from.birth, 'years')})
 						next_crush();
@@ -91,7 +97,7 @@ exports.listCrush		= function (req, res) {
 	], function (err) {
 		if (err)
 			return s.notFound(res, {errors: err}, thisController);
-		return res.status(200).json({message: "List Crush!", crushs: crushs});
+		return res.status(200).json({crushs: crushs});
 	});
 };
 
@@ -101,6 +107,8 @@ exports.startConversation = function (req, res) {
 
 	async.waterfall([
 		function (callback) {
+			if (!isObjectValid(crushTarget))
+				return callback("Invalid objectID");
 			Users.findOne({'_id': crushTarget}).exec(function (err, userFound) {
 				if (err)
 					return callback(err);
@@ -111,6 +119,8 @@ exports.startConversation = function (req, res) {
 			});
 		},
 		function (callback) {
+			if (!isObjectValid(userId))
+				return callback("Invalid objectID");
 			Crushs.find({$or: [{from: userId, to: crushTarget}, {to: userId, from: crushTarget}]}).exec(function (err, crushFound) {
 				if (err)
 					return callback(err);
@@ -157,6 +167,8 @@ exports.removeCrush = function (req, res) {
 
 	async.waterfall([
 		function (callback) {
+			if (!isObjectValid(crushTarget))
+				return callback("Invalid objectID");
 			Users.findOne({'_id': crushTarget}).exec(function (err, userFound) {
 				if (err)
 					return callback(err);
@@ -167,6 +179,8 @@ exports.removeCrush = function (req, res) {
 			});
 		},
 		function (callback) {
+			if (!isObjectValid(crushTarget) || !isObjectValid(userId))
+				return callback("Invalid objectID");
 			Crushs.findOne({from: userId, to: crushTarget}).exec(function (err, crushFound) {
 				if (err)
 					return callback(err);
@@ -194,11 +208,12 @@ exports.removeCrush = function (req, res) {
 			new_notification.save(function (err, notifSaved) {
 				if (err)
 					return callback(err);
-				// console.log('Notification pushed');
 				return callback();
 			});
 		},
 		function (callback) {
+			if (!isObjectValid(crushTarget) || !isObjectValid(userId))
+				return callback("Invalid objectID");
 			Conversations.findOne({$or: [{sender: userId, recipent: crushTarget}, {sender: crushTarget, recipent: userId}]}).exec(function (err, conversationFound) {
 				if (err)
 					return callback(err);
@@ -229,6 +244,8 @@ exports.doCrush = function (req, res) {
 	async.waterfall([
 		//Verify if user have avatar
 		function (callback) {
+			if (!isObjectValid(userId))
+				return callback("Invalid objectID");
 			Users.findOne({'_id': userId}).exec(function (err, userFound) {
 				if (err)
 					return callback(err);
@@ -242,6 +259,8 @@ exports.doCrush = function (req, res) {
 			});
 		},
 		function (callback) {
+			if (!isObjectValid(crushTarget))
+				return callback("Invalid objectID");
 			Users.findOne({'_id': crushTarget}).exec(function (err, userFound) {
 				if (err)
 					return callback(err);
@@ -252,6 +271,8 @@ exports.doCrush = function (req, res) {
 			});
 		},
 		function (callback) {
+			if (!isObjectValid(crushTarget) || !isObjectValid(userId))
+				return callback("Invalid objectID");
 			Crushs.findOne({from: userId, to: crushTarget}).exec(function (err, crushFound) {
 				if (err)
 					return callback(err);
@@ -278,6 +299,8 @@ exports.doCrush = function (req, res) {
 			});
 		},
 		function (callback) {
+			if (!isObjectValid(crushTarget) || !isObjectValid(userId))
+				return callback("Invalid objectID");
 			Crushs.find({$or: [{from: userId, to: crushTarget}, {to: userId, from: crushTarget}]}).exec(function (err, crushTotal) {
 				if (err)
 					return callback(err);

@@ -10,15 +10,17 @@ var multer = require('multer');
 var upload = multer({ dest: 'uploads/' });
 
 exports.findAvatar = function (req, res) {
-	const id = req.params.id;
+	let id = req.params.id;
+
+	if (!id && req.connectedAs && req.connectedAs.id)
+		id = req.connectedAs.id;
 
 	if (!id)
 		return s.badRequest(res, "ID Missing", thisController);
 
 	Users.findOne({$or: [{'username': id}] }).exec(function(err, userFound) {
-		if (err) {
-			return s.serverError(res, "Profile introuvable: " + id, thisController);
-		}
+		if (err)
+			return s.badRequest(res, "Profile introuvable: " + id, thisController);
 
 		var isAvatar = true;
 
@@ -42,7 +44,7 @@ exports.changeAvatar = function (req, res) {
 
 	Users.findOne({'_id': req.connectedAs.id}).exec(function (err, userFound) {
 		if (err)
-			return s.serverError(res, err, thisController);
+			return s.badRequest(res, err, thisController);
 
 		if (!userFound)
 			return s.badRequest(res, {errors: {swal: "Utilisateur introuvable"}}, thisController);
@@ -52,7 +54,7 @@ exports.changeAvatar = function (req, res) {
 		data.avatarID = idPicture;
 		Users.update({'_id': userFound.id}, {data: data}).exec(function (err, userUpdated) {
 			if (err)
-				return s.serverError(res, err, thisController);
+				return s.badRequest(res, err, thisController);
 			return res.status(200).json({});
 		});
 	});
@@ -65,7 +67,7 @@ exports.deleteAvatar = function (req, res) {
 
 	Users.findOne({'_id': req.connectedAs.id}).exec(function (err, userFound) {
 		if (err)
-			return s.serverError(res, err, thisController);
+			return s.badRequest(res, err, thisController);
 
 		if (!userFound)
 			return s.badRequest(res, {errors: {swal: "Utilisateur introuvable"}}, thisController);
@@ -81,7 +83,7 @@ exports.deleteAvatar = function (req, res) {
 		data.pictures = updatePictures;
 		Users.update({'_id': userFound.id}, {data: data}).exec(function (err, userUpdated) {
 			if (err)
-				return s.serverError(res, err, thisController);
+				return s.badRequest(res, err, thisController);
 			return res.status(200).json({});
 		});
 	});
@@ -89,7 +91,7 @@ exports.deleteAvatar = function (req, res) {
 exports.uploadImage = function(req, res) {
 	Users.findOne({'_id': req.connectedAs}).exec(function (err, userFound) {
 		if (err)
-			return s.serverError(res, err, thisController);
+			return s.badRequest(res, err, thisController);
 
 		var data = userFound.data;
 
@@ -102,7 +104,7 @@ exports.uploadImage = function(req, res) {
 		data.pictures.push({data: req.body.file});
 		Users.update({'_id': userFound.id}, {data: data}).exec(function (err, userUpdated) {
 			if (err)
-				return s.serverError(res, err, thisController);
+				return s.badRequest(res, err, thisController);
 			return res.status(200).json({});
 		})
 	})
@@ -155,7 +157,7 @@ exports.updateProfile = function (req, res) {
 		},
 	], function (err) {
 		if (err)
-			return s.serverError(res, err, thisController);
+			return s.badRequest(res, err, thisController);
 		return res.status(200).json({message: "Profile updated"});
 	});
 };
@@ -236,7 +238,7 @@ exports.getProfile = function(req, res) {
 		},
 	], function (err) {
 		if (err)
-			return s.serverError(res, err, thisController);
+			return s.badRequest(res, err, thisController);
 		return res.status(200).json({profile: profile});
 	});
 };

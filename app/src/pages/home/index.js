@@ -17,6 +17,7 @@ import {logoName, apiUrl} from '../../config/crushyard'
 import _ from 'lodash'
 
 class Home extends Component {
+	_isMount = true;
 	constructor(props) {
 		super(props);
 
@@ -63,11 +64,9 @@ class Home extends Component {
 		}
 		if (which === 'tags') {
 			sort.tags = !this.state.sort.tags ? true : false;
-			for (var i = 0; i < array.length; i++) {
-				console.log(array[i].tags);
-				// array = _.intersectionBy(array, ['bonsoir'], 'tags');
-			}
-			// array = sort.distance === false ? array.reverse() : array;
+			array = _.sortBy(this.state.listUsers, "tags");
+
+			array = sort.tags === false ? array.reverse() : array;
 		}
 		this.setState({listUsers: array}, function () {self.getUsers(array)});
 		this.setState({sort: sort});
@@ -143,7 +142,7 @@ class Home extends Component {
 			render.push(
 				<Col key={i} s={12} m={6} l={6} className="xl3">
 					<Card className="crush-tag-card">
-						<div className="crush-tag-name">{users[i].firstName} {users[i].lastName}<br/>{users[i].age} ans ({users[i].score} pts)<br/>{users[i].distance} m</div>
+						<div className="crush-tag-name">{users[i].firstName} <span role="img" aria-labelledby="score">⭐️</span>{users[i].score}<br/>{users[i].age} ans<br/>{users[i].tags} tags en commun<br/>{users[i].distance}m <span role="img" aria-labelledby="distance">📍</span></div>
 						<img alt="profile" className="crush-tag-img" src={users[i].src}/>
 						<div className="crush-tag-buttons">
 							<a href={'/#/profile/'+users[i].id } className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Visit this profile"><Button floating className='grey actions-tag' waves='light' icon='input' /></a>
@@ -158,6 +157,8 @@ class Home extends Component {
 		const self = this;
 
 		services('findAffinate', {filters: this.state.listFilter, tags: this.state.listTags}, function (err, response) {
+			if (self._isMount === false)
+				return ;
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
@@ -176,6 +177,8 @@ class Home extends Component {
 			return ;
 		this.search();
 		services('getTags', {}, function (err, response) {
+			if (self._isMount === false)
+				return ;
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
@@ -195,7 +198,7 @@ class Home extends Component {
 		});
 	}
 	componentWillUnmount() {
-		// global.socket.off('message sent');
+		this._isMount = false;
 	}
 	getFilter() {
 		var render = [];

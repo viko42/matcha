@@ -1,5 +1,5 @@
 exports.serverError = function(res, err, controller) {
-	console.log(controller, 'Service serverError', err);
+	console.log(controller, 'Service serverError');
 	return res.status(500).json({errors: "incorrect action"});
 };
 
@@ -14,6 +14,6 @@ exports.notFound = function(res, err, controller) {
 };
 
 exports.forbidden = function(res, err, controller) {
-	console.log(controller, 'Service forbidden', err);
+	console.log(controller, 'Service forbidden');
 	return res.status(401).json(err);
 };

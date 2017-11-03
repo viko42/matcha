@@ -21,9 +21,6 @@ exports.setAsRead	= function (data, socket) {
 		Users.findOne({'_id': data.userId}).exec(function(err, userRead ) {
 			if (err)
 				return ;
-
-			if (!userRead)
-				return console.log('User not found');
 		})
     });
 };
@@ -41,9 +38,6 @@ exports.get_messages = function (data, socket, callback) {
 				return {errors: "error db"};
 
 			Messages.count({status: 'sended', conversation: data.conversationId,  sender: {"$ne": userId} }).exec(function (err, nbMessagesUnread) {
-				if (err)
-					console.log('Unable to get unread message from this conversation - ' + data.conversationId);
-
 				for (var i = 0; i < messagesFound.length; i++) {
 					messages.push({
 						message: messagesFound[i].message,
@@ -119,7 +113,7 @@ exports.inbox = function(req, res) {
 
 	], function (err) {
 		if (err)
-			return s.serverError(res, err, thisController);
+			return s.badRequest(res, err, thisController);
 		return res.status(200).json({inbox: inbox });
 	})
 };
@@ -205,13 +199,12 @@ exports.send = function(data, socket) {
 			new_notification.save(function (err, notifSaved) {
 				if (err)
 					return callback(err);
-				// console.log('Notification pushed');
 				return callback();
 			});
 		},
 	], function (err) {
 		if (err)
-			return console.log(thisController, err);
+			return ;
 
 		exports.get_messages({userId: socket.handshake.query.userId, ...data}, socket, function (data) {
 			socket.emit('message sent', data);
@@ -225,17 +218,13 @@ exports.send = function(data, socket) {
 };
 
 exports.delete = function(req, res) {
-	// const user = new Users(req.connectedAs);
-
-	// console.log(req.body);
 	async.waterfall([
 		function (callback) {
 			return callback();
 		},
 	], function (err) {
 		if (err)
-			return s.serverError(res, err, thisController);
-		// console.log(req.connectedAs);
+			return s.badRequest(res, err, thisController);
 		return res.status(200).json({deleted: {} });
 	})
 };

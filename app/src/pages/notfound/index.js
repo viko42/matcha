@@ -9,6 +9,10 @@ import Header from '../../components/header'
 import {logoName} from '../../config/crushyard'
 
 class NotFound extends Component {
+	_isMount = true;
+	componentWillUnmount() {
+		this._isMount = false;
+	}
 	componentDidMount() {
 		document.title = `${logoName} - 404 Not found`;
 	}

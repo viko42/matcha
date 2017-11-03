@@ -6,15 +6,18 @@ import './index.css';
 
 import swal from 'sweetalert';
 import {logoName} from '../../config/crushyard'
+import {remLocalStorage}	from '../../config/policies'
 
 class Logout extends Component {
+	_isMount = true;
 	componentDidMount() {
 		document.title = `${logoName} - Loggin off`;
 	}
 	componentWillUnmount() {
-		localStorage.removeItem('user');
-		localStorage.removeItem('auth');
+		remLocalStorage('user');
+		remLocalStorage('auth');
 		swal("Logged off", "Successfully disconnected !", "success");
+		this._isMount = false;
 	}
 	render() {
 		return <Redirect to="/" />;

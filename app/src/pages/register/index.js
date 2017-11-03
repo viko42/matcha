@@ -28,6 +28,10 @@ import {logoName} from '../../config/crushyard'
 // );
 
 class Register extends Component {
+	_isMount = true;
+	componentWillUnmount() {
+		this._isMount = false;
+	}
 	constructor(props) {
 		super(props);
 
@@ -39,8 +43,7 @@ class Register extends Component {
 			lastName: null,
 			phone: null,
 			birth: null,
-			errors: {},
-			isMarkerShown: false,
+			errors: {}
 		};
 
 		this.validation = this.validation.bind(this);
@@ -48,21 +51,21 @@ class Register extends Component {
 	}
 	componentDidMount() {
 		document.title = `${logoName} - Register`;
-		this.delayedShowMarker();
+		// this.delayedShowMarker();
 	}
 	componentWillMount() {
 	    this.initialState = this.state
 	}
-	delayedShowMarker = () => {
-		setTimeout(() => {
-			this.setState({ isMarkerShown: true })
-		}, 3000)
-	}
+	// delayedShowMarker = () => {
+	// 	setTimeout(() => {
+	// 		this.setState({ isMarkerShown: true })
+	// 	}, 3000)
+	// }
 
-	handleMarkerClick = () => {
-		this.setState({ isMarkerShown: false })
-		this.delayedShowMarker()
-	}
+	// handleMarkerClick = () => {
+	// 	this.setState({ isMarkerShown: false })
+	// 	this.delayedShowMarker()
+	// }
 	handleInputChange(event, data) {
 		const target = event.target, name = target.name, value = target.value;
 
@@ -78,10 +81,12 @@ class Register extends Component {
 		const self = this;
 
 		GoogleApi('findPosition', self.state.position ? {getData: self.state.position.coords.latitude+','+self.state.position.coords.longitude} : {}, function (err, response) {
-			if (response && response.data.results && response.data.results[0]) {
+			if (response && response.data.results && response.data.results[0] && this._isMount) {
 				self.setState({localization: response.data.results[0].geometry.location});
 			}
 			services('createUser', self.state, function (err, response) {
+				if (self._isMount === false)
+					return ;
 				if (err) {
 					self.setState({errors: response.data.errors})
 					if (response.data.errors.swal)

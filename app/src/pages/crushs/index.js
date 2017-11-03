@@ -14,6 +14,7 @@ import Header from '../../components/header/index'
 import {logoName, apiUrl, urlApp} from '../../config/crushyard'
 
 class Crushs extends Component {
+	_isMount = true;
 	constructor(props) {
 		super(props);
 
@@ -23,8 +24,9 @@ class Crushs extends Component {
 			inbox: []
 		};
 
-		this.getCrush	= this.getCrush.bind(this);
-		this.getList	= this.getList.bind(this);
+		this.getCrush			= this.getCrush.bind(this);
+		this.getList			= this.getList.bind(this);
+		this.startConversation	= this.startConversation.bind(this);
 	}
 	startConversation(e) {
 		e.preventDefault();
@@ -33,6 +35,9 @@ class Crushs extends Component {
 		const id	= e.target.profileId.value;
 
 		services('startConversation', {getData: id+'/start'}, function (err, response) {
+			console.log(self._isMount);
+			if (self._isMount === false)
+				return ;
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
@@ -49,6 +54,8 @@ class Crushs extends Component {
 		const id	= e.target.profileId.value;
 
 		services('removeCrush', {getData: id+'/remove'}, function (err, response) {
+			if (self._isMount === false)
+				return ;
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
@@ -81,24 +88,26 @@ class Crushs extends Component {
 								<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Cancel this crush"><Button floating className='red actions-tag' waves='light' icon='close' /></a>
 							</form>
 						</div>
-						<div className="crush-tag-name">{crushs[i].firstName} {crushs[i].lastName}<br/>{crushs[i].age} ans</div>
-						<img alt="profile" className="crush-tag-img" src="img/yuna.jpg"/>
-						<div className="crush-tag-buttons">
+						<div className="crush-tag-name">{crushs[i].firstName}<br/>{crushs[i].age} ans</div>
+						<div className="crushlist-tag-buttons">
 							<form onSubmit={this.startConversation}>
 								<input type="hidden" name="profileId" value={crushs[i].profileId}/>
-								<a className="tooltipped" onClick={this.messageCrush} data-position="bottom" data-delay="50" data-tooltip="Speak with him"><Button floating className='blue actions-tag' waves='light' icon='message' /></a>
+								<a className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Speak with him"><Button floating className='blue actions-tag' waves='light' icon='message' /></a>
 							</form>
 						</div>
 					</Card>
 				</Col>
 			);
 		}
-		this.setState({crushs: render});
+		if (this._isMount)
+			this.setState({crushs: render});
 	}
 	getCrush() {
 		const self = this;
 
 		services('getCrush', self.state, function (err, response) {
+			if (self._isMount === false)
+				return ;
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
@@ -112,18 +121,10 @@ class Crushs extends Component {
 		document.title = `${logoName} - Crushs`;
 	}
 	componentDidMount() {
-		// const self = this;
-		//
-		// global.socket.on('message sent', function (data) {
-		// 	let index = self.giveIndexConversation(data.conversationId);
-		//
-		// 	if (index !== -1)
-		// 		this.emit('give messages from conversation', {id: self.state.inbox[index].id, unread: false});
-		// })
 		this.getCrush();
 	}
 	componentWillUnmount() {
-		// global.socket.off('message sent');
+		this._isMount = false;
 	}
 	render() {
 		return (
@@ -131,7 +132,7 @@ class Crushs extends Component {
 				<div className="content">
 					<Row>
 						<Col m={12} s={12}>
-							<Card title='Trouvez votre crush qui vous ressemble !'>Liste de personne ayant le plus de tag en commun avec vous ! <a href>(Voir plus)</a></Card>
+							<Card title='Trouvez votre crush qui vous ressemble !'>Liste de personne ayant crush avec vous !</Card>
 						</Col>
 						{this.state.crushs}
 					</Row>

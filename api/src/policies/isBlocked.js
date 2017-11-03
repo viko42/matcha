@@ -14,13 +14,11 @@ exports.isBlokedSocket = function(fromId, toSocket, call) {
 					return callback(err);
 
 				if (!userFound) {
-					console.log('No user found');
 					return callback('error');
 				}
 
 				for (var i = 0; i < userFound.blocked.length; i++) {
 					if (userFound.blocked[i] === fromId) {
-						console.log('User blocked, no notification');
 						return callback('Blocked');
 					}
 				}

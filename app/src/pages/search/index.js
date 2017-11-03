@@ -15,6 +15,10 @@ import Header from '../../components/header/index'
 import {logoName, apiUrl} from '../../config/crushyard'
 
 class Search extends Component {
+	_isMount = true;
+	componentWillUnmount() {
+		this._isMount = false;
+	}
 	constructor(props) {
 		super(props);
 
@@ -69,6 +73,12 @@ class Search extends Component {
 		if (which === 'distance') {
 			sort.distance = !this.state.sort.distance ? true : false;
 			array = sort.distance === false ? array.reverse() : array;
+		}
+		if (which === 'tags') {
+			sort.tags = !this.state.sort.tags ? true : false;
+			array = _.sortBy(this.state.listUsers, "tags");
+
+			array = sort.tags === false ? array.reverse() : array;
 		}
 		this.setState({listUsers: array}, function () {self.getUsers(array)});
 		this.setState({sort: sort});
@@ -130,11 +140,11 @@ class Search extends Component {
 				</Col>
 			);
 
-		for (var i = 0; i < users.length; i++) {
+		for (var i = 0; users && i < users.length; i++) {
 			render.push(
 				<Col key={i} s={12} m={6} l={6} className="xl3">
 					<Card className="crush-tag-card">
-						<div className="crush-tag-name">{users[i].firstName} {users[i].lastName}<br/>{users[i].age} ans</div>
+						<div className="crush-tag-name">{users[i].firstName} <span role="img" aria-labelledby="score">⭐️</span>{users[i].score}<br/>{users[i].age} ans<br/>{users[i].tags} tags en commun<br/>{users[i].distance}m <span role="img" aria-labelledby="distance">📍</span></div>
 						<img alt="profile" className="crush-tag-img" src={users[i].src}/>
 						<div className="crush-tag-buttons">
 							<a href={'/#/profile/'+users[i].id } className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Visit this profile"><Button floating className='grey actions-tag' waves='light' icon='input' /></a>
@@ -149,6 +159,8 @@ class Search extends Component {
 		const self = this;
 
 		services('find', {filters: this.state.listFilter, tags: this.state.listTags}, function (err, response) {
+			if (self._isMount === false)
+				return ;
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
@@ -165,6 +177,8 @@ class Search extends Component {
 
 		this.search();
 		services('getTags', {}, function (err, response) {
+			if (self._isMount === false)
+				return ;
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
@@ -181,10 +195,6 @@ class Search extends Component {
 			self.setState({myTags: render});
 		});
 	}
-	componentWillUnmount() {
-		// global.socket.off('message sent');
-	}
-
 	getFilter() {
 		var render = [];
 
@@ -217,7 +227,7 @@ class Search extends Component {
 				<div className="content">
 					<Row>
 						<Col m={12} s={12}>
-							<Card title='Trouvez votre crush qui vous ressemble !'>Liste de personne ayant le plus de tag en commun avec vous ! <a href>(Voir plus)</a></Card>
+							<Card title='Trouvez votre crush qui vous ressemble !'>Liste de personne ayant le plus de tag en commun avec vous !</Card>
 						</Col>
 						<Col m={12} s={12} onClick={this.delFilter}>
 

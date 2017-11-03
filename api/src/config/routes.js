@@ -100,24 +100,4 @@ module.exports = function (app) {
 
 	app.route('/report')				.post(isConnected.authorization, Report.newReport);
 
-	//
-	// //
-	// const multer		= require('multer');
-	// const storage = multer.diskStorage({
-	//   destination: './files',
-	//   filename(req, file, cb) {
-	//     cb(null, `${new Date()}-${file.originalname}`);
-	//   },
-	// });
-	// const upload = multer({ storage });
-	// //
-	//
-	// app.route('/profile/upload').post(function (req, res) {
-	// 	const file = req.file; // file passed from client
-	//     const meta = req.body; // all other values passed from the client, like name, etc..
-	//
-	// 	console.log(req.file);
-	// 	res.json({});
-	// });
-
 };

@@ -15,6 +15,7 @@ window.onhashchange = function () {
 }
 
 class SideBar extends Component {
+	_isMount = true;
 	constructor(props) {
 		super(props);
 
@@ -35,12 +36,14 @@ class SideBar extends Component {
 			return ;
 
 		services('getAvatar', {getData: getLocalStorage('user').username}, function (err, response) {
-			if (response.data.src)
+			if (self._isMount === false)
+				return ;
+			if (response.data.src && self._isMount)
 				return self.setState({avatar: response.data.src});
-			// console.log(response.data);
 		})
     }
     componentWillUnmount() {
+		this._isMount = false;
 		window.removeEventListener("resize", this.updateDimensions);
 	}
 	ifConnected() {
@@ -66,6 +69,7 @@ class SideBar extends Component {
 						user={{
 							background: 'img/office.jpg',
 							image: this.state.avatar,
+							user: "test",
 							name: getLocalStorage('user').firstName + ' ' + getLocalStorage('user').lastName,
 							email: getLocalStorage('user').email
 						}}
@@ -76,7 +80,7 @@ class SideBar extends Component {
 					<SideNavItem waves href='#account' icon="person">Mon compte</SideNavItem>
 					<SideNavItem waves href='#crushs' icon="people">Crushs</SideNavItem>
 					<SideNavItem waves href='#inbox' icon="message">Messagerie</SideNavItem>
-					<SideNavItem waves href='#visits' icon="hearing">Mes visites</SideNavItem>
+					<SideNavItem waves href='#visits' icon="add_to_queue">Mes visites</SideNavItem>
 					<SideNavItem waves href='#likes' icon="hearing">Mes likes</SideNavItem>
 					<SideNavItem divider />
 					<SideNavItem subheader>Aide</SideNavItem>

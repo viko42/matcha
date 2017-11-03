@@ -14,6 +14,10 @@ import {logoName} from '../../config/crushyard'
 import Dropzone from 'react-dropzone';
 
 class Profile extends Component {
+	_isMount = true;
+	componentWillUnmount() {
+		this._isMount = false;
+	}
 	constructor(props) {
 		super(props);
 
@@ -47,6 +51,8 @@ class Profile extends Component {
 				return ;
 
 			services('blockUser', {id: self.state.getData}, function (err, response) {
+				if (self._isMount === false)
+					return ;
 				if (err) { self.setState({errors: response.data.errors}); if (response.data.errors.swal) { swal("Error", response.data.errors.swal, "error"); } return ; }
 				swal("Success", self.state.profile.blocked ? "This user is unblock" : "This user is blocked", "success");
 				self.getProfile();
@@ -70,6 +76,8 @@ class Profile extends Component {
 				return ;
 
 			services('reportUser', {reportedId: self.state.getData}, function (err, response) {
+				if (self._isMount === false)
+					return ;
 				if (err) { self.setState({errors: response.data.errors}); if (response.data.errors.swal) { swal("Error", response.data.errors.swal, "error"); } return ; }
 				swal("Success", "This user is reported", "success");
 				self.getProfile();
@@ -80,6 +88,8 @@ class Profile extends Component {
 		const self = this;
 
 		services('startConversation', {getData: this.state.getData+'/start'}, function (err, response) {
+			if (self._isMount === false)
+				return ;
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
@@ -93,6 +103,8 @@ class Profile extends Component {
 		const self = this;
 
 		services('doCrush', {getData: this.state.getData}, function (err, response) {
+			if (self._isMount === false)
+				return ;
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
@@ -120,6 +132,8 @@ class Profile extends Component {
 		const self = this;
 
 		services('removeCrush', {getData: this.state.getData+'/remove'}, function (err, response) {
+			if (self._isMount === false)
+				return ;
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
@@ -170,12 +184,16 @@ class Profile extends Component {
 	}
 	selectAvatar(e) {
 		e.preventDefault();
-		this.setState({selectAvatar: e.target.picId.value})
+
+		if (this._isMount)
+			this.setState({selectAvatar: e.target.picId.value})
 	}
 	deleteAvatar() {
 		const self = this;
 
 		services('deleteAvatar', {id: self.state.selectAvatar}, function (err, response) {
+			if (self._isMount === false)
+				return ;
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
@@ -200,6 +218,8 @@ class Profile extends Component {
 				return ;
 
 			services('changeAvatar', {id: self.state.selectAvatar}, function (err, response) {
+				if (self._isMount === false)
+					return ;
 				if (err) {
 					self.setState({errors: response.data.errors})
 					if (response.data.errors.swal)
@@ -218,7 +238,6 @@ class Profile extends Component {
 		if (String(button) === "about-me") {
 			if (this.state.aboutMe === true) {
 				values.aboutMe = document.getElementById(button).value;
-				console.log(values);
 				this.updateProfile(values);
 			}
 			this.setState({aboutMe: this.state.aboutMe ? false : true});
@@ -234,16 +253,14 @@ class Profile extends Component {
 			if (this.state.myInfos === true) {
 				values.myInfosSexe = document.getElementById(button+"1").value;
 				values.myInfosOrientation = document.getElementById(button+"2").value;
-				console.log(values);
 				this.updateProfile(values);
 			}
 			this.setState({myInfos: this.state.myInfos ? false : true});
 		}
 		if (String(button) === "myLibrary") {
-			if (this.state.myLibrary === true) {
+			if (this.state.myLibrary === true && this.state.profile.tags.indexOf(document.getElementById(button).value) === -1) {
 				values.myLibraryCat = "tags";
 				values.myLibrary = document.getElementById(button).value;
-				console.log(values);
 				this.updateProfile(values);
 			}
 		}
@@ -255,6 +272,8 @@ class Profile extends Component {
 		const self = this;
 
 		services('updateProfile', values, function (err, response) {
+			if (self._isMount === false)
+				return ;
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
@@ -268,6 +287,8 @@ class Profile extends Component {
 		const self = this;
 
 		services('getProfile', self.state, function (err, response) {
+			if (self._isMount === false)
+				return ;
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
@@ -275,9 +296,12 @@ class Profile extends Component {
 				window.location.assign(urlApp + "/#");
 				return ;
 			}
-			self.setState({profile: response.data.profile});
+			if (self._isMount)
+				self.setState({profile: response.data.profile});
 			services('getAvatar', {getData: response.data.profile.username}, function (err, response) {
-				if (response.data.src)
+				if (!self._isMount)
+					return ;
+				if (response.data.src && self._isMount)
 					return self.setState({avatar: response.data.src});
 				return self.setState({avatar: "http://www.bmxpugetville.fr/wp-content/uploads/2015/09/avatar.jpg"});
 			})
@@ -286,7 +310,8 @@ class Profile extends Component {
 	componentWillReceiveProps(newProps) {
 		const self = this;
 
-		this.setState({getData: newProps.match.params.id}, function () { self.getProfile(); });
+		if (self._isMount)
+			this.setState({getData: newProps.match.params.id}, function () { self.getProfile(); });
 	}
 	componentDidMount() {
 		this.getProfile();
@@ -304,6 +329,8 @@ class Profile extends Component {
 		reader.readAsDataURL(event[0]);
 		reader.onloadend = function() {
 			services('uploadImage', {file: reader.result}, function (err, response) {
+				if (self._isMount === false)
+					return ;
 				if (err) {
 					self.setState({errors: response.data.errors})
 					if (response.data.errors.swal)
@@ -331,17 +358,14 @@ class Profile extends Component {
 									<div key='header' className="links-header">
 										<a className="link-name tooltipped" data-position="bottom" data-delay="50" data-tooltip="Status"><Icon className={profile.connected === false ? "offline" : "online"}>wb_sunny</Icon>{profile.firstName} {profile.lastName}</a><br/>{profile.connected === true ? "User online" : "User offline"}
 										<br/>
-										{profile.connected === false && <a href>Last activity on {profile.last_activity}</a>}
+										{profile.connected === false && <a>Last activity on {profile.last_activity}</a>}
 										<div hidden={profile.me === true || profile.crushed === true ? true : false} className="yes-crush">
 											<a onClick={this.doCrush.bind(this, true)} className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Want to crush ?"><Button floating large className='green' waves='light' icon='check' /></a>
 										</div>
-										<div hidden={profile.me === true || profile.crushed === true ? true : false} className="no-crush">
-											<a onClick={this.removeCrush.bind(this, false)} className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Reject this profile"><Button floating large className='red' waves='light' icon='close' /></a>
-										</div>
-
 										<div hidden={profile.me === true || profile.crushed === false ? true : false} className="no-crush">
 											<a onClick={this.removeCrush.bind(this, false)} className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Reject this profile"><Button floating large className='red' waves='light' icon='close' /></a>
 										</div>
+
 										<div hidden={profile.doubleCrush === true ? false : true} className="yes-crush">
 											<a onClick={this.startConversation.bind(this)} className="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Start a conversation!"><Button floating large className='blue' waves='light' icon='speaker_notes' /></a>
 										</div>
@@ -366,10 +390,6 @@ class Profile extends Component {
 
 						{/* Content of my sidebar Profile */}
 						<Col l={4} m={4} s={12}>
-
-							<Card className="side-crush">
-								<div className="side-crush-text">240 Crush(s)</div>
-							</Card>
 
 							<Card className="hi-icon-wrap hi-icon-effect-9 hi-icon-effect-9a ">
 								{!this.state.myInfos && profile.me && <a onClick={this.toggleButton.bind(this, 'myInfos')}>

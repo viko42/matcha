@@ -65,7 +65,7 @@ label:not(.active):after {
 	margin-right: 70px;
 	right: 0;
 	position: absolute;
-	margin-top: 12px;
+	/*margin-top: 12px;*/
 }
 .crush-tag-age {
 	/*display: inline-block;*/
@@ -83,6 +83,10 @@ label:not(.active):after {
 .crush-tag-buttons {
 	float: right;
 	margin-top: 15px;
+}
+.crushlist-tag-buttons {
+	float: none;
+	margin: none;
 }
 .crush-tag-buttons-close {
 	float: left;

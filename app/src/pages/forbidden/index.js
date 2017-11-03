@@ -8,6 +8,10 @@ import Header from '../../components/header/index'
 import {logoName} from '../../config/crushyard'
 
 class Forbidden extends Component {
+	_isMount = true;
+	componentWillUnmount() {
+		this._isMount = false;
+	}
 	componentDidMount() {
 		document.title =  `${logoName} - Forbidden`;
 	}

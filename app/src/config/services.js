@@ -241,7 +241,6 @@ export function GoogleApi(props, data, callback) {
     }).then(function (res) {
 		return callback(null, res);
     }).catch(function (err) {
-		console.log(err);
 		if (err.response)
 			return callback(null, null);
 	});

@@ -17,6 +17,10 @@ const { apiUrl } = require('../../config/crushyard');
 
 
 class Login extends Component {
+	_isMount = true;
+	componentWillUnmount() {
+		this._isMount = false;
+	}
 	constructor(props) {
 		super(props);
 
@@ -47,6 +51,8 @@ class Login extends Component {
 		const self = this;
 
 		services('loginUser', self.state, function (err, response) {
+			if (self._isMount === false)
+				return ;
 			if (err) {
 				self.setState({errors: response.data.errors})
 				if (response.data.errors.swal)
@@ -59,6 +65,10 @@ class Login extends Component {
 			global.socket = io.connect(apiUrl, {
 				query: {token: getLocalStorage('auth')}
 			});
+			// global.socket.on('connect_error', function(err) {
+			//   console.log('Error connecting to server 2');
+			// // window.location.assign(urlApp + "/#/home");
+			// });
 
 			swal("Summary", "Successfully connected !", "success");
 			self.setState({redirect: true});
@@ -74,7 +84,7 @@ class Login extends Component {
 								<Col m={12} s={12}>
 									<Card title="Vos données de connexion">
 										<Row>
-											<Input type="email" name='email' label="Your email" error={this.state.errors && this.state.errors.email ? this.state.errors.email : null} onChange={this.handleInputChange} s={12}/>
+											<Input type="text" name='login' label="Your email or username" error={this.state.errors && this.state.errors.login ? this.state.errors.login : null} onChange={this.handleInputChange} s={12}/>
 											<Input type="password" name='password' label="Your password" error={this.state.errors.password ? this.state.errors.password : null} onChange={this.handleInputChange} s={12} />
 											<Col s={12}><Link to="/reset" className="pull-right">Mot de passe oublié</Link></Col>
 											<Col s={12}><Button className="pull-left" waves='light'>LOGIN</Button></Col>

@@ -29,21 +29,21 @@ exports.newReport = function (req, res) {
 
 	Users.findOne({'_id': profileId}).exec(function (err, userFound) {
 		if (err)
-			return s.serverError(res, err, thisController);
+			return s.badRequest(res, err, thisController);
 
 		if (!userFound)
 			return s.notFound(res, {errors: profileId + ' not found. [Reported-CONTROLLER]'}, thisController);
 
 		Reported.find({from: userId, reportedId: profileId}).exec(function(err, reportFound) {
 			if (err)
-				return s.serverError(res, err, thisController);
+				return s.badRequest(res, err, thisController);
 
 			if (reportFound.length > 0)
 				return s.notFound(res, {errors: {swal: 'Profile deja report'}}, thisController);
 
 			new_report.save(function (err, reportSaved) {
 				if (err)
-					return s.serverError(res, err, thisController);
+					return s.badRequest(res, err, thisController);
 				addScore(profileId, -10);
 				return res.status(200).json({reported: true});
 			});
