@@ -81,12 +81,10 @@ class Register extends Component {
 		const self = this;
 
 		GoogleApi('findPosition', self.state.position ? {getData: self.state.position.coords.latitude+','+self.state.position.coords.longitude} : {}, function (err, response) {
-			if (response && response.data.results && response.data.results[0] && this._isMount) {
+			if (response && response.data.results && response.data.results[0] && this._isMount && self.state.position.coords.latitude && self.state.position.coords.longitude) {
 				self.setState({localization: response.data.results[0].geometry.location});
 			}
 			services('createUser', self.state, function (err, response) {
-				if (self._isMount === false)
-					return ;
 				if (err) {
 					self.setState({errors: response.data.errors})
 					if (response.data.errors.swal)

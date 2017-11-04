@@ -236,6 +236,9 @@ export function GoogleApi(props, data, callback) {
 	var apiGoogle	= "AIzaSyAWyS9AomCahBfTue98dIGMcCozwbgKBbc";
 	var get_data	= data.getData ? data.getData : '';
 
+	if (!get_data)
+		return callback();
+
 	axios({
    	 method: tabs[props].method,
    	 url: tabs[props].url + get_data + "&key=" + apiGoogle,
