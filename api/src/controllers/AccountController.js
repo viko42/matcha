@@ -127,7 +127,7 @@ exports.update = function(req, res) {
 	], function (err) {
 		if (err)
 			return s.badRequest(res, err, thisController);
-		return res.status(200).json({data: {firstName: user.firstName, lastName: user.lastName, email: user.email, phone: user.phone, birth: user.birth}});
+		return res.status(200).json({data: {firstName: user.firstName, lastName: user.lastName, email: user.email, phone: user.phone, birth: user.birth, username: user.username}});
 	})
 };
 
