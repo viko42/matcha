@@ -107,21 +107,21 @@ class Account extends Component {
 					<Row>
 						<Col m={12} s={12}>
 							<Card title="Edit your account">
-								{this.state.account.email && <Row>
+								{this.state.account && this.state.account.email && <Row>
 									<Input type="text"  name='firstName' label="Your firstName" defaultValue={this.state.firstName}  onChange={this.handleInputChange} s={12} />
 									<Input type="text"  name='lastName' label="Your lastName" defaultValue={this.state.lastName}  onChange={this.handleInputChange} s={12} />
 									<Input type="email"  name='email' label="Your email" defaultValue={this.state.account.email} onChange={this.handleInputChange} s={12}/>
 									<Input type="password" ref={el => this.inputPassword = el} name='password' id='password' label="Your password" onChange={this.handleInputChange} s={12} />
 								</Row>
 								}
-								{!this.state.account.email && <Row>
+								{this.state.account && !this.state.account.email && <Row>
 									<Col s={12}>
 										<center><Preloader size='big'/></center>
 									</Col>
 								</Row>
 								}
 
-								{this.state.account.birth && <Row>
+								{this.state.account && this.state.account.birth && <Row>
 									<Input type="text"  name='birth' label="Date de naissance" defaultValue={this.state.account.birth} s={12} disabled/>
 									<Input id="phone" type="text" name='phone' label="Your phone number" defaultValue={this.state.phone} onChange={this.handleInputChange} s={12} />
 									<Col s={12}>
@@ -129,7 +129,7 @@ class Account extends Component {
 									</Col>
 								</Row>
 								}
-								{!this.state.account.email && <Row>
+								{this.state.account && !this.state.account.email && <Row>
 									<Col s={12}>
 										<center><Preloader size='big'/></center>
 									</Col>

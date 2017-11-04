@@ -12,7 +12,7 @@ import swal from 'sweetalert';
 import services from '../../config/services';
 
 import io from "socket.io-client";
-import {getLocalStorage} from '../../config/policies'
+import {getLocalStorage, remLocalStorage} from '../../config/policies'
 
 const { urlApp, apiUrl } = require('../../config/crushyard');
 const NotificationSystem = require('react-notification-system'); //https://github.com/igorprado/react-notification-system
@@ -142,6 +142,16 @@ class Header extends React.Component {
 
 		// Stop the loader
 		$('body').addClass('loaded');
+
+		let user = getLocalStorage('user');
+		let token = getLocalStorage('auth');
+
+		if ((user && (!user.username || !user.firstName || !user.lastName)) || (!user && token) || (user && !token)) {
+			remLocalStorage('user');
+			remLocalStorage('auth');
+			window.location.reload();
+			console.log('Reload ??');
+		}
 
 		this._notificationSystem = this.refs.notificationSystem;
 

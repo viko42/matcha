@@ -47,7 +47,7 @@ class SideBar extends Component {
 		window.removeEventListener("resize", this.updateDimensions);
 	}
 	ifConnected() {
-		if (!getLocalStorage('auth'))
+		if (!getLocalStorage('auth') || !getLocalStorage('user'))
 			return (
 				<SideNav
 					trigger={<h1 className="testButton">☰</h1>}

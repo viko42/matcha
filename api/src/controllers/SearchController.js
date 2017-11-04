@@ -185,7 +185,8 @@ exports.findAffinate = function (req, res) {
 						src: (!isAvatar || !usersFound[i].data.pictures[usersFound[i].data.avatarID]) ? "http://www.bmxpugetville.fr/wp-content/uploads/2015/09/avatar.jpg" : usersFound[i].data.pictures[usersFound[i].data.avatarID].data,
 						score: usersFound[i].data.score ? usersFound[i].data.score : 0,
 						tags: tagsInt,
-						distance: geolib.getDistance( {latitude: user.location[1], longitude: user.location[0]}, {latitude: usersFound[i].location[1], longitude: usersFound[i].location[0]} )
+						distance: geolib.getDistance( {latitude: user.location[1], longitude: user.location[0]}, {latitude: usersFound[i].location[1], longitude: usersFound[i].location[0]} ),
+						username: usersFound[i].username
 					}
 				}
 				results = usersFound;
@@ -343,7 +344,8 @@ exports.find = function (req, res) {
 						src: (!isAvatar || !usersFound[i].data.pictures[usersFound[i].data.avatarID]) ? "http://www.bmxpugetville.fr/wp-content/uploads/2015/09/avatar.jpg" : usersFound[i].data.pictures[usersFound[i].data.avatarID].data,
 						score: usersFound[i].data.score ? usersFound[i].data.score : 0,
 						tags: tagsInt,
-						distance: geolib.getDistance( {latitude: user.location[1], longitude: user.location[0]}, {latitude: usersFound[i].location[1], longitude: usersFound[i].location[0]} )
+						distance: geolib.getDistance( {latitude: user.location[1], longitude: user.location[0]}, {latitude: usersFound[i].location[1], longitude: usersFound[i].location[0]} ),
+						username: usersFound[i].username
 					}
 				}
 				results = usersFound;

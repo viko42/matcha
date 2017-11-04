@@ -51,6 +51,7 @@ app.use(function(req, res, next) {
 	}
 	next();
 });
+// app.use(express.static('/uploads'));
 
 app.use(bodyParser.json({limit: '5mb'}));
 app.use(bodyParser.urlencoded({limit: '5mb', extended: true}));

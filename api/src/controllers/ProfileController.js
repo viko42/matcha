@@ -1,4 +1,5 @@
 const mongoose	= require('mongoose');
+const fs		= require('fs');
 const s			= require('../config/services');
 const async		= require('async');
 const _			= require('lodash');
@@ -6,8 +7,11 @@ const moment	= require('moment');
 const Users		= mongoose.model('Users');
 const Crushs	= mongoose.model('Crushs');
 const thisController	= "ProfileController";
-var multer = require('multer');
-var upload = multer({ dest: 'uploads/' });
+
+// var multer = require('multer');
+// var upload = multer({ dest: 'uploads/' });
+
+// var base64Img = require('base64-img');
 
 exports.findAvatar = function (req, res) {
 	let id = req.params.id;
@@ -34,7 +38,16 @@ exports.findAvatar = function (req, res) {
 			return res.status(200).json({src: "http://www.bmxpugetville.fr/wp-content/uploads/2015/09/avatar.jpg"});
 
 		return res.status(200).json({src: userFound.data.pictures[userFound.data.avatarID].data});
-	});
+
+		// server.get("/api/id/:w", function(req, res) {
+	    // var data = userFound.data.pictures[userFound.data.avatarID].data;
+		//
+		// fs.readFile('./uploads/'+id+'.png', function(err, data) {
+		// 	if (err) throw err;
+		// 	else
+				// res.end(userFound.data.pictures[userFound.data.avatarID].data);
+		// });
+   });
 };
 exports.changeAvatar = function (req, res) {
 	const idPicture = req.body.id;
@@ -55,7 +68,13 @@ exports.changeAvatar = function (req, res) {
 		Users.update({'_id': userFound.id}, {data: data}).exec(function (err, userUpdated) {
 			if (err)
 				return s.badRequest(res, err, thisController);
-			return res.status(200).json({});
+
+			if (!userFound.data.pictures[idPicture])
+				return res.status(200).json({});
+
+			// base64Img.img(userFound.data.pictures[idPicture].data, 'uploads', userFound.username, function(err, filepath) {
+				return res.status(200).json({});
+			// });
 		});
 	});
 };
@@ -84,6 +103,11 @@ exports.deleteAvatar = function (req, res) {
 		Users.update({'_id': userFound.id}, {data: data}).exec(function (err, userUpdated) {
 			if (err)
 				return s.badRequest(res, err, thisController);
+
+			// fs.unlink('./uploads/',function(err){
+			// 	if(err) return console.log(err);
+			// 	console.log('file deleted successfully');
+			// });
 			return res.status(200).json({});
 		});
 	});
@@ -105,7 +129,10 @@ exports.uploadImage = function(req, res) {
 		Users.update({'_id': userFound.id}, {data: data}).exec(function (err, userUpdated) {
 			if (err)
 				return s.badRequest(res, err, thisController);
-			return res.status(200).json({});
+
+			// base64Img.img(data, 'uploads', userFound.username, function(err, filepath) {
+				return res.status(200).json({});
+			// });
 		})
 	})
 };
