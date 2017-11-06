@@ -387,12 +387,15 @@ exports.create = function(req, res) {
 
 	async.waterfall([
 		function (callback) {
-			Users.findOne({email: new_user.email}, function(err, user) {
+			Users.findOne({$or: [{email: new_user.email}, {username: new_user.username}]}, function(err, user) {
 				if (err)
 					return callback(err);
 
-				if (user)
+				if (user && user.email === new_user.email)
 					return callback({errors: {email: "This email is already in use"}});
+
+				if (user && user.username === new_user.username)
+					return callback({errors: {username: "This username is already in use"}});
 
 				callback();
 			});
