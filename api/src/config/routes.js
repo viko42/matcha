@@ -6,7 +6,7 @@ module.exports = function (app) {
 	var Users = require('../controllers/UsersController');
 	//--------------------------------------------------------------------
 
-	app.route('/users')			.get(isConnected.authorization, Users.list);
+	// app.route('/users')			.get(isConnected.authorization, Users.list);
 	app.route('/users/tags')	.get(isConnected.authorization, Users.tags);
 
 	app.route('/users/create')	.post(Users.create);
@@ -85,6 +85,7 @@ module.exports = function (app) {
 	//--------------------------------------------------------------------
 
 	app.route('/login')			.post(Users.login);
+	app.route('/verify')		.post(Users.verify);
 
 	//####################################################################
 	//						Search

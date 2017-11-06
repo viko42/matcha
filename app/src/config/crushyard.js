@@ -1,6 +1,6 @@
 exports.logoName	= "CrushYard";
 
-const ip = "localhost";
+const ip = "127.0.0.1";
 
 if (process.env.NODE_ENV === "development") {
 	exports.apiUrl		= "http://127.0.0.1:8080";

@@ -42,7 +42,7 @@ const Routes = (props) => (
 	<Switch>
 		<Route exact path='/'		component={isConnected(Home, HomeGuest)}/>
 		<Route path='/profile/:id'	component={Authorization(Profile, ['User', 'Admin'])}/>
-		<Route path='/account'		component={Authorization(Account, ['User', 'Admin'])}/>
+		<Route path='/account'		component={Authorization(Account)}/>
 		<Route path='/inbox'		component={Authorization(Inbox, ['User', 'Admin'])}/>
 		<Route path='/crushs'		component={Authorization(Crushs, ['User', 'Admin'])}/>
 		<Route path='/search'		component={Authorization(Search, ['User', 'Admin'])}/>

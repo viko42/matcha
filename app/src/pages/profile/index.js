@@ -2,14 +2,14 @@ import React, { Component } from 'react';
 import { Col, Card, Row, Collection, CollectionItem, Chip, Input, Button, Icon, Carousel } from 'react-materialize';
 import swal from 'sweetalert';
 import services from '../../config/services';
-import {urlApp} from '../../config/crushyard'
 // import FileBase64 from 'react-file-base64';
 
 import '../../index.css';
 import './index.css';
 
 import Header from '../../components/header'
-import {logoName} from '../../config/crushyard'
+import {getLocalStorage} from '../../config/policies'
+import {logoName, urlApp} from '../../config/crushyard'
 
 import Dropzone from 'react-dropzone';
 
@@ -343,6 +343,11 @@ class Profile extends Component {
 	}
 	componentWillMount() {
 		document.title = `${logoName} - Profile`;
+
+		services('verifyToken', {token: getLocalStorage('auth')}, function (err, response) {
+			if (err)
+				return window.location.reload();
+		});
 	}
 	render() {
 		const { profile } = this.state;

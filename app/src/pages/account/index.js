@@ -9,7 +9,7 @@ import '../../index.css';
 import './index.css';
 
 import Header				from '../../components/header'
-import {logoName}			from '../../config/crushyard'
+import {logoName}	from '../../config/crushyard'
 
 import {setLocalStorage, getLocalStorage}	from '../../config/policies'
 import Geolocation			from "react-geolocation";
@@ -26,6 +26,12 @@ class Account extends Component {
 	}
 	componentWillUnmount() {
 		this._isMount = false;
+	}
+	componentWillMount() {
+		services('verifyToken', {token: getLocalStorage('auth')}, function (err, response) {
+			if (err)
+				return window.location.reload();
+		});
 	}
 	componentDidMount() {
 		document.title = `${logoName} - Account`;

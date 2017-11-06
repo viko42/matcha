@@ -7,7 +7,7 @@ import './index.css';
 // import $ from 'jquery';
 
 import swal		from 'sweetalert';
-import {getLocalStorage} from '../../config/policies'
+import {getLocalStorage, remLocalStorage} from '../../config/policies'
 // import ReactTable from 'react-table'
 // import 'react-table/react-table.css'
 
@@ -125,6 +125,14 @@ class Home extends Component {
 	}
 	componentWillMount() {
 		document.title = `${logoName} - Home`;
+
+		if (getLocalStorage('auth'))
+			services('verifyToken', {token: getLocalStorage('auth')}, function (err, response) {
+				if (err) {
+					remLocalStorage('auth');
+					return window.location.reload();
+				}
+			});
 	}
 	getUsers(users) {
 		var render = [];

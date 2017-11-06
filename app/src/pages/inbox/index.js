@@ -8,6 +8,7 @@ import './index.css';
 import swal		from 'sweetalert';
 import moment	from 'moment';
 
+import {getLocalStorage} from '../../config/policies'
 import Header from '../../components/header/index'
 import {logoName, apiUrl} from '../../config/crushyard'
 
@@ -68,6 +69,11 @@ class Inbox extends Component {
 
 	componentWillMount() {
 		document.title = `${logoName} - Inbox`;
+
+		services('verifyToken', {token: getLocalStorage('auth')}, function (err, response) {
+			if (err)
+				return window.location.reload();
+		});
 	}
 	giveIndexConversation(id) {
 		for (var i = 0; i < this.state.inbox.length; i++) {

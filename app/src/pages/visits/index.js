@@ -9,6 +9,7 @@ import swal		from 'sweetalert';
 
 // import ReactTable from 'react-table'
 // import 'react-table/react-table.css'
+import {getLocalStorage} from '../../config/policies'
 
 import Header from '../../components/header/index'
 import {logoName, apiUrl} from '../../config/crushyard'
@@ -49,6 +50,11 @@ class Visits extends Component {
 	}
 	componentWillMount() {
 		document.title = `${logoName} - Mes visites`;
+
+		services('verifyToken', {token: getLocalStorage('auth')}, function (err, response) {
+			if (err)
+				return window.location.reload();
+		});
 	}
 	componentDidMount() {
 		const self = this;

@@ -545,3 +545,15 @@ exports.login = function(req, res) {
 		});
 	});
 }
+
+exports.verify = function(req, res) {
+	var data = req.body;
+
+	if (!data || !data.token)
+		return s.forbidden(res, {errors: {message: 'connection refused'}}, thisController);
+	jwt.verify(data.token, 'ilovescotchyscotch', function (err, verifiedToken) {
+		if (err || !verifiedToken.id)
+			return s.forbidden(res, {errors: {message: 'invalid token'}}, thisController);
+		return res.status(200).json({logged: true});
+	});
+}
