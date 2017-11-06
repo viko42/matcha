@@ -444,7 +444,8 @@ exports.create = function(req, res) {
 			new_user.data = {
 				profile: {
 					sexe: 'Non renseigné',
-					orientation: 'Non renseigné'
+					orientation: 'Non renseigné',
+					tags: [],
 				},
 				pictures: [],
 				score: 0
