@@ -55,7 +55,8 @@ class Reset extends Component {
 					swal("Error", response.data.errors.swal, "error");
 				return ;
 			}
-			swal("Top!", "Vérifiez vos mails!", "success");
+			if (response.data && response.data.reset === true)
+				swal("Top!", "Vérifiez vos mails!", "success");
 		});
 	}
 	setNewPassword(e) {

@@ -47,7 +47,7 @@ exports.reset = function (req, res) {
 					return callback(err);
 
 				if (!userFound)
-					return callback("User not found");
+					return callback({errors: {swal: "User not found"}});
 
 				data.transporter.sendMail(data.mailOptions, function(error, info){
 					if (error)
@@ -60,7 +60,7 @@ exports.reset = function (req, res) {
 	], function (err) {
 		if (err)
 			return s.badRequest(res, err, thisController);
-		return res.status(200).json({message: "Code generated!"});
+		return res.status(200).json({message: "Code generated!", reset: true});
 	});
 };
 

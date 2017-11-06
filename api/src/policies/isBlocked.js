@@ -3,7 +3,6 @@ var Users		= mongoose.model('Users');
 var s			= require('../config/services');
 var async		= require('async');
 
-// Verify if 'TO' block 'FROM'
 exports.isBlokedSocket = function(fromId, toSocket, call) {
 	var idRecipent = false;
 
@@ -22,6 +21,7 @@ exports.isBlokedSocket = function(fromId, toSocket, call) {
 						return callback('Blocked');
 					}
 				}
+
 				idRecipent = userFound.id;
 				return callback();
 			});
