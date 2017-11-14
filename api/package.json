@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "IP=localhost MONGOPORT=27017 nodemon app.js --exec babel-node --presets es2015,stage-2",
+    "start": "IP=127.0.0.1 MONGOPORT=27017 nodemon app.js --exec babel-node --presets es2015,stage-2",
     "build": "IP=172.17.0.1 MONGOPORT=27018 babel-node app.js --presets es2015,stage-2",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
