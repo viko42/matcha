@@ -74,7 +74,7 @@ class SideBar extends Component {
 							email: getLocalStorage('user').email
 						}}
 					/>
-					{/* <SideNavItem href='#/' icon='cloud'>Retour à la page d'accueil</SideNavItem> */}
+					<SideNavItem href='#/' icon='cloud'>Retour à la page d'accueil</SideNavItem>
 					{/* <SideNavItem divider /> */}
 					<SideNavItem subheader>Panel</SideNavItem>
 					<SideNavItem waves href='#account' icon="person">Mon compte</SideNavItem>

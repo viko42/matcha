@@ -370,6 +370,12 @@ exports.create = function(req, res) {
 	if (!new_user.username)
 		return s.badRequest(res, {errors: {username: 'Champs manquant'}});
 
+	new_user.username = new_user.username.replace(' ', '');
+	new_user.username = new_user.username.replace('\t', '');
+
+	if (!new_user.username)
+		return s.badRequest(res, {errors: {username: 'Champs incorrect'}});
+
 	if (!new_user.lastName)
 		return s.badRequest(res, {errors: {lastName: 'Champs manquant'}});
 
