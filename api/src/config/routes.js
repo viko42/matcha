@@ -61,7 +61,6 @@ module.exports = function (app) {
 
 	app.route('/inbox')						.get(isConnected.authorization, Messages.inbox);
 	app.route('/inbox/send')				.post(isConnected.authorization, Messages.send);
-	// app.route('/messages/delete')			.delete(isConnected.authorization, Messages.delete);
 
 	//####################################################################
 	//						Search

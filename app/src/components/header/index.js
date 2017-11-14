@@ -149,6 +149,7 @@ class Header extends React.Component {
 		if ((user && (!user.username || !user.firstName || !user.lastName)) || (!user && token) || (user && !token)) {
 			remLocalStorage('user');
 			remLocalStorage('auth');
+			// console.log('RELOAD 1');
 			window.location.reload();
 		}
 
