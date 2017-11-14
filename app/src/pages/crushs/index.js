@@ -78,7 +78,7 @@ class Crushs extends Component {
 					</Card>
 				</Col>
 			);
-		for (var i = 0; i < crushs.length; i++) {
+		for (var i = 0; crushs && i < crushs.length; i++) {
 			render.push(
 				<Col s={12} m={6} l={6} className="xl3" key={i}>
 					<Card className="crush-tag-card">

@@ -39,7 +39,7 @@ class MapContainer extends Component {
 	listMarks(positions) {
 		var positionsRender = [];
 
-		for (var i = 0; i < positions.length; i++) {
+		for (var i = 0; positions && i < positions.length; i++) {
 			positionsRender.push(
 				<Marker key={i} title={'This is an user.'} name={'User'} position={{lat: positions[i].lat, lng: positions[i].lng}} />
 			);

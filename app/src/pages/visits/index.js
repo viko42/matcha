@@ -37,7 +37,7 @@ class Visits extends Component {
 				</tr>
 			);
 
-		for (var i = 0; i < users.length; i++) {
+		for (var i = 0; users && i < users.length; i++) {
 			render.push(
 				<tr key={i}>
 					<td>{users[i].firstName} {users[i].lastName}</td>

@@ -46,7 +46,7 @@ class Likes extends Component {
 				</Col>
 			);
 
-		for (var i = 0; i < users.length; i++) {
+		for (var i = 0; users && i < users.length; i++) {
 			render.push(
 				<Col key={i} s={12} m={6} l={6} className="xl3">
 					<Card className="crush-tag-card">
