@@ -39,6 +39,9 @@ exports.myNotifications = function (req, res) {
 				if (unreadNotif[i] && !unreadNotif[i].from)
 					return callback('User not found');
 
+				if (!unreadNotif[i])
+					return callback();
+
 				for (var i = 0; i < unreadNotif.length; i++) {
 					if (unreadNotif[i].type[0] === "message") {
 						unreadNotif[i].message = "Vous avez reçu un message de " + unreadNotif[i].from.firstName;
