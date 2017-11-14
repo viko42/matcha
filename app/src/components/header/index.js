@@ -150,7 +150,6 @@ class Header extends React.Component {
 			remLocalStorage('user');
 			remLocalStorage('auth');
 			window.location.reload();
-			console.log('Reload ??');
 		}
 
 		this._notificationSystem = this.refs.notificationSystem;
@@ -235,7 +234,8 @@ class Header extends React.Component {
 		if (this.state.notification === true)
 			this.setAsRead();
 
-		this.setState({notification: this.state.notification === true ? false : true});
+		if (this._isMount)
+			this.setState({notification: this.state.notification === true ? false : true});
 	}
 	componentWillUnmount() {
 		global.socket.off('test_message');

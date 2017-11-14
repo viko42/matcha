@@ -50,15 +50,15 @@ const Routes = (props) => (
 		<Route path='/likes'		component={Authorization(Likes, ['User', 'Admin'])}/>
 		<Route path='/maps'			component={Authorization(Maps, ['User', 'Admin'])}/>
 
-		<Route path='/register'		component={Register}/>
-		<Route path='/login'		component={Login}/>
-		<Route path='/reset'		component={Reset}/>
-		<Route path='/logout'		component={Logout}/>
+			<Route path='/register'		component={Register}/>
+		<Route path='/login'				component={Login}/>
+		<Route path='/reset'				component={Reset}/>
+		<Route path='/logout'				component={Logout}/>
 		<Route path='/unsupported'	component={NotSupported}/>
 		<Route path='/maintenance'	component={Error}/>
-		<Route path='/limited'		component={Limited}/>
-		<Route path='/support'		component={Support}/>
-		<Route component={NotFound}/>
+		<Route path='/limited'			component={Limited}/>
+		<Route path='/support'			component={Support}/>
+		<Route											component={NotFound}/>
     </Switch>
 );
 

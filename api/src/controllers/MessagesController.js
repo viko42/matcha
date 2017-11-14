@@ -209,6 +209,7 @@ exports.send = function(data, socket) {
 		exports.get_messages({userId: socket.handshake.query.userId, ...data}, socket, function (data) {
 			socket.emit('message sent', data);
 			isBlokedSocket(socket.handshake.query.userId, receiverSocketId, function (to, idRecipent) {
+				// console.log('SENT TO '+to);
 				socket.to(to).emit('test_message', {message: userEmit+" : "+ maxNotification(messageSent), status: 'success'});
 				socket.to(to).emit('receive message', {conversationId: conversationId});
 				addScore(idRecipent, 1);

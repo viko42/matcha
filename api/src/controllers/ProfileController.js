@@ -26,6 +26,9 @@ exports.findAvatar = function (req, res) {
 		if (err)
 			return s.badRequest(res, "Profile introuvable: " + id, thisController);
 
+		if (!userFound)
+			return s.badRequest(res, "User not found", thisController);
+
 		var isAvatar = true;
 
 		if (!userFound || !userFound.data.pictures || (!userFound.data.avatarID && !userFound.data.pictures[0]))
@@ -243,6 +246,9 @@ exports.getProfile = function(req, res) {
 
 				if (!user)
 					return callback("User not found");
+
+				if (user.data.profile && !user.data.profile.tags)
+					user.data.profile.tags = [];
 
 				profile = {
 					...user.data.profile,

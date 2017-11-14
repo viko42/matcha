@@ -41,7 +41,7 @@ class Profile extends Component {
 		swal({
 			title: "Are you sure ?",
 			text: self.state.profile.blocked ? "You will unblock this user" : "You will block this user and will be unable to see this user anymore",
-			type: "warning",
+			icon: "warning",
 			buttons: {
 				Retour: "Retour",
 				Oui: "Oui",
@@ -66,7 +66,7 @@ class Profile extends Component {
 		swal({
 			title: "Are you sure ?",
 			text: "You will report this user.",
-			type: "warning",
+			icon: "warning",
 			buttons: {
 				Retour: "Retour",
 				Oui: "Oui",
@@ -115,7 +115,7 @@ class Profile extends Component {
 				swal({
 					title: "You have a new crush !",
 					text: "Speak directly with your new crush in the inbox section !",
-					type: "success"
+					icon: "success"
 				}).then(() => {
 					self.startConversation();
 					global.socket.emit('send crush', {id: self.state.getData});
